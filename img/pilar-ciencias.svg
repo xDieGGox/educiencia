@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="20" fill="#3ca6a6"/>
+  <!-- Microscope icon -->
+  <!-- Eyepiece -->
+  <rect x="88" y="28" width="24" height="14" rx="4" fill="white" opacity="0.95"/>
+  <!-- Tube body -->
+  <rect x="93" y="42" width="14" height="44" rx="3" fill="white" opacity="0.9"/>
+  <!-- Arm / stage arm -->
+  <rect x="84" y="80" width="32" height="10" rx="3" fill="white" opacity="0.9"/>
+  <!-- Objective lens -->
+  <rect x="95" y="90" width="10" height="22" rx="5" fill="white" opacity="0.85"/>
+  <!-- Stage -->
+  <rect x="68" y="116" width="64" height="10" rx="3" fill="white" opacity="0.9"/>
+  <!-- Stage clip -->
+  <rect x="85" y="126" width="10" height="8" rx="2" fill="white" opacity="0.7"/>
+  <rect x="105" y="126" width="10" height="8" rx="2" fill="white" opacity="0.7"/>
+  <!-- Base -->
+  <rect x="62" y="140" width="76" height="12" rx="6" fill="white" opacity="0.9"/>
+  <!-- Focus knob -->
+  <circle cx="76" cy="104" r="9" fill="white" opacity="0.8"/>
+  <circle cx="76" cy="104" r="5" fill="#3ca6a6" opacity="0.6"/>
+  <!-- Light beam suggestion -->
+  <polygon points="100,112 90,150 110,150" fill="rgba(255,255,255,0.12)"/>
+  <!-- Decorative dots -->
+  <circle cx="154" cy="48" r="5" fill="rgba(255,255,255,0.35)"/>
+  <circle cx="166" cy="62" r="3" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="48"  cy="160" r="4" fill="rgba(255,255,255,0.3)"/>
+</svg>

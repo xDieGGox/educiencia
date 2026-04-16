@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EDUCIENCIA — Proyecto de vinculación comunitaria. Clases de refuerzo gratuitas en Biología, Química, Matemáticas y Física." />
+  <title>EDUCIENCIA — Acompañamiento científico para tu comunidad</title>
+
+  <style>
+    /* ============================================================
+       RESET Y BASE
+    ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1e1e2e;
+      background-color: #ffffff;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    /* ============================================================
+       VARIABLES DE COLOR
+    ============================================================ */
+    :root {
+      --color-primary:       #1a3a5c;
+      --color-primary-dark:  #122a4a;
+      --color-secondary:     #2e7d32;
+      --color-accent:        #f57c00;
+      --color-bg:            #ffffff;
+      --color-bg-alt:        #f5f7fa;
+      --color-text:          #1e1e2e;
+      --color-text-muted:    #555e7a;
+      --color-border:        #e0e4ef;
+      --color-shadow:        rgba(0,0,0,0.08);
+      --color-shadow-hover:  rgba(0,0,0,0.14);
+
+      /* Colores por área */
+      --color-bio:   #2e7d32;
+      --color-qui:   #6a1b9a;
+      --color-mat:   #1565c0;
+      --color-fis:   #e65100;
+
+      /* Colores de estado */
+      --color-estado-proxima:    #1565c0;
+      --color-estado-disponible: #2e7d32;
+      --color-estado-finalizada: #9e9e9e;
+
+      --radius: 8px;
+      --radius-sm: 4px;
+      --container: 1200px;
+      --section-gap: 80px;
+    }
+
+    /* ============================================================
+       UTILIDADES
+    ============================================================ */
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section {
+      padding: var(--section-gap) 0;
+    }
+
+    .section--alt {
+      background-color: var(--color-bg-alt);
+    }
+
+    .section__header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section__title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+    }
+
+    .section__subtitle {
+      font-size: 1.0625rem;
+      color: var(--color-text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+    .text-center { text-align: center; }
+    .text-muted   { color: var(--color-text-muted); }
+
+    /* ============================================================
+       CHIPS / ETIQUETAS
+    ============================================================ */
+    .chip {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .chip--bio   { background: #e8f5e9; color: var(--color-bio); }
+    .chip--qui   { background: #f3e5f5; color: var(--color-qui); }
+    .chip--mat   { background: #e3f2fd; color: var(--color-mat); }
+    .chip--fis   { background: #fff3e0; color: var(--color-fis); }
+
+    .chip--proxima    { background: #e3f2fd; color: var(--color-estado-proxima); }
+    .chip--disponible { background: #e8f5e9; color: var(--color-estado-disponible); }
+    .chip--finalizada { background: #f5f5f5; color: var(--color-estado-finalizada); }
+
+    .chip--nivel   { background: #f0f2f8; color: var(--color-text-muted); }
+    .chip--tipo    { background: #fafafa; color: var(--color-text-muted); border: 1px solid var(--color-border); }
+
+    /* ============================================================
+       BOTONES
+    ============================================================ */
+    .btn {
+      display: inline-block;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      text-align: center;
+    }
+
+    .btn--primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn--primary:hover {
+      background: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+    }
+
+    .btn--outline {
+      background: transparent;
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    .btn--outline:hover {
+      background: var(--color-primary);
+      color: #ffffff;
+    }
+
+    .btn--white {
+      background: #ffffff;
+      color: var(--color-primary);
+      border-color: #ffffff;
+    }
+
+    .btn--white:hover {
+      background: #e8edf5;
+    }
+
+    .btn--outline-white {
+      background: transparent;
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .btn--outline-white:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .btn--sm {
+      padding: 6px 14px;
+      font-size: 0.875rem;
+    }
+
+    .btn--bio { background: var(--color-bio); color: #fff; border-color: var(--color-bio); }
+    .btn--qui { background: var(--color-qui); color: #fff; border-color: var(--color-qui); }
+    .btn--mat { background: var(--color-mat); color: #fff; border-color: var(--color-mat); }
+    .btn--fis { background: var(--color-fis); color: #fff; border-color: var(--color-fis); }
+
+    /* ============================================================
+       TARJETAS (CARD)
+    ============================================================ */
+    .card {
+      background: var(--color-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--color-shadow);
+      padding: 24px;
+      transition: box-shadow 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 16px var(--color-shadow-hover);
+    }
+
+    /* Tarjeta de área — borde superior de color */
+    .card--area {
+      border-top: 4px solid var(--color-border);
+    }
+    .card--area.card--bio { border-top-color: var(--color-bio); }
+    .card--area.card--qui { border-top-color: var(--color-qui); }
+    .card--area.card--mat { border-top-color: var(--color-mat); }
+    .card--area.card--fis { border-top-color: var(--color-fis); }
+
+    /* Tarjeta de clase — borde lateral de color */
+    .card--clase {
+      display: flex;
+      gap: 0;
+      border-left: 5px solid var(--color-border);
+      padding: 0;
+      overflow: hidden;
+    }
+    .card--clase.card--bio { border-left-color: var(--color-bio); }
+    .card--clase.card--qui { border-left-color: var(--color-qui); }
+    .card--clase.card--mat { border-left-color: var(--color-mat); }
+    .card--clase.card--fis { border-left-color: var(--color-fis); }
+
+    .card--clase .clase-body {
+      padding: 18px 20px;
+      flex: 1;
+    }
+
+    .card--clase .clase-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .card--clase .clase-titulo {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 6px;
+    }
+
+    .card--clase .clase-info {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 12px;
+    }
+
+    .card--clase .clase-acciones {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Tarjeta de recurso */
+    .card--recurso .recurso-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .card--recurso .recurso-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      margin-top: 8px;
+    }
+
+    .card--recurso .recurso-titulo {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 6px;
+    }
+
+    .card--recurso .recurso-desc {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    /* Tarjeta de equipo */
+    .card--equipo {
+      text-align: center;
+    }
+
+    .card--equipo .equipo-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--color-bg-alt);
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--color-primary);
+      border: 3px solid var(--color-border);
+    }
+
+    .card--equipo .equipo-nombre {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+    }
+
+    .card--equipo .equipo-rol {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+    }
+
+    .card--equipo .equipo-areas {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Tarjeta de testimonio */
+    .card--testimonio {
+      background: var(--color-bg);
+      border-radius: var(--radius);
+      padding: 28px;
+      position: relative;
+    }
+
+    .card--testimonio::before {
+      content: '\201C';
+      font-size: 4rem;
+      color: var(--color-border);
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      line-height: 1;
+    }
+
+    .card--testimonio .testimonio-texto {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      font-style: italic;
+      margin-bottom: 16px;
+      padding-top: 20px;
+    }
+
+    .card--testimonio .testimonio-autor {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .card--testimonio .testimonio-rol {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ============================================================
+       HEADER / NAVEGACIÓN
+    ============================================================ */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--color-primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 64px;
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .header-logo .logo-icon {
+      font-size: 1.5rem;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .header-nav a {
+      color: rgba(255,255,255,0.85);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .header-nav a:hover,
+    .header-nav a.active {
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+    }
+
+    /* Menú hamburguesa (móvil) */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: #ffffff;
+      font-size: 1.5rem;
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    .hero {
+      background: linear-gradient(135deg, var(--color-primary) 0%, #0d2540 100%);
+      color: #ffffff;
+      padding: 96px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      max-width: 700px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.82);
+      max-width: 580px;
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       BLOQUE DE PILARES (iconos)
+    ============================================================ */
+    .pilares-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .pilar-item {
+      text-align: center;
+      padding: 28px 16px;
+    }
+
+    .pilar-icon {
+      font-size: 2.5rem;
+      margin-bottom: 14px;
+    }
+
+    .pilar-titulo {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+    }
+
+    .pilar-desc {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       SECCIÓN DE ÁREAS
+    ============================================================ */
+    .area-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 14px;
+    }
+
+    .area-card-nombre {
+      font-size: 1.1875rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+    }
+
+    .area-card-desc {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+
+    .area-card-sesiones {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* ============================================================
+       SECCIÓN DE AGENDA (PREVIEW)
+    ============================================================ */
+    .agenda-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ============================================================
+       SECCIÓN DE RECURSOS (PREVIEW)
+    ============================================================ */
+    .recursos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    /* ============================================================
+       FILTROS
+    ============================================================ */
+    .filtros-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 32px;
+      align-items: center;
+    }
+
+    .filtros-bar label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-right: 4px;
+    }
+
+    .filtro-btn {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filtro-btn:hover,
+    .filtro-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+    }
+
+    /* ============================================================
+       IMPACTO / NÚMEROS
+    ============================================================ */
+    .impacto-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+
+    .impacto-item {
+      padding: 24px 16px;
+    }
+
+    .impacto-numero {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .impacto-label {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ============================================================
+       CTA INSTITUCIONAL
+    ============================================================ */
+    .cta-section {
+      background: var(--color-primary);
+      color: #ffffff;
+      padding: 64px 0;
+      text-align: center;
+    }
+
+    .cta-titulo {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .cta-desc {
+      font-size: 1.0625rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 540px;
+      margin: 0 auto 28px;
+    }
+
+    .cta-acciones {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       FORMULARIO DE CONTACTO
+    ============================================================ */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--color-text);
+      background: var(--color-bg);
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-aviso {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      margin-top: 12px;
+    }
+
+    /* ============================================================
+       FAQ (ACORDEÓN)
+    ============================================================ */
+    .faq-item {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .faq-pregunta {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 16px 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .faq-pregunta .faq-icon {
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      color: var(--color-text-muted);
+      transition: transform 0.2s;
+    }
+
+    .faq-pregunta[aria-expanded="true"] .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-respuesta {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      line-height: 1.65;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.2s;
+    }
+
+    .faq-respuesta.open {
+      max-height: 300px;
+      padding-bottom: 16px;
+    }
+
+    /* ============================================================
+       INFO DE CONTACTO
+    ============================================================ */
+    .contacto-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .contacto-info-item {
+      text-align: center;
+      padding: 28px 20px;
+      background: var(--color-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--color-shadow);
+    }
+
+    .contacto-info-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .contacto-info-titulo {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .contacto-info-valor {
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .site-footer {
+      background: #0d1f33;
+      color: rgba(255,255,255,0.75);
+      padding: 56px 0 28px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand .footer-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-brand p {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .footer-col-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 14px;
+    }
+
+    .footer-links li + li {
+      margin-top: 8px;
+    }
+
+    .footer-links a {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-bottom p {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .footer-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ============================================================
+       ANCLAS DE NAVEGACIÓN INTERNA
+    ============================================================ */
+    .page-anchor {
+      padding-top: 80px;
+      margin-top: -80px;
+    }
+
+    /* ============================================================
+       ENLACE "VER MÁS"
+    ============================================================ */
+    .ver-mas-link {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 28px;
+      transition: gap 0.15s;
+    }
+
+    .ver-mas-link:hover {
+      gap: 10px;
+      text-decoration: underline;
+    }
+
+    .section-footer {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    /* ============================================================
+       BREADCRUMB
+    ============================================================ */
+    .breadcrumb {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .breadcrumb a {
+      color: rgba(255,255,255,0.75);
+    }
+
+    .breadcrumb a:hover {
+      color: #fff;
+    }
+
+    /* ============================================================
+       DIVISORES DE SECCIÓN
+    ============================================================ */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 0;
+    }
+
+    /* ============================================================
+       AVISO INFORMATIVO
+    ============================================================ */
+    .aviso {
+      background: #e8f0fb;
+      border-left: 4px solid var(--color-mat);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.875rem;
+      color: var(--color-primary);
+      margin-top: 24px;
+    }
+
+    .aviso a {
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    /* ============================================================
+       RESPONSIVE — TABLET (< 1024px)
+    ============================================================ */
+    @media (max-width: 1024px) {
+      .pilares-grid { grid-template-columns: repeat(2, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .impacto-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1 / -1; }
+    }
+
+    /* ============================================================
+       RESPONSIVE — MÓVIL (< 768px)
+    ============================================================ */
+    @media (max-width: 768px) {
+      :root { --section-gap: 52px; }
+
+      .header-nav { display: none; }
+      .nav-toggle { display: block; }
+
+      .header-nav.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--color-primary-dark);
+        padding: 12px 16px;
+        gap: 2px;
+        z-index: 999;
+      }
+
+      .header-nav.open a {
+        padding: 10px 12px;
+      }
+
+      .hero { padding: 60px 0 52px; }
+      .hero-title { font-size: 1.75rem; }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .pilares-grid,
+      .recursos-grid,
+      .impacto-grid,
+      .contacto-info-grid { grid-template-columns: 1fr; }
+
+      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { text-align: center; }
+
+      .filtros-bar { gap: 8px; }
+
+      .cta-acciones { flex-direction: column; align-items: center; }
+
+      .card--clase .clase-acciones { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER — Navegación institucional fija
+  ============================================================ -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <a href="#inicio" class="header-logo" aria-label="EDUCIENCIA — Ir al inicio">
+        <span class="logo-icon" aria-hidden="true">⚗️</span>
+        <span>EDUCIENCIA</span>
+      </a>
+
+      <nav class="header-nav" id="main-nav" role="navigation" aria-label="Navegación principal">
+        <a href="#inicio" class="active">Inicio</a>
+        <a href="#proyecto">Proyecto</a>
+        <a href="#areas">Áreas</a>
+        <a href="#agenda">Agenda</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#comunidad">Comunidad</a>
+        <a href="#equipo">Equipo</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-nav">
+        ☰
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       HERO — Sección principal de presentación
+  ============================================================ -->
+  <section class="hero" id="inicio" aria-labelledby="hero-titulo">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Proyecto de vinculación con la comunidad</p>
+      <h1 class="hero-title" id="hero-titulo">
+        Apoyo en ciencias,<br>para quien lo necesite.
+      </h1>
+      <p class="hero-subtitle">
+        Clases de refuerzo gratuitas en Biología, Química, Matemáticas y Física.
+        Acompañadas por estudiantes universitarios comprometidos con su comunidad.
+      </p>
+      <div class="hero-actions">
+        <a href="#areas" class="btn btn--white">Ver áreas de refuerzo</a>
+        <a href="#agenda" class="btn btn--outline-white">Ver agenda de clases</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       PILARES — ¿Qué ofrece el proyecto?
+  ============================================================ -->
+  <section class="section" aria-label="Características del proyecto">
+    <div class="container">
+      <div class="pilares-grid">
+        <div class="pilar-item">
+          <div class="pilar-icon" aria-hidden="true">🔬</div>
+          <h3 class="pilar-titulo">Refuerzo en ciencias</h3>
+          <p class="pilar-desc">Acompañamiento académico en las cuatro grandes áreas de las ciencias experimentales.</p>
+        </div>
+        <div class="pilar-item">
+          <div class="pilar-icon" aria-hidden="true">🤝</div>
+          <h3 class="pilar-titulo">Estudiantes como tutores</h3>
+          <p class="pilar-desc">Jóvenes universitarios en formación que ponen su conocimiento al servicio de su comunidad.</p>
+        </div>
+        <div class="pilar-item">
+          <div class="pilar-icon" aria-hidden="true">📅</div>
+          <h3 class="pilar-titulo">Clases gratuitas</h3>
+          <p class="pilar-desc">Sesiones periódicas organizadas, accesibles para todos sin necesidad de registro previo.</p>
+        </div>
+        <div class="pilar-item">
+          <div class="pilar-icon" aria-hidden="true">📚</div>
+          <h3 class="pilar-titulo">Recursos para todos</h3>
+          <p class="pilar-desc">Materiales educativos de acceso libre generados por el equipo del proyecto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+
+  <!-- ============================================================
+       SOBRE EL PROYECTO — Descripción institucional
+  ============================================================ -->
+  <section class="section section--alt page-anchor" id="proyecto" aria-labelledby="proyecto-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="proyecto-titulo">¿Qué es EDUCIENCIA?</h2>
+        <p class="section__subtitle">Un proyecto académico con vocación social que nace desde la universidad para servir a la comunidad.</p>
+      </div>
+
+      <div class="grid-2" style="align-items:start; gap: 48px;">
+        <div>
+          <p style="margin-bottom:16px; color: var(--color-text);">
+            <strong>EDUCIENCIA</strong> es un proyecto de vinculación con la comunidad que nace desde la carrera de
+            Ciencias Experimentales. Su propósito es ofrecer acompañamiento académico gratuito en las áreas de
+            Biología, Química, Matemáticas y Física, atendiendo a estudiantes de educación básica y bachillerato
+            que requieren refuerzo en estas materias.
+          </p>
+          <p style="margin-bottom:16px; color: var(--color-text);">
+            El proyecto está impulsado por estudiantes universitarios en formación que, bajo la guía de docentes
+            coordinadores, ejercen como tutores y aplican su conocimiento en beneficio directo de su comunidad.
+            No es un servicio comercial. Es un compromiso académico y social.
+          </p>
+          <p style="color: var(--color-text);">
+            A través de sesiones regulares, materiales educativos de acceso libre y una comunidad de aprendizaje
+            en construcción, EDUCIENCIA busca demostrar que la ciencia es comprensible, cercana y transformadora.
+          </p>
+          <a href="#equipo" class="ver-mas-link" style="margin-top:20px;">Conocer al equipo →</a>
+        </div>
+        <div>
+          <div class="card" style="background: var(--color-primary); color: #fff; border: none;">
+            <h3 style="font-size:1rem; font-weight:700; margin-bottom:14px; opacity:0.75; text-transform:uppercase; letter-spacing:0.06em;">Objetivos del proyecto</h3>
+            <ul style="display:flex; flex-direction:column; gap:10px;">
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span aria-hidden="true">✓</span>
+                <span>Ofrecer clases de refuerzo gratuitas en ciencias experimentales.</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span aria-hidden="true">✓</span>
+                <span>Despertar el interés social y comunitario por el conocimiento científico.</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span aria-hidden="true">✓</span>
+                <span>Alojar y organizar recursos educativos generados en el proyecto.</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span aria-hidden="true">✓</span>
+                <span>Visibilizar el trabajo de vinculación entre universidad y comunidad.</span>
+              </li>
+              <li style="display:flex; gap:10px; align-items:flex-start;">
+                <span aria-hidden="true">✓</span>
+                <span>Facilitar el acceso a horarios, recursos y canales de apoyo.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="card" style="margin-top:16px; border-left: 4px solid var(--color-accent);">
+            <p style="font-size:0.875rem; color:var(--color-text-muted);">
+              <strong style="color:var(--color-primary);">Marco institucional:</strong> Proyecto de vinculación con la comunidad —
+              Carrera de Ciencias Experimentales, Departamento de Extensión Universitaria.
+              Avalado y coordinado por docentes de la institución.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       ÁREAS DE REFUERZO — Cuatro disciplinas
+  ============================================================ -->
+  <section class="section page-anchor" id="areas" aria-labelledby="areas-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="areas-titulo">Áreas de acompañamiento</h2>
+        <p class="section__subtitle">Elige el área en la que necesitas apoyo. En cada una encontrarás clases, temas y recursos preparados para ti.</p>
+      </div>
+
+      <div class="grid-4">
+
+        <!-- Tarjeta: Biología -->
+        <div class="card card--area card--bio">
+          <div class="area-card-icon" aria-hidden="true">🌿</div>
+          <h3 class="area-card-nombre">Biología</h3>
+          <p class="area-card-desc">Exploramos los sistemas vivos: desde la célula hasta los ecosistemas. Trabajamos los contenidos del currículo escolar con enfoque práctico y visual.</p>
+          <p class="area-card-sesiones">🗓 3 sesiones disponibles</p>
+          <a href="#agenda" class="btn btn--bio btn--sm" aria-label="Explorar área de Biología">Explorar área</a>
+        </div>
+
+        <!-- Tarjeta: Química -->
+        <div class="card card--area card--qui">
+          <div class="area-card-icon" aria-hidden="true">⚗️</div>
+          <h3 class="area-card-nombre">Química</h3>
+          <p class="area-card-desc">Desmitificamos la química con explicaciones claras y ejemplos cotidianos. Desde la tabla periódica hasta reacciones básicas y estequiometría.</p>
+          <p class="area-card-sesiones">🗓 2 sesiones disponibles</p>
+          <a href="#agenda" class="btn btn--qui btn--sm" aria-label="Explorar área de Química">Explorar área</a>
+        </div>
+
+        <!-- Tarjeta: Matemáticas -->
+        <div class="card card--area card--mat">
+          <div class="area-card-icon" aria-hidden="true">📐</div>
+          <h3 class="area-card-nombre">Matemáticas</h3>
+          <p class="area-card-desc">Reforzamos el razonamiento matemático en los temas que más generan dificultad: álgebra, funciones, geometría y mucho más. Sin prisa, con método.</p>
+          <p class="area-card-sesiones">🗓 4 sesiones disponibles</p>
+          <a href="#agenda" class="btn btn--mat btn--sm" aria-label="Explorar área de Matemáticas">Explorar área</a>
+        </div>
+
+        <!-- Tarjeta: Física -->
+        <div class="card card--area card--fis">
+          <div class="area-card-icon" aria-hidden="true">⚡</div>
+          <h3 class="area-card-nombre">Física</h3>
+          <p class="area-card-desc">Conectamos la física con el mundo real. Fuerza, movimiento, energía, ondas. La física no se memoriza: se comprende a través de la práctica.</p>
+          <p class="area-card-sesiones">🗓 2 sesiones disponibles</p>
+          <a href="#agenda" class="btn btn--fis btn--sm" aria-label="Explorar área de Física">Explorar área</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+
+  <!-- ============================================================
+       AGENDA DE CLASES — Próximas sesiones
+  ============================================================ -->
+  <section class="section section--alt page-anchor" id="agenda" aria-labelledby="agenda-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="agenda-titulo">Agenda de clases</h2>
+        <p class="section__subtitle">Consulta las sesiones disponibles. Las clases son gratuitas y no requieren inscripción previa salvo indicación especial.</p>
+      </div>
+
+      <!-- Filtros de agenda -->
+      <div class="filtros-bar" role="group" aria-label="Filtros de agenda">
+        <span>
+          <label>Área:</label>
+        </span>
+        <button class="filtro-btn active" onclick="filtrarClases('todas')" aria-pressed="true">Todas</button>
+        <button class="filtro-btn" onclick="filtrarClases('biologia')" aria-pressed="false">Biología</button>
+        <button class="filtro-btn" onclick="filtrarClases('quimica')" aria-pressed="false">Química</button>
+        <button class="filtro-btn" onclick="filtrarClases('matematicas')" aria-pressed="false">Matemáticas</button>
+        <button class="filtro-btn" onclick="filtrarClases('fisica')" aria-pressed="false">Física</button>
+      </div>
+
+      <!-- Lista de clases -->
+      <div class="agenda-lista" id="agenda-lista" role="list">
+
+        <!-- Clase 1 — Matemáticas -->
+        <article class="card card--clase card--mat" role="listitem"
+                 data-area="matematicas" data-nivel="bachillerato" data-estado="proxima">
+          <div class="clase-body">
+            <div class="clase-meta">
+              <span class="chip chip--mat">Matemáticas</span>
+              <span class="chip chip--proxima">Próxima</span>
+              <span class="chip chip--nivel">Bachillerato básico</span>
+            </div>
+            <h3 class="clase-titulo">Funciones cuadráticas y representación gráfica</h3>
+            <p class="clase-info">
+              📅 Lunes 14 de abril, 2025 &nbsp;|&nbsp; 🕓 16:00 – 17:30 h &nbsp;|&nbsp;
+              💻 Virtual &nbsp;|&nbsp; 👤 Tutor: Sebastián Torres
+            </p>
+            <p style="font-size:0.875rem; color: var(--color-text-muted); margin-bottom:14px;">
+              Analizaremos la forma general de las funciones cuadráticas, identificaremos vértice, raíces
+              e interceptos, y practicaremos su graficación paso a paso.
+            </p>
+            <div class="clase-acciones">
+              <a href="#recursos" class="btn btn--primary btn--sm">Acceder a la clase</a>
+              <a href="#recursos" class="btn btn--outline btn--sm">Ver materiales</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Clase 2 — Biología -->
+        <article class="card card--clase card--bio" role="listitem"
+                 data-area="biologia" data-nivel="basico" data-estado="proxima">
+          <div class="clase-body">
+            <div class="clase-meta">
+              <span class="chip chip--bio">Biología</span>
+              <span class="chip chip--proxima">Próxima</span>
+              <span class="chip chip--nivel">Básico</span>
+            </div>
+            <h3 class="clase-titulo">La célula: estructura y funciones básicas</h3>
+            <p class="clase-info">
+              📅 Martes 15 de abril, 2025 &nbsp;|&nbsp; 🕓 15:00 – 16:30 h &nbsp;|&nbsp;
+              🏫 Presencial — Aula 204, Edificio A &nbsp;|&nbsp; 👤 Tutor: Valeria Ríos
+            </p>
+            <p style="font-size:0.875rem; color: var(--color-text-muted); margin-bottom:14px;">
+              Revisaremos los componentes celulares básicos, la diferencia entre célula procariota y eucariota,
+              y realizaremos un esquema comparativo comentado.
+            </p>
+            <div class="clase-acciones">
+              <span class="chip chip--disponible" style="align-self:center;">Presencial — Acceso libre</span>
+              <a href="#recursos" class="btn btn--outline btn--sm">Ver materiales</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Clase 3 — Química -->
+        <article class="card card--clase card--qui" role="listitem"
+                 data-area="quimica" data-nivel="bachillerato" data-estado="disponible">
+          <div class="clase-body">
+            <div class="clase-meta">
+              <span class="chip chip--qui">Química</span>
+              <span class="chip chip--disponible">Disponible</span>
+              <span class="chip chip--nivel">Bachillerato</span>
+            </div>
+            <h3 class="clase-titulo">Tabla periódica: tendencias y propiedades de los elementos</h3>
+            <p class="clase-info">
+              📅 Miércoles 16 de abril, 2025 &nbsp;|&nbsp; 🕓 17:00 – 18:30 h &nbsp;|&nbsp;
+              💻 Virtual &nbsp;|&nbsp; 👤 Tutor: Camilo Espinoza
+            </p>
+            <p style="font-size:0.875rem; color: var(--color-text-muted); margin-bottom:14px;">
+              Exploraremos las tendencias periódicas: electronegatividad, radio atómico, energía de ionización.
+              Ejercicios comparativos con ejemplos de aplicación.
+            </p>
+            <div class="clase-acciones">
+              <a href="#recursos" class="btn btn--primary btn--sm">Acceder a la clase</a>
+              <a href="#recursos" class="btn btn--outline btn--sm">Ver materiales</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Clase 4 — Física -->
+        <article class="card card--clase card--fis" role="listitem"
+                 data-area="fisica" data-nivel="bachillerato" data-estado="proxima">
+          <div class="clase-body">
+            <div class="clase-meta">
+              <span class="chip chip--fis">Física</span>
+              <span class="chip chip--proxima">Próxima</span>
+              <span class="chip chip--nivel">Bachillerato avanzado</span>
+            </div>
+            <h3 class="clase-titulo">Leyes de Newton y aplicaciones prácticas</h3>
+            <p class="clase-info">
+              📅 Jueves 17 de abril, 2025 &nbsp;|&nbsp; 🕓 16:30 – 18:00 h &nbsp;|&nbsp;
+              💻 Virtual &nbsp;|&nbsp; 👤 Tutor: Daniela Moreno
+            </p>
+            <p style="font-size:0.875rem; color: var(--color-text-muted); margin-bottom:14px;">
+              Análisis de las tres leyes del movimiento, diagramas de cuerpo libre y resolución de problemas
+              aplicados con situaciones cotidianas.
+            </p>
+            <div class="clase-acciones">
+              <a href="#recursos" class="btn btn--primary btn--sm">Acceder a la clase</a>
+              <a href="#recursos" class="btn btn--outline btn--sm">Ver materiales</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Clase 5 — Matemáticas (finalizada) -->
+        <article class="card card--clase card--mat" role="listitem"
+                 data-area="matematicas" data-nivel="basico" data-estado="finalizada"
+                 style="opacity: 0.65;">
+          <div class="clase-body">
+            <div class="clase-meta">
+              <span class="chip chip--mat">Matemáticas</span>
+              <span class="chip chip--finalizada">Finalizada</span>
+              <span class="chip chip--nivel">Básico</span>
+            </div>
+            <h3 class="clase-titulo">Introducción al álgebra: variables y ecuaciones simples</h3>
+            <p class="clase-info">
+              📅 Lunes 7 de abril, 2025 &nbsp;|&nbsp; 🕓 16:00 – 17:00 h &nbsp;|&nbsp;
+              💻 Virtual &nbsp;|&nbsp; 👤 Tutor: Sebastián Torres
+            </p>
+            <div class="clase-acciones">
+              <a href="#recursos" class="btn btn--outline btn--sm">Ver materiales de la sesión</a>
+            </div>
+          </div>
+        </article>
+
+      </div><!-- /agenda-lista -->
+
+      <div class="aviso">
+        Las clases son <strong>gratuitas y de acceso abierto</strong>. Para las sesiones virtuales,
+        el enlace de acceso se comparte en la misma tarjeta. ¿Tienes dudas?
+        <a href="#contacto">Escríbenos</a>.
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       RECURSOS EDUCATIVOS — Repositorio
+  ============================================================ -->
+  <section class="section page-anchor" id="recursos" aria-labelledby="recursos-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="recursos-titulo">Recursos educativos</h2>
+        <p class="section__subtitle">Materiales de apoyo creados por el equipo EDUCIENCIA. Disponibles para todos, sin necesidad de registro.</p>
+      </div>
+
+      <!-- Filtros de recursos -->
+      <div class="filtros-bar" role="group" aria-label="Filtros de recursos">
+        <span><label>Filtrar por:</label></span>
+        <button class="filtro-btn active" onclick="filtrarRecursos('todos')" aria-pressed="true">Todos</button>
+        <button class="filtro-btn" onclick="filtrarRecursos('biologia')" aria-pressed="false">Biología</button>
+        <button class="filtro-btn" onclick="filtrarRecursos('quimica')" aria-pressed="false">Química</button>
+        <button class="filtro-btn" onclick="filtrarRecursos('matematicas')" aria-pressed="false">Matemáticas</button>
+        <button class="filtro-btn" onclick="filtrarRecursos('fisica')" aria-pressed="false">Física</button>
+      </div>
+
+      <!-- Grid de recursos -->
+      <div class="recursos-grid" id="recursos-grid">
+
+        <!-- Recurso 1 -->
+        <article class="card card--recurso" data-area="matematicas">
+          <div class="recurso-icon" aria-hidden="true">📄</div>
+          <span class="chip chip--mat">Matemáticas</span>
+          <div class="recurso-meta">
+            <span class="chip chip--tipo">Guía PDF</span>
+            <span class="chip chip--nivel">Bachillerato básico</span>
+          </div>
+          <h3 class="recurso-titulo">Guía de funciones cuadráticas</h3>
+          <p class="recurso-desc">Explicación paso a paso de la forma general, vértice, raíces e interceptos. Incluye 15 ejercicios resueltos y 10 ejercicios propuestos.</p>
+          <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:14px;">Por Sebastián Torres · Abril 2025</p>
+          <a href="#" class="btn btn--primary btn--sm" aria-label="Descargar guía de funciones cuadráticas">⬇ Descargar guía</a>
+        </article>
+
+        <!-- Recurso 2 -->
+        <article class="card card--recurso" data-area="biologia">
+          <div class="recurso-icon" aria-hidden="true">🎬</div>
+          <span class="chip chip--bio">Biología</span>
+          <div class="recurso-meta">
+            <span class="chip chip--tipo">Video explicativo</span>
+            <span class="chip chip--nivel">Básico</span>
+          </div>
+          <h3 class="recurso-titulo">La célula: estructura y organelos</h3>
+          <p class="recurso-desc">Video de 18 minutos con animaciones que explican la célula eucariota animal y vegetal, diferenciando sus organelos y funciones principales.</p>
+          <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:14px;">Por Valeria Ríos · Marzo 2025</p>
+          <a href="#" class="btn btn--primary btn--sm" aria-label="Ver video sobre la célula">▶ Ver video</a>
+        </article>
+
+        <!-- Recurso 3 -->
+        <article class="card card--recurso" data-area="quimica">
+          <div class="recurso-icon" aria-hidden="true">📊</div>
+          <span class="chip chip--qui">Química</span>
+          <div class="recurso-meta">
+            <span class="chip chip--tipo">Presentación</span>
+            <span class="chip chip--nivel">Bachillerato</span>
+          </div>
+          <h3 class="recurso-titulo">Tendencias periódicas: resumen visual</h3>
+          <p class="recurso-desc">Presentación de 24 diapositivas con esquemas y tablas comparativas sobre electronegatividad, radio atómico y energía de ionización.</p>
+          <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:14px;">Por Camilo Espinoza · Abril 2025</p>
+          <a href="#" class="btn btn--primary btn--sm" aria-label="Ver presentación de tendencias periódicas">🔗 Ver presentación</a>
+        </article>
+
+        <!-- Recurso 4 -->
+        <article class="card card--recurso" data-area="fisica">
+          <div class="recurso-icon" aria-hidden="true">📄</div>
+          <span class="chip chip--fis">Física</span>
+          <div class="recurso-meta">
+            <span class="chip chip--tipo">Ejercicios resueltos</span>
+            <span class="chip chip--nivel">Bachillerato avanzado</span>
+          </div>
+          <h3 class="recurso-titulo">Leyes de Newton — Problemas resueltos</h3>
+          <p class="recurso-desc">Colección de 20 problemas de aplicación de las leyes de Newton con desarrollo completo, diagramas de cuerpo libre y respuestas comentadas.</p>
+          <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:14px;">Por Daniela Moreno · Abril 2025</p>
+          <a href="#" class="btn btn--primary btn--sm" aria-label="Descargar problemas de Leyes de Newton">⬇ Descargar PDF</a>
+        </article>
+
+        <!-- Recurso 5 -->
+        <article class="card card--recurso" data-area="matematicas">
+          <div class="recurso-icon" aria-hidden="true">✏️</div>
+          <span class="chip chip--mat">Matemáticas</span>
+          <div class="recurso-meta">
+            <span class="chip chip--tipo">Ficha resumen</span>
+            <span class="chip chip--nivel">Básico</span>
+          </div>
+          <h3 class="recurso-titulo">Álgebra básica — Ficha de referencia</h3>
+          <p class="recurso-desc">Una hoja de referencia rápida con propiedades de las operaciones algebraicas, leyes de los exponentes y técnicas de simplificación.</p>
+          <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:14px;">Por Sebastián Torres · Marzo 2025</p>
+          <a href="#" class="btn btn--primary btn--sm" aria-label="Descargar ficha de álgebra básica">⬇ Descargar ficha</a>
+        </article>
+
+        <!-- Recurso 6 -->
+        <article class="card card--recurso" data-area="biologia">
+          <div class="recurso-icon" aria-hidden="true">📄</div>
+          <span class="chip chip--bio">Biología</span>
+          <div class="recurso-meta">
+            <span class="chip chip--tipo">Guía PDF</span>
+            <span class="chip chip--nivel">Bachillerato</span>
+          </div>
+          <h3 class="recurso-titulo">Ecosistemas: cadenas y redes tróficas</h3>
+          <p class="recurso-desc">Guía completa con definiciones, esquemas de cadenas alimentarias, niveles tróficos y ejercicios de análisis de ecosistemas locales.</p>
+          <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:14px;">Por Valeria Ríos · Marzo 2025</p>
+          <a href="#" class="btn btn--primary btn--sm" aria-label="Descargar guía de ecosistemas">⬇ Descargar guía</a>
+        </article>
+
+      </div><!-- /recursos-grid -->
+
+      <div class="section-footer">
+        <a href="#recursos" class="ver-mas-link">Ver todos los recursos disponibles →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+
+  <!-- ============================================================
+       COMUNIDAD — Impacto y testimonios
+  ============================================================ -->
+  <section class="section section--alt page-anchor" id="comunidad" aria-labelledby="comunidad-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="comunidad-titulo">Voces de nuestra comunidad</h2>
+        <p class="section__subtitle">El impacto del proyecto se construye en cada sesión, en cada estudiante acompañado y en cada material compartido.</p>
+      </div>
+
+      <!-- Números de impacto -->
+      <div class="impacto-grid" style="margin-bottom: 56px;" role="region" aria-label="Datos de impacto del proyecto">
+        <div class="impacto-item">
+          <div class="impacto-numero" aria-label="87 estudiantes acompañados">87</div>
+          <div class="impacto-label">Estudiantes acompañados</div>
+        </div>
+        <div class="impacto-item">
+          <div class="impacto-numero" aria-label="42 sesiones realizadas">42</div>
+          <div class="impacto-label">Sesiones realizadas</div>
+        </div>
+        <div class="impacto-item">
+          <div class="impacto-numero" aria-label="28 recursos disponibles">28</div>
+          <div class="impacto-label">Recursos disponibles</div>
+        </div>
+        <div class="impacto-item">
+          <div class="impacto-numero" aria-label="8 tutores participantes">8</div>
+          <div class="impacto-label">Tutores del proyecto</div>
+        </div>
+      </div>
+
+      <!-- Testimonios -->
+      <div class="grid-3">
+        <div class="card card--testimonio">
+          <p class="testimonio-texto">
+            "Gracias a EDUCIENCIA pude entender las funciones cuadráticas que me costaban mucho.
+            El tutor explica con paciencia y los ejercicios son muy claros."
+          </p>
+          <p class="testimonio-autor">Andrea Salcedo</p>
+          <p class="testimonio-rol">Estudiante de bachillerato, 16 años</p>
+        </div>
+        <div class="card card--testimonio">
+          <p class="testimonio-texto">
+            "Como mamá, me da tranquilidad saber que hay un espacio gratuito y serio donde mi hijo
+            puede recibir apoyo en química. El equipo es muy dedicado."
+          </p>
+          <p class="testimonio-autor">Rosa Méndez</p>
+          <p class="testimonio-rol">Representante de estudiante</p>
+        </div>
+        <div class="card card--testimonio">
+          <p class="testimonio-texto">
+            "Ser tutor en EDUCIENCIA me enseñó tanto como las clases de la universidad.
+            Explicar refuerza lo que sabes y te conecta con la comunidad."
+          </p>
+          <p class="testimonio-autor">Sebastián Torres</p>
+          <p class="testimonio-rol">Tutor — Carrera de Ciencias Experimentales</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       EQUIPO — Coordinadores y tutores
+  ============================================================ -->
+  <section class="section page-anchor" id="equipo" aria-labelledby="equipo-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="equipo-titulo">Equipo EDUCIENCIA</h2>
+        <p class="section__subtitle">Conoce a las personas que hacen posible este proyecto: docentes coordinadores y estudiantes tutores comprometidos con su comunidad.</p>
+      </div>
+
+      <!-- Coordinación -->
+      <h3 style="font-size:0.875rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--color-text-muted); margin-bottom:20px;">
+        Coordinación del proyecto
+      </h3>
+      <div class="grid-2" style="margin-bottom:48px;">
+        <div class="card card--equipo" style="text-align:left; display:flex; gap:20px; align-items:flex-start;">
+          <div class="equipo-avatar" style="flex-shrink:0; margin:0;">🧑‍🏫</div>
+          <div>
+            <p class="equipo-nombre">Dra. Patricia Guzmán</p>
+            <p class="equipo-rol">Docente coordinadora — Ciencias Experimentales</p>
+            <p style="font-size:0.875rem; color:var(--color-text-muted);">
+              Responsable académica del proyecto de vinculación. Docente de la cátedra de Química General.
+              Coordina la formación de los tutores y el seguimiento del impacto comunitario.
+            </p>
+          </div>
+        </div>
+        <div class="card card--equipo" style="text-align:left; display:flex; gap:20px; align-items:flex-start;">
+          <div class="equipo-avatar" style="flex-shrink:0; margin:0;">🧑‍🏫</div>
+          <div>
+            <p class="equipo-nombre">Msc. Andrés Castillo</p>
+            <p class="equipo-rol">Docente asesor — Matemáticas y Física</p>
+            <p style="font-size:0.875rem; color:var(--color-text-muted);">
+              Asesor metodológico del proyecto. Supervisa la calidad pedagógica de los materiales
+              producidos y acompaña a los tutores de las áreas exactas.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutores -->
+      <h3 style="font-size:0.875rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--color-text-muted); margin-bottom:20px;">
+        Tutores estudiantiles
+      </h3>
+      <div class="grid-4">
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👩‍🔬</div>
+          <p class="equipo-nombre">Valeria Ríos</p>
+          <p class="equipo-rol">5.º semestre — Biología</p>
+          <div class="equipo-areas">
+            <span class="chip chip--bio">Biología</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👨‍🏫</div>
+          <p class="equipo-nombre">Sebastián Torres</p>
+          <p class="equipo-rol">6.º semestre — Matemáticas</p>
+          <div class="equipo-areas">
+            <span class="chip chip--mat">Matemáticas</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👨‍🔬</div>
+          <p class="equipo-nombre">Camilo Espinoza</p>
+          <p class="equipo-rol">7.º semestre — Química</p>
+          <div class="equipo-areas">
+            <span class="chip chip--qui">Química</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👩‍💻</div>
+          <p class="equipo-nombre">Daniela Moreno</p>
+          <p class="equipo-rol">6.º semestre — Física</p>
+          <div class="equipo-areas">
+            <span class="chip chip--fis">Física</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👩‍🔬</div>
+          <p class="equipo-nombre">Lucía Vargas</p>
+          <p class="equipo-rol">5.º semestre — Biología y Química</p>
+          <div class="equipo-areas">
+            <span class="chip chip--bio">Biología</span>
+            <span class="chip chip--qui">Química</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👨‍🏫</div>
+          <p class="equipo-nombre">Marco Pereira</p>
+          <p class="equipo-rol">8.º semestre — Física y Matemáticas</p>
+          <div class="equipo-areas">
+            <span class="chip chip--fis">Física</span>
+            <span class="chip chip--mat">Matemáticas</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👩‍🔬</div>
+          <p class="equipo-nombre">Sara Núñez</p>
+          <p class="equipo-rol">4.º semestre — Química</p>
+          <div class="equipo-areas">
+            <span class="chip chip--qui">Química</span>
+          </div>
+        </div>
+        <div class="card card--equipo">
+          <div class="equipo-avatar">👨‍🔬</div>
+          <p class="equipo-nombre">Felipe Alvarado</p>
+          <p class="equipo-rol">7.º semestre — Biología</p>
+          <div class="equipo-areas">
+            <span class="chip chip--bio">Biología</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="aviso" style="margin-top: 32px;">
+        <strong>Nota:</strong> Los tutores de EDUCIENCIA son estudiantes universitarios en formación.
+        Su participación forma parte de su proceso académico y es acompañada en todo momento por los
+        docentes coordinadores del proyecto.
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+
+  <!-- ============================================================
+       CTA — Llamado institucional
+  ============================================================ -->
+  <div class="cta-section" role="complementary" aria-label="¿Necesitas apoyo?">
+    <div class="container">
+      <h2 class="cta-titulo">¿Necesitas apoyo en ciencias?</h2>
+      <p class="cta-desc">
+        Las clases son gratuitas, los recursos son abiertos y el equipo está disponible
+        para orientarte. Escríbenos y con gusto te respondemos.
+      </p>
+      <div class="cta-acciones">
+        <a href="#agenda" class="btn btn--white">Ver agenda de clases</a>
+        <a href="#contacto" class="btn btn--outline-white">Contactar al equipo</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       CONTACTO — Formulario y canales
+  ============================================================ -->
+  <section class="section section--alt page-anchor" id="contacto" aria-labelledby="contacto-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="contacto-titulo">Contacto</h2>
+        <p class="section__subtitle">¿Tienes preguntas, quieres participar o necesitas orientación? Escríbenos.</p>
+      </div>
+
+      <!-- Canales de contacto -->
+      <div class="contacto-info-grid">
+        <div class="contacto-info-item">
+          <div class="contacto-info-icon" aria-hidden="true">📧</div>
+          <p class="contacto-info-titulo">Correo electrónico</p>
+          <p class="contacto-info-valor">educiencia@universidad.edu</p>
+        </div>
+        <div class="contacto-info-item">
+          <div class="contacto-info-icon" aria-hidden="true">💬</div>
+          <p class="contacto-info-titulo">Canal de mensajería</p>
+          <p class="contacto-info-valor">@EDUCIENCIA (Telegram / WhatsApp)</p>
+        </div>
+        <div class="contacto-info-item">
+          <div class="contacto-info-icon" aria-hidden="true">🏛️</div>
+          <p class="contacto-info-titulo">Institución</p>
+          <p class="contacto-info-valor">Facultad de Ciencias Experimentales<br>Universidad Nacional</p>
+        </div>
+      </div>
+
+      <!-- Layout: formulario + FAQ -->
+      <div class="grid-2" style="gap: 48px; align-items: start;">
+
+        <!-- Formulario de contacto -->
+        <div>
+          <h3 style="font-size:1.125rem; font-weight:700; color:var(--color-primary); margin-bottom:20px;">
+            Envíanos un mensaje
+          </h3>
+          <form action="#" method="post" aria-label="Formulario de contacto">
+            <div class="form-group">
+              <label for="nombre">Nombre completo <span aria-hidden="true">*</span></label>
+              <input type="text" id="nombre" name="nombre" required
+                     placeholder="Tu nombre" autocomplete="name" />
+            </div>
+            <div class="form-group">
+              <label for="correo">Correo electrónico <span aria-hidden="true">*</span></label>
+              <input type="email" id="correo" name="correo" required
+                     placeholder="tu@correo.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="asunto">Asunto</label>
+              <select id="asunto" name="asunto">
+                <option value="">Selecciona un asunto…</option>
+                <option value="consulta">Tengo una consulta general</option>
+                <option value="apoyo">Necesito apoyo en una materia</option>
+                <option value="participar">Quiero participar como tutor</option>
+                <option value="docente">Soy docente y quiero derivar estudiantes</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="mensaje">Mensaje <span aria-hidden="true">*</span></label>
+              <textarea id="mensaje" name="mensaje" required
+                        placeholder="Escribe tu mensaje aquí…" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary">Enviar mensaje</button>
+            <p class="form-aviso">
+              Tu información será utilizada únicamente para responder tu consulta.
+              No la compartiremos con terceros.
+            </p>
+          </form>
+        </div>
+
+        <!-- Preguntas frecuentes -->
+        <div>
+          <h3 style="font-size:1.125rem; font-weight:700; color:var(--color-primary); margin-bottom:20px;">
+            Preguntas frecuentes
+          </h3>
+          <div class="faq-lista" role="list">
+
+            <div class="faq-item" role="listitem">
+              <button class="faq-pregunta" aria-expanded="false" onclick="toggleFaq(this)">
+                ¿Las clases de refuerzo son gratuitas?
+                <span class="faq-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-respuesta">
+                Sí, todas las clases de EDUCIENCIA son completamente gratuitas. El proyecto es parte
+                de un programa de vinculación con la comunidad y no tiene ningún costo asociado.
+              </div>
+            </div>
+
+            <div class="faq-item" role="listitem">
+              <button class="faq-pregunta" aria-expanded="false" onclick="toggleFaq(this)">
+                ¿Necesito inscribirme para asistir?
+                <span class="faq-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-respuesta">
+                En la mayoría de los casos no es necesario. Puedes revisar la agenda, identificar la
+                sesión de tu interés y unirte directamente en el horario indicado. Solo en algunas
+                sesiones especiales se pedirá confirmación previa, lo cual se indicará en la tarjeta
+                de la clase.
+              </div>
+            </div>
+
+            <div class="faq-item" role="listitem">
+              <button class="faq-pregunta" aria-expanded="false" onclick="toggleFaq(this)">
+                ¿Qué nivel educativo atiende el proyecto?
+                <span class="faq-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-respuesta">
+                Atendemos principalmente a estudiantes de educación básica superior y bachillerato.
+                Cada sesión y recurso especifica el nivel al que está dirigido, para que puedas
+                identificar fácilmente lo que necesitas.
+              </div>
+            </div>
+
+            <div class="faq-item" role="listitem">
+              <button class="faq-pregunta" aria-expanded="false" onclick="toggleFaq(this)">
+                ¿Puedo acceder a los recursos sin asistir a las clases?
+                <span class="faq-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-respuesta">
+                Por supuesto. Todos los recursos del repositorio son de acceso libre y no requieren
+                ningún tipo de registro ni inscripción. Puedes descargar o consultar cualquier material
+                en cualquier momento.
+              </div>
+            </div>
+
+            <div class="faq-item" role="listitem">
+              <button class="faq-pregunta" aria-expanded="false" onclick="toggleFaq(this)">
+                ¿Cómo puedo unirme como tutor del proyecto?
+                <span class="faq-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-respuesta">
+                Si eres estudiante universitario de la carrera de Ciencias Experimentales y te interesa
+                participar como tutor, escríbenos a través del formulario de contacto seleccionando
+                el asunto "Quiero participar como tutor". Nos pondremos en contacto contigo.
+              </div>
+            </div>
+
+          </div><!-- /faq-lista -->
+        </div>
+
+      </div><!-- /grid-2 -->
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER — Pie de página institucional
+  ============================================================ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+
+        <!-- Columna marca -->
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span aria-hidden="true">⚗️</span>
+            <span>EDUCIENCIA</span>
+          </div>
+          <p>
+            Proyecto de vinculación con la comunidad de la Carrera de Ciencias Experimentales.
+            Ofrecemos acompañamiento académico gratuito en Biología, Química, Matemáticas y Física.
+          </p>
+          <p style="margin-top: 12px;">
+            <span class="footer-tag">Servicio comunitario</span>
+            <span class="footer-tag" style="margin-left:8px;">Acceso abierto</span>
+            <span class="footer-tag" style="margin-left:8px;">Gratuito</span>
+          </p>
+        </div>
+
+        <!-- Columna navegación -->
+        <div>
+          <p class="footer-col-title">Navegación</p>
+          <ul class="footer-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#proyecto">Sobre el proyecto</a></li>
+            <li><a href="#areas">Áreas de refuerzo</a></li>
+            <li><a href="#agenda">Agenda de clases</a></li>
+            <li><a href="#recursos">Recursos educativos</a></li>
+            <li><a href="#comunidad">Comunidad</a></li>
+            <li><a href="#equipo">Equipo</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+
+        <!-- Columna información -->
+        <div>
+          <p class="footer-col-title">Institución</p>
+          <ul class="footer-links">
+            <li><a href="#">Facultad de Ciencias Experimentales</a></li>
+            <li><a href="#">Universidad Nacional</a></li>
+            <li><a href="#">Departamento de Extensión</a></li>
+          </ul>
+          <p class="footer-col-title" style="margin-top: 20px;">Áreas</p>
+          <ul class="footer-links">
+            <li><a href="#areas">🌿 Biología</a></li>
+            <li><a href="#areas">⚗️ Química</a></li>
+            <li><a href="#areas">📐 Matemáticas</a></li>
+            <li><a href="#areas">⚡ Física</a></li>
+          </ul>
+        </div>
+
+      </div><!-- /footer-grid -->
+
+      <div class="footer-bottom">
+        <p>© 2025 EDUCIENCIA — Proyecto de vinculación con la comunidad. Todos los recursos son de acceso libre.</p>
+        <p>Carrera de Ciencias Experimentales · Universidad Nacional</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT MÍNIMO EMBEBIDO
+  ============================================================ -->
+  <script>
+    /* ---- Menú hamburguesa (móvil) ---- */
+    const navToggle = document.getElementById('nav-toggle');
+    const mainNav   = document.getElementById('main-nav');
+
+    navToggle.addEventListener('click', function () {
+      const isOpen = mainNav.classList.toggle('open');
+      this.setAttribute('aria-expanded', isOpen);
+      this.textContent = isOpen ? '✕' : '☰';
+    });
+
+    /* ---- Cierra menú al hacer clic en enlace (móvil) ---- */
+    mainNav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        mainNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        navToggle.textContent = '☰';
+      });
+    });
+
+    /* ---- Filtro de agenda ---- */
+    function filtrarClases(area) {
+      const lista = document.getElementById('agenda-lista');
+      const items = lista.querySelectorAll('article');
+      const botones = document.querySelectorAll('.filtros-bar .filtro-btn');
+
+      botones.forEach(function (b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+
+      /* Activar el botón pulsado */
+      event.target.classList.add('active');
+      event.target.setAttribute('aria-pressed', 'true');
+
+      items.forEach(function (item) {
+        if (area === 'todas') {
+          item.style.display = '';
+        } else {
+          item.style.display = (item.dataset.area === area) ? '' : 'none';
+        }
+      });
+    }
+
+    /* ---- Filtro de recursos ---- */
+    function filtrarRecursos(area) {
+      const grid = document.getElementById('recursos-grid');
+      const items = grid.querySelectorAll('article');
+
+      /* Actualizar estado de botones */
+      const botones = document.querySelectorAll('#recursos ~ .filtros-bar .filtro-btn');
+
+      items.forEach(function (item) {
+        if (area === 'todos') {
+          item.style.display = '';
+        } else {
+          item.style.display = (item.dataset.area === area) ? '' : 'none';
+        }
+      });
+    }
+
+    /* ---- Acordeón de FAQ ---- */
+    function toggleFaq(boton) {
+      const respuesta = boton.nextElementSibling;
+      const isOpen = respuesta.classList.toggle('open');
+      boton.setAttribute('aria-expanded', isOpen);
+      boton.querySelector('.faq-icon').textContent = isOpen ? '−' : '+';
+    }
+
+    /* ---- Enlace activo en navegación según scroll ---- */
+    const sections = document.querySelectorAll('section[id], div[id="inicio"]');
+    const navLinks = document.querySelectorAll('.header-nav a');
+
+    function actualizarNavActiva() {
+      let current = '';
+      sections.forEach(function (sec) {
+        const top = sec.getBoundingClientRect().top;
+        if (top <= 100) {
+          current = sec.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(function (link) {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', actualizarNavActiva, { passive: true });
+  </script>
+
+</body>
+</html>

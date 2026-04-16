@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Panel de Administracion EDUCIENCIA"
+AuthUserFile /home/u[REEMPLAZAR]/public_html/.htpasswd
+Require valid-user

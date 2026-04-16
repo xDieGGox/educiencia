@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="20" fill="#758093"/>
+  <!-- Two person silhouettes -->
+  <!-- Person Left -->
+  <circle cx="74" cy="64" r="20" fill="white" opacity="0.9"/>
+  <path d="M 40 140 Q 42 100 74 98 Q 106 100 108 140 Z" fill="white" opacity="0.85"/>
+  <!-- Person Right -->
+  <circle cx="126" cy="64" r="20" fill="white" opacity="0.9"/>
+  <path d="M 92 140 Q 94 100 126 98 Q 158 100 160 140 Z" fill="white" opacity="0.85"/>
+  <!-- Handshake / connection -->
+  <rect x="86" y="130" width="28" height="8" rx="4" fill="#ee552c" opacity="0.9"/>
+  <!-- Connecting bar (community) -->
+  <path d="M 62 78 Q 100 90 138 78" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-dasharray="5,3"/>
+  <!-- Decorative elements -->
+  <circle cx="160" cy="44" r="6" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="40"  cy="160" r="5" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="168" cy="160" r="4" fill="rgba(255,255,255,0.25)"/>
+</svg>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EDUCIENCIA – Proyecto de vinculación comunitaria. Clases de refuerzo gratuitas en Biología, Química, Matemáticas y Física." />
+  <title>EDUCIENCIA – Acompañamiento científico para tu comunidad</title>
+  <link rel="stylesheet" href="/css/styles.css?v=7" />
+  <!-- CSS crítico del carrusel inline: garantiza que funcione sin importar caché -->
+  <style>
+    .hero { padding: 0 !important; overflow: hidden; }
+
+    .hero-carousel {
+      position: relative !important;
+      height: 520px !important;
+      overflow: hidden !important;
+      width: 100% !important;
+    }
+
+    .carousel-track {
+      position: relative !important;
+      display: block !important;   /* NO flex — el track no necesita flex */
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Slides apilados con position:absolute + fade */
+    .carousel-slide {
+      position: absolute !important;
+      top: 0 !important; left: 0 !important;
+      width: 100% !important; height: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.85s ease-in-out !important;
+      z-index: 0 !important;
+      background: linear-gradient(135deg, #011f26 0%, #0d2540 100%) !important;
+    }
+    .carousel-slide.is-active {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 2 !important;
+    }
+    .carousel-slide-bg {
+      position: absolute !important;
+      top: 0 !important; left: 0 !important;
+      width: 100% !important; height: 100% !important;
+      background-size: cover !important;
+      background-position: center right !important;
+    }
+    .carousel-slide-overlay {
+      position: absolute !important;
+      top: 0 !important; left: 0 !important;
+      width: 100% !important; height: 100% !important;
+      background: linear-gradient(to right,
+        rgba(1,31,38,0.82) 0%, rgba(1,31,38,0.55) 45%,
+        rgba(1,31,38,0.18) 75%, rgba(1,31,38,0.0) 100%) !important;
+      z-index: 0 !important;
+    }
+    .hero-content {
+      position: relative !important;
+      z-index: 3 !important;
+      width: 100% !important;
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+      padding: 0 24px !important;
+      color: #fff !important;
+    }
+    .hero-title {
+      color: #fff !important;
+    }
+    .carousel-btn {
+      position: absolute !important;
+      top: 50% !important; transform: translateY(-50%) !important;
+      z-index: 10 !important;
+      width: 44px !important; height: 44px !important;
+      border-radius: 50% !important;
+      background: rgba(255,255,255,0.15) !important;
+      border: 2px solid rgba(255,255,255,0.35) !important;
+      color: #fff !important; font-size: 1.3rem !important;
+      cursor: pointer !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+    }
+    .carousel-btn--prev { left: 16px !important; }
+    .carousel-btn--next { right: 16px !important; }
+    .carousel-dots {
+      position: absolute !important;
+      bottom: 20px !important; left: 50% !important;
+      transform: translateX(-50%) !important;
+      display: flex !important; gap: 8px !important;
+      z-index: 10 !important;
+    }
+    .carousel-dot {
+      width: 9px !important; height: 9px !important;
+      border-radius: 50% !important;
+      background: rgba(255,255,255,0.38) !important;
+      border: none !important; cursor: pointer !important;
+      transition: background 0.25s, transform 0.25s !important;
+      padding: 0 !important;
+    }
+    .carousel-dot.active {
+      background: #fff !important;
+      transform: scale(1.4) !important;
+    }
+    .carousel-progress {
+      position: absolute !important;
+      bottom: 0 !important; left: 0 !important;
+      height: 3px !important;
+      background: #3ca6a6 !important;
+      z-index: 10 !important;
+      width: 0% !important;
+    }
+    @media (max-width: 768px) {
+      .hero-carousel { height: 400px !important; }
+      .carousel-btn  { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <!-- HERO CAROUSEL -->
+  <section class="hero" id="inicio" aria-label="Portada del sitio">
+    <div class="hero-carousel" id="hero-carousel">
+      <!-- Slide estático de respaldo: visible antes de que JS cargue y reemplace -->
+      <div class="carousel-track" id="carousel-track">
+        <div class="carousel-slide is-active">
+          <div class="carousel-slide-bg" style="background-image:url('/img/hero-slide-1.svg')"></div>
+          <div class="carousel-slide-overlay"></div>
+          <div class="hero-content">
+            <p class="hero-eyebrow">Proyecto de vinculación con la comunidad</p>
+            <h1 class="hero-title">Ciencia al alcance de todos</h1>
+            <p class="hero-subtitle">La ciencia puede ser cercana, comprensible y útil. EDUCIENCIA brinda apoyo académico gratuito para transformar el aprendizaje de las ciencias experimentales en el bachillerato.</p>
+            <div class="hero-actions">
+              <a href="/agenda.html" class="btn btn--white">Ver agenda de clases</a>
+              <a href="/recursos.html" class="btn btn--outline-white">Ver recursos</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel-btn carousel-btn--prev" id="carousel-prev" aria-label="Slide anterior">&#8249;</button>
+      <button class="carousel-btn carousel-btn--next" id="carousel-next" aria-label="Siguiente slide">&#8250;</button>
+
+      <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Slides del carrusel"></div>
+      <div class="carousel-progress" id="carousel-progress"></div>
+    </div>
+  </section>
+
+  <!-- PILARES -->
+  <section class="section" aria-label="Características del proyecto">
+    <div class="container">
+      <div class="pilares-grid" id="pilares-grid"></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- SOBRE EL PROYECTO -->
+  <section class="section section--alt" id="proyecto" aria-labelledby="proyecto-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="proyecto-titulo" data-cfg="seccion_proyecto_titulo">¿Qué es EDUCIENCIA?</h2>
+        <p class="section__subtitle" data-cfg="seccion_proyecto_subtitulo">Un proyecto académico con vocación social que nace desde la universidad para servir a la comunidad.</p>
+      </div>
+      <div class="grid-2" style="align-items:start; gap:48px;">
+        <div id="proyecto-texto"></div>
+        <div id="proyecto-objetivos"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREAS -->
+  <section class="section" id="areas" aria-labelledby="areas-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="areas-titulo">Áreas de acompañamiento</h2>
+        <p class="section__subtitle">Selecciona el área en la que necesitas apoyo y encuentra espacios, recursos y temas pensados para fortalecer tu aprendizaje.</p>
+      </div>
+      <div class="grid-4" id="areas-grid"></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- AGENDA PREVIEW -->
+  <section class="section section--alt" id="agenda" aria-labelledby="agenda-preview-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="agenda-preview-titulo">Próximas clases</h2>
+        <p class="section__subtitle">Consulta las sesiones disponibles. Las clases son gratuitas y no requieren inscripción previa.</p>
+      </div>
+      <div class="agenda-lista" id="agenda-preview"></div>
+      <div class="section-footer">
+        <a href="/agenda.html" class="ver-mas-link">Ver agenda completa →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECURSOS PREVIEW -->
+  <section class="section" id="recursos" aria-labelledby="recursos-preview-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="recursos-preview-titulo">Recursos educativos</h2>
+        <p class="section__subtitle">Materiales de apoyo creados por el equipo EDUCIENCIA. Disponibles para todos, sin necesidad de registro.</p>
+      </div>
+      <div class="recursos-grid" id="recursos-preview"></div>
+      <div class="section-footer">
+        <a href="/recursos.html" class="ver-mas-link">Ver todos los recursos →</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CTA -->
+  <div class="cta-section" role="complementary">
+    <div class="container">
+      <h2 class="cta-titulo">¿Necesitas apoyo en ciencias?</h2>
+      <p class="cta-desc">Las clases son gratuitas, los recursos son abiertos y el equipo está disponible para orientarte.</p>
+      <div class="cta-acciones">
+        <a href="/agenda.html" class="btn btn--white">Ver agenda de clases</a>
+        <a href="/contacto.html" class="btn btn--outline-white">Contactar al equipo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPACTO + TESTIMONIOS -->
+  <section class="section section--alt" id="comunidad" aria-labelledby="comunidad-titulo">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="comunidad-titulo">Voces de nuestra comunidad</h2>
+        <p class="section__subtitle">El impacto del proyecto se construye en cada sesión, en cada estudiante acompañado.</p>
+      </div>
+      <div class="impacto-grid" id="impacto-grid" style="margin-bottom:56px;"></div>
+      <div class="grid-3" id="testimonios-grid"></div>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+
+  <script src="/js/app.js?v=7"></script>
+  <script>
+    /* ─── Hero Carousel ──────────────────────────────────────────────── */
+    function initCarousel(slides) {
+      const track    = document.getElementById('carousel-track');
+      const dotsEl   = document.getElementById('carousel-dots');
+      const progress = document.getElementById('carousel-progress');
+      if (!track || !slides || !slides.length) return;
+
+      let current = 0;
+      let timer   = null;
+      let progRaf = null;
+      const DURATION = 4000; // ms por slide
+
+      /* ── Construir slides (el primero nace con is-active) ── */
+      track.innerHTML = slides.map((s, i) => `
+        <div class="carousel-slide${i === 0 ? ' is-active' : ''}"
+             role="tabpanel" aria-label="Slide ${i + 1}" id="slide-panel-${i}">
+          ${s.imagen
+            ? `<div class="carousel-slide-bg"
+                    style="background-image:url('${s.imagen}')"></div>`
+            : ''}
+          <div class="carousel-slide-overlay"></div>
+          <div class="hero-content">
+            ${s.eyebrow ? `<p class="hero-eyebrow">${s.eyebrow}</p>` : ''}
+            <h1 class="hero-title">${s.titulo}</h1>
+            <p class="hero-subtitle">${s.subtitulo}</p>
+            <div class="hero-actions">
+              ${s.btn1_texto
+                ? `<a href="${s.btn1_href || '#'}" class="btn btn--white">${s.btn1_texto}</a>`
+                : ''}
+              ${s.btn2_texto
+                ? `<a href="${s.btn2_href || '#'}" class="btn btn--outline-white">${s.btn2_texto}</a>`
+                : ''}
+            </div>
+          </div>
+        </div>`).join('');
+
+      /* ── Construir dots ── */
+      dotsEl.innerHTML = slides.map((_, i) => `
+        <button class="carousel-dot${i === 0 ? ' active' : ''}"
+                role="tab" aria-selected="${i === 0}"
+                aria-controls="slide-panel-${i}"
+                aria-label="Ir al slide ${i + 1}"></button>`).join('');
+
+      const dots       = dotsEl.querySelectorAll('.carousel-dot');
+      const slideEls   = track.querySelectorAll('.carousel-slide');
+
+      /* ── Ir a un slide por índice (fade) ── */
+      function goTo(n) {
+        const total = slides.length;
+        const next  = ((n % total) + total) % total;
+
+        // Quitar is-active del slide actual; poner al siguiente
+        slideEls.forEach((el, i) => el.classList.toggle('is-active', i === next));
+
+        current = next;
+        dots.forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+          d.setAttribute('aria-selected', String(i === current));
+        });
+        resetProgress();
+      }
+
+      /* ── Barra de progreso ── */
+      function resetProgress() {
+        if (progRaf) cancelAnimationFrame(progRaf);
+        progress.style.transition = 'none';
+        progress.style.width      = '0%';
+        progRaf = requestAnimationFrame(() => {
+          progRaf = requestAnimationFrame(() => {
+            progress.style.transition = `width ${DURATION}ms linear`;
+            progress.style.width      = '100%';
+            progRaf = null;
+          });
+        });
+      }
+
+      /* ── Autoplay ── */
+      function autoPlay() {
+        clearInterval(timer);
+        timer = setInterval(() => goTo(current + 1), DURATION);
+      }
+
+      /* ── Eventos ── */
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); autoPlay(); }));
+      document.getElementById('carousel-prev')
+        .addEventListener('click', () => { goTo(current - 1); autoPlay(); });
+      document.getElementById('carousel-next')
+        .addEventListener('click', () => { goTo(current + 1); autoPlay(); });
+
+      const carousel = document.getElementById('hero-carousel');
+      carousel.addEventListener('mouseenter', () => clearInterval(timer));
+      carousel.addEventListener('mouseleave', autoPlay);
+
+      let touchStartX = 0;
+      carousel.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+      carousel.addEventListener('touchend', e => {
+        const dx = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(dx) > 40) { goTo(current + (dx > 0 ? 1 : -1)); autoPlay(); }
+      }, { passive: true });
+
+      goTo(0);
+      autoPlay();
+    }
+
+    /* ─── Pilares ────────────────────────────────────────────────────── */
+    function renderPilares(pilares) {
+      const el = document.getElementById('pilares-grid');
+      if (!el || !pilares || !pilares.length) return;
+      el.innerHTML = pilares.map(p => `
+        <div class="pilar-item">
+          ${p.imagen
+            ? `<div class="pilar-img" aria-hidden="true"><img src="${p.imagen}" alt="${p.titulo}" loading="lazy" /></div>`
+            : `<div class="pilar-icon" aria-hidden="true">🔳</div>`
+          }
+          <h3 class="pilar-titulo">${p.titulo}</h3>
+          <p class="pilar-desc">${p.descripcion}</p>
+        </div>`).join('');
+    }
+
+    (async () => {
+      const data = await initPage('inicio');
+
+      // Carousel
+      initCarousel(data.hero_slides || []);
+
+      // Pilares
+      renderPilares(data.pilares || []);
+
+      // Título y subtítulo de la sección desde config
+      const cfg = data.config || {};
+      const tituloEl = document.getElementById('proyecto-titulo');
+      const subtituloEl = tituloEl && tituloEl.closest('.section__header')
+                          ? tituloEl.closest('.section__header').querySelector('.section__subtitle')
+                          : null;
+      if (tituloEl && cfg.seccion_proyecto_titulo) tituloEl.textContent = cfg.seccion_proyecto_titulo;
+      if (subtituloEl && cfg.seccion_proyecto_subtitulo) subtituloEl.textContent = cfg.seccion_proyecto_subtitulo;
+
+      // Proyecto texto
+      document.getElementById('proyecto-texto').innerHTML = `
+        <p style="margin-bottom:16px;color:var(--color-text);">${cfg.descripcion_proyecto_1 || ''}</p>
+        <p style="margin-bottom:16px;color:var(--color-text);">${cfg.descripcion_proyecto_2 || ''}</p>
+        <p style="color:var(--color-text);">${cfg.descripcion_proyecto_3 || ''}</p>
+        <a href="/equipo.html" class="ver-mas-link" style="margin-top:20px;">Conocer al equipo →</a>
+      `;
+
+      // Proyecto objetivos
+      const items = (data.objetivos || []).map(o =>
+        `<li style="display:flex;gap:10px;align-items:flex-start;"><span>✓</span><span>${o}</span></li>`
+      ).join('');
+      document.getElementById('proyecto-objetivos').innerHTML = `
+        <div class="card" style="background:var(--color-primary);color:#fff;border:none;">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:14px;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Objetivo del proyecto</h3>
+          <ul style="display:flex;flex-direction:column;gap:10px;">${items}</ul>
+        </div>
+        ${cfg.marco_institucional ? `
+        <div class="card" style="margin-top:16px;border-left:4px solid var(--color-accent);">
+          <p style="font-size:0.875rem;color:var(--color-text-muted);">
+            <strong style="color:var(--color-primary);">Visión:</strong> ${cfg.marco_institucional}
+          </p>
+        </div>` : ''}
+      `;
+
+      // Áreas grid
+      const areasDef = [
+        { key: 'biologia',    nombre: 'Biología',    icono: '🧬', cls: 'bio', desc: 'Comprende los seres vivos y sus procesos desde ejemplos claros y recursos visuales. En esta área encontrarás apoyo para abordar contenidos clave del currículo escolar de manera práctica.' },
+        { key: 'quimica',     nombre: 'Química',     icono: '🧪', cls: 'qui', desc: 'Acércate a la química desde explicaciones sencillas y situaciones cotidianas. Aquí podrás reforzar temas fundamentales de forma clara y progresiva.' },
+        { key: 'matematicas', nombre: 'Matemáticas', icono: '📐', cls: 'mat', desc: 'Fortalece tu razonamiento matemático con apoyo en contenidos que suelen presentar mayor dificultad, como álgebra, funciones y geometría.' },
+        { key: 'fisica',      nombre: 'Física',      icono: '🔭', cls: 'fis', desc: 'Comprende la física a partir de situaciones del mundo real. Se trabajan temas clave como movimiento, energía, fuerza y ondas desde una perspectiva aplicada.' }
+      ];
+      const areasHtml = areasDef.map(a => {
+        const count = (data.clases || []).filter(c => c.area === a.key && c.estado !== 'finalizada').length;
+        return `
+          <div class="card card--area card--${a.cls}">
+            <div class="area-card-icon" aria-hidden="true">${a.icono}</div>
+            <h3 class="area-card-nombre">${a.nombre}</h3>
+            <p class="area-card-desc">${a.desc}</p>
+            <p class="area-card-sesiones">📅 ${count} sesión${count !== 1 ? 'es' : ''} disponible${count !== 1 ? 's' : ''}</p>
+            <a href="/agenda.html?area=${a.key}" class="btn btn--${a.cls} btn--sm">Explorar área</a>
+          </div>`;
+      }).join('');
+      document.getElementById('areas-grid').innerHTML = areasHtml;
+
+      // Agenda preview (max 3 no finalizadas)
+      const proximas = (data.clases || []).filter(c => c.estado !== 'finalizada').slice(0, 3);
+      document.getElementById('agenda-preview').innerHTML =
+        proximas.length ? proximas.map(renderClaseCard).join('') : '<p class="empty-state">No hay clases programadas próximamente.</p>';
+
+      // Recursos preview (primeros 3)
+      const recsPrev = (data.recursos || []).slice(0, 3);
+      document.getElementById('recursos-preview').innerHTML =
+        recsPrev.map(renderRecursoCard).join('');
+
+      // Impacto
+      const imp = data.impacto || {};
+      document.getElementById('impacto-grid').innerHTML = `
+        <div class="impacto-item"><div class="impacto-numero">${imp.estudiantes || 0}</div><div class="impacto-label">Estudiantes acompañados</div></div>
+        <div class="impacto-item"><div class="impacto-numero">${imp.sesiones || 0}</div><div class="impacto-label">Sesiones realizadas</div></div>
+        <div class="impacto-item"><div class="impacto-numero">${imp.recursos || 0}</div><div class="impacto-label">Recursos disponibles</div></div>
+        <div class="impacto-item"><div class="impacto-numero">${imp.tutores || 0}</div><div class="impacto-label">Tutores del proyecto</div></div>
+      `;
+
+      // Testimonios
+      document.getElementById('testimonios-grid').innerHTML = (data.testimonios || []).map(t => `
+        <div class="card card--testimonio">
+          <p class="testimonio-texto">"${t.texto}"</p>
+          <p class="testimonio-autor">${t.autor}</p>
+          <p class="testimonio-rol">${t.rol}</p>
+        </div>`).join('');
+
+      initScrollNav();
+    })();
+  </script>
+</body>
+</html>

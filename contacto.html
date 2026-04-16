@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto – EDUCIENCIA</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* ── Tarjeta de captación ── */
+    .contacto-info-item.captacion {
+      cursor: pointer;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0d5c3a 100%);
+      color: #fff;
+      border: none;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .contacto-info-item.captacion:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(26,58,92,0.25);
+    }
+    .contacto-info-item.captacion .contacto-info-titulo,
+    .contacto-info-item.captacion .contacto-info-valor {
+      color: rgba(255,255,255,0.92);
+    }
+    .contacto-info-item.captacion .contacto-info-titulo {
+      color: #fff;
+      font-weight: 700;
+    }
+    .captacion-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    .captacion-cta {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      padding: 5px 14px;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+    .contacto-info-item.captacion:hover .captacion-cta {
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* ── Modal de registro ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 900;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.22);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #e8ecf5;
+    }
+    .modal-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1a3a5c;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #888;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .modal-close:hover { background: #f0f2f8; color: #333; }
+    .modal-body { padding: 20px 24px 24px; }
+    .modal-intro {
+      font-size: 0.875rem;
+      color: #555e7a;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .modal-form .form-group { margin-bottom: 14px; }
+    .modal-form label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 5px;
+    }
+    .modal-form input,
+    .modal-form select,
+    .modal-form textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #dde2ef;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: #1e1e2e;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .modal-form input:focus,
+    .modal-form select:focus,
+    .modal-form textarea:focus {
+      outline: none;
+      border-color: #1a3a5c;
+      box-shadow: 0 0 0 3px rgba(26,58,92,0.08);
+    }
+    .modal-form textarea { resize: vertical; min-height: 70px; }
+    .areas-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .area-check-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      padding: 5px 12px;
+      border: 1.5px solid #dde2ef;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      color: #444;
+    }
+    .area-check-label input { display: none; }
+    .area-check-label:has(input:checked) {
+      border-color: #1a3a5c;
+      background: #e8f0fb;
+      color: #1a3a5c;
+      font-weight: 600;
+    }
+    .modal-footer-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e8ecf5;
+    }
+    .btn-reg-cancel {
+      background: none;
+      border: 1.5px solid #dde2ef;
+      color: #555;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-reg-cancel:hover { background: #f5f7fa; }
+    .btn-reg-submit {
+      background: #1a3a5c;
+      color: #fff;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-reg-submit:hover { background: #122a4a; }
+    .btn-reg-submit:disabled { background: #9099b2; cursor: not-allowed; }
+
+    /* ── Estado de éxito dentro del modal ── */
+    .reg-success {
+      display: none;
+      text-align: center;
+      padding: 24px 0 8px;
+    }
+    .reg-success-icon { font-size: 3rem; margin-bottom: 12px; }
+    .reg-success h3 { font-size: 1.1rem; font-weight: 700; color: #1a3a5c; margin-bottom: 8px; }
+    .reg-success p  { font-size: 0.875rem; color: #555e7a; }
+  </style>
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <!-- BANNER -->
+  <div class="page-banner">
+    <div class="container">
+      <p class="page-banner__eyebrow">Proyecto EDUCIENCIA</p>
+      <h1 class="page-banner__title">Contacto</h1>
+      <p class="page-banner__desc">¿Tienes preguntas, quieres participar o necesitas orientación? Escríbenos.</p>
+    </div>
+  </div>
+
+  <!-- CONTACTO -->
+  <section class="section section--alt">
+    <div class="container">
+
+      <!-- Canales -->
+      <div class="contacto-info-grid" id="contacto-info"></div>
+
+      <!-- Formulario + FAQ -->
+      <div class="grid-2" style="gap:48px;align-items:start;">
+
+        <div>
+          <h2 style="font-size:1.125rem;font-weight:700;color:var(--color-primary);margin-bottom:20px;">Envíanos un mensaje</h2>
+          <form aria-label="Formulario de contacto" onsubmit="handleMensaje(event)">
+            <div class="form-group">
+              <label for="nombre">Nombre completo <span aria-hidden="true">*</span></label>
+              <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre" autocomplete="name" />
+            </div>
+            <div class="form-group">
+              <label for="correo">Correo electrónico <span aria-hidden="true">*</span></label>
+              <input type="email" id="correo" name="correo" required placeholder="tu@correo.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="asunto">Asunto</label>
+              <select id="asunto" name="asunto">
+                <option value="">Selecciona un asunto…</option>
+                <option value="consulta">Tengo una consulta general</option>
+                <option value="apoyo">Necesito apoyo en una materia</option>
+                <option value="participar">Quiero participar como tutor</option>
+                <option value="docente">Soy docente y quiero derivar estudiantes</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="mensaje">Mensaje <span aria-hidden="true">*</span></label>
+              <textarea id="mensaje" name="mensaje" required placeholder="Escribe tu mensaje aquí…" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary" id="btn-enviar">Enviar mensaje</button>
+            <div id="form-feedback" style="margin-top:12px;font-size:0.875rem;display:none;padding:10px 14px;border-radius:6px;"></div>
+            <p class="form-aviso">Tu información será utilizada únicamente para responder tu consulta. No la compartiremos con terceros.</p>
+          </form>
+        </div>
+
+        <div>
+          <h2 style="font-size:1.125rem;font-weight:700;color:var(--color-primary);margin-bottom:20px;">Preguntas frecuentes</h2>
+          <div class="faq-lista" id="faq-lista" role="list"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       MODAL: Registro de estudiante
+  ══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-registro" role="dialog" aria-modal="true" aria-labelledby="modal-reg-titulo">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-reg-titulo">Únete al proyecto EDUCIENCIA</h2>
+        <button class="modal-close" onclick="cerrarModalRegistro()" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Estado éxito -->
+        <div class="reg-success" id="reg-success">
+          <div class="reg-success-icon">🎉</div>
+          <h3>¡Registro recibido!</h3>
+          <p>Gracias por tu interés. El equipo EDUCIENCIA se pondrá en contacto contigo pronto para coordinar los detalles.</p>
+          <button class="btn-reg-submit" style="margin-top:20px;" onclick="cerrarModalRegistro()">Cerrar</button>
+        </div>
+
+        <!-- Formulario -->
+        <div id="reg-form-container">
+          <p class="modal-intro">
+            Completa el formulario y el equipo se comunicará contigo para darte la bienvenida al proyecto.
+            Las clases son completamente gratuitas y abiertas.
+          </p>
+          <form class="modal-form" onsubmit="enviarRegistro(event)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label for="reg-nombre">Nombre completo *</label>
+                <input type="text" id="reg-nombre" required placeholder="Tu nombre" autocomplete="name" />
+              </div>
+              <div class="form-group">
+                <label for="reg-correo">Correo electrónico *</label>
+                <input type="email" id="reg-correo" required placeholder="tu@correo.com" autocomplete="email" />
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group">
+                <label for="reg-telefono">Teléfono / WhatsApp</label>
+                <input type="tel" id="reg-telefono" placeholder="0987654321" autocomplete="tel" />
+              </div>
+              <div class="form-group">
+                <label for="reg-grado">Año / curso que cursas *</label>
+                <select id="reg-grado" required>
+                  <option value="">Selecciona…</option>
+                  <option>1.° de Bachillerato</option>
+                  <option>2.° de Bachillerato</option>
+                  <option>3.° de Bachillerato</option>
+                  <option>Educación Básica Superior</option>
+                  <option>Universidad (primer año)</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-institucion">Institución educativa *</label>
+              <input type="text" id="reg-institucion" required placeholder="Nombre de tu colegio o unidad educativa" />
+            </div>
+            <div class="form-group">
+              <label>Áreas en las que necesitas apoyo</label>
+              <div class="areas-group">
+                <label class="area-check-label">
+                  <input type="checkbox" name="area" value="biologia" /> 🌿 Biología
+                </label>
+                <label class="area-check-label">
+                  <input type="checkbox" name="area" value="quimica" /> ⚗️ Química
+                </label>
+                <label class="area-check-label">
+                  <input type="checkbox" name="area" value="matematicas" /> 📐 Matemáticas
+                </label>
+                <label class="area-check-label">
+                  <input type="checkbox" name="area" value="fisica" /> ⚡ Física
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="reg-como">¿Cómo te enteraste de EDUCIENCIA?</label>
+              <select id="reg-como">
+                <option value="">Selecciona…</option>
+                <option value="docente">Un docente me lo recomendó</option>
+                <option value="amigo">Un amigo / compañero</option>
+                <option value="redes">Redes sociales</option>
+                <option value="afiche">Afiche o cartelera</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reg-nota">¿Algo más que quieras contarnos?</label>
+              <textarea id="reg-nota" placeholder="Cuéntanos tu situación o qué esperas del proyecto…" rows="3"></textarea>
+            </div>
+            <div class="modal-footer-row">
+              <button type="button" class="btn-reg-cancel" onclick="cerrarModalRegistro()">Cancelar</button>
+              <button type="submit" class="btn-reg-submit" id="btn-reg-submit">Enviar registro →</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    (async () => {
+      const data = await initPage('contacto');
+      const cfg  = data.config || {};
+
+      // Canales de contacto
+      document.getElementById('contacto-info').innerHTML = `
+        <div class="contacto-info-item">
+          <div class="contacto-info-icon">📧</div>
+          <p class="contacto-info-titulo">Correo electrónico</p>
+          <p class="contacto-info-valor">${cfg.correo || '—'}</p>
+        </div>
+        <div class="contacto-info-item">
+          <div class="contacto-info-icon">💬</div>
+          <p class="contacto-info-titulo">Canal de mensajería</p>
+          <p class="contacto-info-valor">${cfg.telegram || '—'} (Telegram / WhatsApp)</p>
+        </div>
+        <div class="contacto-info-item captacion"
+             onclick="abrirModalRegistro()"
+             role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' ')abrirModalRegistro()"
+             aria-label="Abre formulario de registro de estudiantes">
+          <span class="captacion-badge">¡Únete!</span>
+          <div class="contacto-info-icon">🎓</div>
+          <p class="contacto-info-titulo">Regístrate como estudiante</p>
+          <p class="contacto-info-valor">Forma parte del proyecto y recibe acompañamiento personalizado de nuestros tutores.</p>
+          <span class="captacion-cta">Quiero registrarme →</span>
+        </div>
+      `;
+
+      // FAQ
+      const faqHtml = (data.faq || []).map(f => `
+        <div class="faq-item" role="listitem">
+          <button class="faq-pregunta" aria-expanded="false">
+            ${f.pregunta}
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-respuesta">${f.respuesta}</div>
+        </div>`).join('');
+      document.getElementById('faq-lista').innerHTML =
+        faqHtml || '<p class="text-muted">No hay preguntas frecuentes registradas.</p>';
+      initFaq();
+    })();
+
+    /* ── Formulario de mensajes (guarda en el servidor) ── */
+    async function handleMensaje(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-enviar');
+      const fb  = document.getElementById('form-feedback');
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+
+      const payload = {
+        nombre:  document.getElementById('nombre').value.trim(),
+        correo:  document.getElementById('correo').value.trim(),
+        asunto:  document.getElementById('asunto').value,
+        mensaje: document.getElementById('mensaje').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/mensaje', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Error del servidor');
+        fb.style.display     = 'block';
+        fb.style.background  = '#e8f5e9';
+        fb.style.color       = '#2e7d32';
+        fb.style.border      = '1px solid #c8e6c9';
+        fb.textContent       = '✓ Mensaje recibido. Nos pondremos en contacto pronto.';
+        e.target.reset();
+      } catch {
+        fb.style.display     = 'block';
+        fb.style.background  = '#fdecea';
+        fb.style.color       = '#c62828';
+        fb.style.border      = '1px solid #f5c6c6';
+        fb.textContent       = '✗ No se pudo enviar. ¿El servidor está activo?';
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Enviar mensaje';
+      }
+    }
+
+    /* ── Modal de registro ── */
+    function abrirModalRegistro() {
+      document.getElementById('modal-registro').classList.add('open');
+      document.getElementById('reg-form-container').style.display = '';
+      document.getElementById('reg-success').style.display = 'none';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModalRegistro() {
+      document.getElementById('modal-registro').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Cerrar con clic fuera del modal
+    document.getElementById('modal-registro').addEventListener('click', function(e) {
+      if (e.target === this) cerrarModalRegistro();
+    });
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') cerrarModalRegistro();
+    });
+
+    async function enviarRegistro(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-reg-submit');
+      btn.disabled    = true;
+      btn.textContent = 'Enviando…';
+
+      const areas = Array.from(
+        document.querySelectorAll('#modal-registro input[name="area"]:checked')
+      ).map(cb => cb.value);
+
+      const payload = {
+        nombre:       document.getElementById('reg-nombre').value.trim(),
+        correo:       document.getElementById('reg-correo').value.trim(),
+        telefono:     document.getElementById('reg-telefono').value.trim(),
+        grado:        document.getElementById('reg-grado').value,
+        institucion:  document.getElementById('reg-institucion').value.trim(),
+        areas:        areas,
+        como:         document.getElementById('reg-como').value,
+        nota:         document.getElementById('reg-nota').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/registro', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Error del servidor');
+        document.getElementById('reg-form-container').style.display = 'none';
+        document.getElementById('reg-success').style.display = 'block';
+      } catch {
+        btn.disabled    = false;
+        btn.textContent = 'Enviar registro →';
+        alert('No se pudo enviar el registro. Verifica que el servidor esté activo.');
+      }
+    }
+  </script>
+</body>
+</html>

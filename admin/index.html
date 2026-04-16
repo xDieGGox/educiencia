@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de administración – EDUCIENCIA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f8; color: #1e1e2e; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: #1a3a5c; color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 56px; flex-shrink: 0;
+    }
+    .topbar-brand { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .topbar-badge { background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+    .topbar a { color: rgba(255,255,255,0.8); font-size: 0.85rem; text-decoration: none; }
+    .topbar a:hover { color: #fff; }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; flex: 1; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 220px; background: #fff; flex-shrink: 0;
+      border-right: 1px solid #e0e4ef;
+      padding: 20px 0;
+    }
+    .sidebar-section { padding: 6px 16px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9099b2; margin-top: 10px; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; font-size: 0.875rem; font-weight: 500; color: #444;
+      cursor: pointer; border: none; background: none; width: 100%; text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-item:hover { background: #f5f7fa; color: #1a3a5c; }
+    .sidebar-item.active { background: #e8f0fb; color: #1a3a5c; font-weight: 700; border-right: 3px solid #1a3a5c; }
+    .sidebar-item .icon { font-size: 1.1rem; }
+
+    /* ── CONTENIDO PRINCIPAL ── */
+    .main { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+    /* ── PANELES ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .panel-title { font-size: 1.375rem; font-weight: 700; color: #1a3a5c; margin-bottom: 6px; }
+    .panel-desc  { font-size: 0.875rem; color: #555e7a; margin-bottom: 24px; }
+
+    /* ── TARJETAS DE ADMIN ── */
+    .admin-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); padding: 24px; margin-bottom: 20px; }
+    .admin-card-title { font-size: 1rem; font-weight: 700; color: #1a3a5c; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e0e4ef; display: flex; justify-content: space-between; align-items: center; }
+
+    /* ── FORMULARIOS ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #444; margin-bottom: 5px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 8px 12px; border: 1.5px solid #dde2ef;
+      border-radius: 5px; font-family: inherit; font-size: 0.875rem; color: #1e1e2e;
+      background: #fff; transition: border-color 0.15s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #1a3a5c; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group input[type="number"] { width: auto; min-width: 90px; }
+
+    /* ── BOTONES ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 5px; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+    .btn-primary { background: #1a3a5c; color: #fff; border-color: #1a3a5c; }
+    .btn-primary:hover { background: #122a4a; }
+    .btn-success { background: #2e7d32; color: #fff; border-color: #2e7d32; }
+    .btn-success:hover { background: #1b5e20; }
+    .btn-danger  { background: #c62828; color: #fff; border-color: #c62828; }
+    .btn-danger:hover { background: #b71c1c; }
+    .btn-outline { background: transparent; color: #1a3a5c; border-color: #1a3a5c; }
+    .btn-outline:hover { background: #1a3a5c; color: #fff; }
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+    .btn-icon { padding: 5px 8px; font-size: 0.875rem; }
+
+    /* ── LISTA DE ITEMS ── */
+    .items-list { display: flex; flex-direction: column; gap: 8px; }
+    .item-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; background: #f8f9fc; border-radius: 6px;
+      border: 1px solid #e8ecf5; gap: 12px;
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-title { font-size: 0.9rem; font-weight: 600; color: #1a3a5c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-meta  { font-size: 0.78rem; color: #777; margin-top: 2px; }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* ── CHIPS ── */
+    .chip { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .chip-bio { background: #e8f5e9; color: #2e7d32; }
+    .chip-qui { background: #f3e5f5; color: #6a1b9a; }
+    .chip-mat { background: #e3f2fd; color: #1565c0; }
+    .chip-fis { background: #fff3e0; color: #e65100; }
+    .chip-proxima    { background: #e3f2fd; color: #1565c0; }
+    .chip-disponible { background: #e8f5e9; color: #2e7d32; }
+    .chip-finalizada { background: #f5f5f5; color: #9e9e9e; }
+
+    /* ── NOTIFICACIÓN ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #2e7d32; color: #fff;
+      padding: 12px 20px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transform: translateY(100px); opacity: 0;
+      transition: transform 0.3s, opacity 0.3s; z-index: 9999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { background: #c62828; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 10px;
+      padding: 28px; width: 90%; max-width: 640px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title  { font-size: 1.1rem; font-weight: 700; color: #1a3a5c; }
+    .modal-close  { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #888; padding: 4px; }
+    .modal-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e0e4ef; display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── IMPACTO ── */
+    .impacto-inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .impacto-input-item label { display: block; font-size: 0.8rem; font-weight: 600; color: #444; margin-bottom: 5px; }
+    .impacto-input-item input { width: 100%; padding: 8px 12px; border: 1.5px solid #dde2ef; border-radius: 5px; font-size: 1rem; font-weight: 700; color: #1a3a5c; text-align: center; }
+
+    /* ── AREAS CHECKBOXES ── */
+    .areas-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+    .areas-checks label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; padding: 4px 10px; border: 1.5px solid #dde2ef; border-radius: 20px; }
+    .areas-checks input[type="checkbox"] { cursor: pointer; }
+
+    /* ── FOTO UPLOAD ── */
+    .foto-upload-area { display: flex; align-items: center; gap: 20px; }
+    .foto-circle {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: #e8ecf5; border: 3px dashed #c0c8e0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; flex-shrink: 0; overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .foto-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .foto-circle.has-photo { border: 3px solid #1a3a5c; box-shadow: 0 0 0 3px rgba(26,58,92,0.12); }
+    .foto-upload-btns { display: flex; flex-direction: column; gap: 8px; }
+    .btn-quitar { color: #888; border-color: #ccc; font-size: 0.8rem; }
+    .btn-quitar:hover { color: #c62828; border-color: #c62828; background: transparent; }
+
+    /* ── Tarjetas de registro / mensaje ── */
+    .inbox-card {
+      background: #fff;
+      border: 1px solid #e8ecf5;
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      transition: box-shadow 0.15s;
+    }
+    .inbox-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .inbox-card.no-leido { border-left: 4px solid #1a3a5c; }
+    .inbox-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .inbox-nombre { font-size: 0.95rem; font-weight: 700; color: #1a3a5c; }
+    .inbox-fecha  { font-size: 0.75rem; color: #9099b2; white-space: nowrap; }
+    .inbox-meta   { font-size: 0.8rem; color: #555e7a; margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .inbox-body   { font-size: 0.85rem; color: #333; line-height: 1.55; }
+    .inbox-areas  { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .inbox-area-chip {
+      font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+      background: #e8f0fb; color: #1a3a5c;
+    }
+    .inbox-actions { display: flex; gap: 6px; margin-top: 10px; }
+    .empty-inbox { text-align: center; padding: 40px; color: #9099b2; font-size: 0.9rem; }
+    .inbox-card-expand { display: none; }
+    .inbox-card.expandida .inbox-card-expand { display: block; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 16px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-row.cols-3 { grid-template-columns: 1fr; }
+      .impacto-inputs { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <span>⚗️</span>
+    <span>EDUCIENCIA</span>
+    <span class="topbar-badge">Administración</span>
+  </div>
+  <div class="topbar-actions">
+    <a href="/" target="_blank">← Ver sitio web</a>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" aria-label="Navegación del panel">
+    <div class="sidebar-section">Portada</div>
+    <button class="sidebar-item" data-panel="hero">
+      <span class="icon">🖼️</span> Hero Carrusel
+    </button>
+    <button class="sidebar-item" data-panel="pilares">
+      <span class="icon">🔳</span> Pilares
+    </button>
+
+    <div class="sidebar-section">Contenido</div>
+    <button class="sidebar-item active" data-panel="clases">
+      <span class="icon">📅</span> Agenda de clases
+    </button>
+    <button class="sidebar-item" data-panel="recursos">
+      <span class="icon">📚</span> Recursos
+    </button>
+    <button class="sidebar-item" data-panel="equipo">
+      <span class="icon">👥</span> Equipo
+    </button>
+    <button class="sidebar-item" data-panel="testimonios">
+      <span class="icon">💬</span> Testimonios
+    </button>
+    <button class="sidebar-item" data-panel="faq">
+      <span class="icon">❓</span> FAQ
+    </button>
+
+    <div class="sidebar-section">Comunidad</div>
+    <button class="sidebar-item" data-panel="registros">
+      <span class="icon">🎓</span> Registros de estudiantes
+      <span id="badge-registros" style="margin-left:auto;background:#c62828;color:#fff;font-size:0.68rem;font-weight:700;padding:1px 7px;border-radius:20px;display:none;"></span>
+    </button>
+    <button class="sidebar-item" data-panel="mensajes">
+      <span class="icon">✉️</span> Mensajes recibidos
+      <span id="badge-mensajes" style="margin-left:auto;background:#c62828;color:#fff;font-size:0.68rem;font-weight:700;padding:1px 7px;border-radius:20px;display:none;"></span>
+    </button>
+
+    <button class="sidebar-item" data-panel="proyecto">
+      <span class="icon">📝</span> Sección Proyecto
+    </button>
+
+    <div class="sidebar-section">General</div>
+    <button class="sidebar-item" data-panel="impacto">
+      <span class="icon">📊</span> Números de impacto
+    </button>
+    <button class="sidebar-item" data-panel="config">
+      <span class="icon">⚙️</span> Configuración
+    </button>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ===== PANEL: HERO CAROUSEL ===== -->
+    <div class="panel" id="panel-hero">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Hero Carrusel</h1>
+          <p class="panel-desc" style="margin-bottom:0;">Gestiona los slides de la portada principal. Puedes reordenarlos arrastrando.</p>
+        </div>
+        <a href="/" target="_blank" class="btn btn-outline btn-sm" style="align-self:center;">🔗 Ver portada</a>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Slides registrados
+          <button class="btn btn-primary btn-sm" onclick="abrirModalSlide()">+ Nuevo slide</button>
+        </div>
+        <div class="items-list" id="list-hero"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: PILARES ===== -->
+    <div class="panel" id="panel-pilares">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Pilares del proyecto</h1>
+          <p class="panel-desc" style="margin-bottom:0;">Administra las tarjetas de características debajo del carrusel. Cada pilar puede llevar una imagen PNG.</p>
+        </div>
+        <a href="/" target="_blank" class="btn btn-outline btn-sm" style="align-self:center;">🔗 Ver en portada</a>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Pilares registrados
+          <button class="btn btn-primary btn-sm" onclick="abrirModalPilar()">+ Nuevo pilar</button>
+        </div>
+        <div class="items-list" id="list-pilares"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: CLASES ===== -->
+    <div class="panel active" id="panel-clases">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Agenda de clases</h1>
+          <p class="panel-desc" style="margin-bottom:0;">Agrega, edita o elimina sesiones de la agenda pública.</p>
+        </div>
+        <a href="/agenda.html" target="_blank" class="btn btn-outline btn-sm" style="align-self:center;">
+          🔗 Ver agenda pública
+        </a>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Sesiones registradas
+          <button class="btn btn-primary btn-sm" onclick="abrirModalClase()">+ Nueva sesión</button>
+        </div>
+        <div class="items-list" id="list-clases"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: RECURSOS ===== -->
+    <div class="panel" id="panel-recursos">
+      <h1 class="panel-title">Recursos educativos</h1>
+      <p class="panel-desc">Gestiona los materiales que aparecen en el repositorio público.</p>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Recursos registrados
+          <button class="btn btn-primary btn-sm" onclick="abrirModalRecurso()">+ Nuevo recurso</button>
+        </div>
+        <div class="items-list" id="list-recursos"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: EQUIPO ===== -->
+    <div class="panel" id="panel-equipo">
+      <h1 class="panel-title">Equipo</h1>
+      <p class="panel-desc">Administra los coordinadores docentes y tutores estudiantiles.</p>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Coordinadores
+          <button class="btn btn-primary btn-sm" onclick="abrirModalCoord()">+ Coordinador</button>
+        </div>
+        <div class="items-list" id="list-coordinadores"></div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Tutores estudiantiles
+          <button class="btn btn-primary btn-sm" onclick="abrirModalTutor()">+ Tutor</button>
+        </div>
+        <div class="items-list" id="list-tutores"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: TESTIMONIOS ===== -->
+    <div class="panel" id="panel-testimonios">
+      <h1 class="panel-title">Testimonios</h1>
+      <p class="panel-desc">Gestiona las citas que aparecen en la sección de comunidad.</p>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Testimonios
+          <button class="btn btn-primary btn-sm" onclick="abrirModalTestimonio()">+ Testimonio</button>
+        </div>
+        <div class="items-list" id="list-testimonios"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: FAQ ===== -->
+    <div class="panel" id="panel-faq">
+      <h1 class="panel-title">Preguntas frecuentes</h1>
+      <p class="panel-desc">Administra las preguntas y respuestas del acordeón de contacto.</p>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Preguntas frecuentes
+          <button class="btn btn-primary btn-sm" onclick="abrirModalFaq()">+ Pregunta</button>
+        </div>
+        <div class="items-list" id="list-faq"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: IMPACTO ===== -->
+    <div class="panel" id="panel-impacto">
+      <h1 class="panel-title">Números de impacto</h1>
+      <p class="panel-desc">Actualiza las cifras que aparecen en la sección de comunidad.</p>
+      <div class="admin-card">
+        <div class="impacto-inputs">
+          <div class="impacto-input-item">
+            <label>Estudiantes acompañados</label>
+            <input type="number" id="imp-estudiantes" min="0" />
+          </div>
+          <div class="impacto-input-item">
+            <label>Sesiones realizadas</label>
+            <input type="number" id="imp-sesiones" min="0" />
+          </div>
+          <div class="impacto-input-item">
+            <label>Recursos disponibles</label>
+            <input type="number" id="imp-recursos" min="0" />
+          </div>
+          <div class="impacto-input-item">
+            <label>Tutores del proyecto</label>
+            <input type="number" id="imp-tutores" min="0" />
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-success" onclick="guardarImpacto()">💾 Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: SECCIÓN PROYECTO ===== -->
+    <div class="panel" id="panel-proyecto">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Sección «¿Qué es EDUCIENCIA?»</h1>
+          <p class="panel-desc" style="margin-bottom:0;">Edita el título, subtítulo, descripción, objetivos y marco institucional de esta sección.</p>
+        </div>
+        <a href="/" target="_blank" class="btn btn-outline btn-sm" style="align-self:center;">🔗 Ver en portada</a>
+      </div>
+
+      <!-- Encabezado de la sección -->
+      <div class="admin-card">
+        <div class="admin-card-title">Encabezado de la sección</div>
+        <div class="form-group">
+          <label>Título de la sección</label>
+          <input type="text" id="proy-titulo" placeholder="¿Qué es EDUCIENCIA?" />
+        </div>
+        <div class="form-group">
+          <label>Subtítulo de la sección</label>
+          <textarea id="proy-subtitulo" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- Descripción en 3 párrafos -->
+      <div class="admin-card">
+        <div class="admin-card-title">Descripción del proyecto (columna izquierda)</div>
+        <div class="form-group">
+          <label>Párrafo 1</label>
+          <textarea id="proy-p1" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Párrafo 2</label>
+          <textarea id="proy-p2" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Párrafo 3</label>
+          <textarea id="proy-p3" rows="3"></textarea>
+        </div>
+      </div>
+
+      <!-- Objetivos -->
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Objetivo del proyecto
+          <button class="btn btn-primary btn-sm" onclick="agregarObjetivo()">+ Agregar objetivo</button>
+        </div>
+        <p style="font-size:0.8rem;color:#777;margin-bottom:14px;">Arrastra ↑↓ para reordenar. Cada ítem aparece en la tarjeta azul de la portada.</p>
+        <div id="objetivos-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- Marco institucional -->
+      <div class="admin-card">
+        <div class="admin-card-title">Visión</div>
+        <div class="form-group">
+          <label>Texto del marco institucional (aparece en la tarjeta con borde de color)</label>
+          <textarea id="proy-marco" rows="3"></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-success" onclick="guardarProyecto()" style="margin-top:4px;">💾 Guardar sección</button>
+    </div>
+
+    <!-- ===== PANEL: CONFIGURACIÓN ===== -->
+    <div class="panel" id="panel-config">
+      <h1 class="panel-title">Configuración general</h1>
+      <p class="panel-desc">Datos generales del sitio, contacto e institución.</p>
+      <div class="admin-card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre del proyecto</label>
+            <input type="text" id="cfg-nombre_proyecto" />
+          </div>
+          <div class="form-group">
+            <label>Lema</label>
+            <input type="text" id="cfg-lema" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción en el hero (portada)</label>
+          <textarea id="cfg-descripcion_hero" rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Correo de contacto</label>
+            <input type="email" id="cfg-correo" />
+          </div>
+          <div class="form-group">
+            <label>Telegram / WhatsApp</label>
+            <input type="text" id="cfg-telegram" placeholder="@nombrecanal" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre de la facultad</label>
+            <input type="text" id="cfg-institucion_nombre" />
+          </div>
+          <div class="form-group">
+            <label>Universidad</label>
+            <input type="text" id="cfg-institucion_universidad" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Departamento</label>
+          <input type="text" id="cfg-departamento" />
+        </div>
+        <div class="form-group">
+          <label>Visión (texto completo)</label>
+          <textarea id="cfg-marco_institucional" rows="3"></textarea>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #e0e4ef;margin:20px 0;" />
+        <p style="font-size:0.875rem;font-weight:700;color:#1a3a5c;margin-bottom:16px;">Descripción del proyecto (3 párrafos)</p>
+        <div class="form-group">
+          <label>Párrafo 1</label>
+          <textarea id="cfg-descripcion_proyecto_1" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Párrafo 2</label>
+          <textarea id="cfg-descripcion_proyecto_2" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Párrafo 3</label>
+          <textarea id="cfg-descripcion_proyecto_3" rows="3"></textarea>
+        </div>
+
+        <button class="btn btn-success" onclick="guardarConfig()">💾 Guardar configuración</button>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: REGISTROS DE ESTUDIANTES ===== -->
+    <div class="panel" id="panel-registros">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Registros de estudiantes</h1>
+          <p class="panel-desc" style="margin-bottom:0;">Estudiantes que se han registrado a través de la página de contacto.</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-outline btn-sm" onclick="exportarCSV('registros')">⬇ Exportar CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="cargarRegistros()">↻ Actualizar</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span id="registros-count">Cargando…</span>
+        </div>
+        <div id="lista-registros"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: MENSAJES RECIBIDOS ===== -->
+    <div class="panel" id="panel-mensajes">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Mensajes recibidos</h1>
+          <p class="panel-desc" style="margin-bottom:0;">Mensajes enviados desde el formulario de contacto.</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-outline btn-sm" onclick="exportarCSV('mensajes')">⬇ Exportar CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="cargarMensajes()">↻ Actualizar</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span id="mensajes-count">Cargando…</span>
+        </div>
+        <div id="lista-mensajes"></div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== MODALES ===== -->
+
+<!-- Modal: Hero Slide -->
+<div class="modal-overlay" id="modal-slide">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-slide-titulo">Nuevo slide</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-slide')">✕</button>
+    </div>
+    <input type="hidden" id="slide-id" />
+    <input type="hidden" id="slide-imagen" />
+
+    <!-- Image upload area -->
+    <div class="form-group">
+      <label>Imagen de fondo del slide</label>
+      <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;">
+        <div id="slide-img-preview" style="width:260px;height:100px;border-radius:8px;overflow:hidden;background:#e8ecf5;border:2px dashed #c0c8e0;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#9099b2;flex-shrink:0;position:relative;">
+          <span id="slide-img-label">Sin imagen — se usará gradiente</span>
+          <img id="slide-img-el" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input type="file" id="slide-img-file" accept="image/*" style="display:none;" onchange="leerImagenSlide()" />
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('slide-img-file').click()">📷 Cargar imagen</button>
+          <button type="button" class="btn btn-outline btn-sm btn-quitar" onclick="quitarImagenSlide()">✕ Quitar imagen</button>
+          <p style="font-size:0.75rem;color:#9099b2;max-width:200px;">PNG, JPG o SVG. Se usará como fondo del slide con overlay oscuro.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Eyebrow (texto pequeño sobre el título)</label>
+      <input type="text" id="slide-eyebrow" placeholder="Proyecto de vinculación con la comunidad" />
+    </div>
+    <div class="form-group">
+      <label>Título principal *</label>
+      <input type="text" id="slide-titulo" placeholder="Ciencia al alcance de todos" />
+    </div>
+    <div class="form-group">
+      <label>Subtítulo / descripción</label>
+      <textarea id="slide-subtitulo" rows="3" placeholder="Texto descriptivo del slide…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Botón 1 — Texto</label>
+        <input type="text" id="slide-btn1_texto" placeholder="Ver agenda de clases" />
+      </div>
+      <div class="form-group">
+        <label>Botón 1 — Enlace</label>
+        <input type="text" id="slide-btn1_href" placeholder="/agenda.html" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Botón 2 — Texto</label>
+        <input type="text" id="slide-btn2_texto" placeholder="Ver recursos" />
+      </div>
+      <div class="form-group">
+        <label>Botón 2 — Enlace</label>
+        <input type="text" id="slide-btn2_href" placeholder="/recursos.html" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-slide')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarSlide()">💾 Guardar slide</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Pilar -->
+<div class="modal-overlay" id="modal-pilar">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-pilar-titulo">Nuevo pilar</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-pilar')">✕</button>
+    </div>
+    <input type="hidden" id="pilar-id" />
+    <input type="hidden" id="pilar-imagen" />
+
+    <!-- Image upload area -->
+    <div class="form-group">
+      <label>Imagen del pilar (PNG recomendado, formato cuadrado)</label>
+      <div style="display:flex;align-items:flex-start;gap:20px;">
+        <div id="pilar-img-preview" style="width:100px;height:100px;border-radius:12px;overflow:hidden;background:#e8ecf5;border:2px dashed #c0c8e0;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#9099b2;flex-shrink:0;position:relative;text-align:center;">
+          <span id="pilar-img-label" style="padding:8px;">Sin imagen</span>
+          <img id="pilar-img-el" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input type="file" id="pilar-img-file" accept="image/*" style="display:none;" onchange="leerImagenPilar()" />
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('pilar-img-file').click()">📷 Cargar imagen PNG</button>
+          <button type="button" class="btn btn-outline btn-sm btn-quitar" onclick="quitarImagenPilar()">✕ Quitar imagen</button>
+          <p style="font-size:0.75rem;color:#9099b2;max-width:180px;">Se muestra como icono cuadrado (88×88 px).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Título del pilar *</label>
+      <input type="text" id="pilar-titulo" placeholder="Refuerzo en ciencias" />
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="pilar-descripcion" rows="3" placeholder="Breve descripción del pilar…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-pilar')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarPilar()">💾 Guardar pilar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Clase -->
+<div class="modal-overlay" id="modal-clase">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-clase-titulo">Nueva clase</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-clase')">✕</button>
+    </div>
+    <input type="hidden" id="clase-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label>Área *</label>
+        <select id="clase-area">
+          <option value="biologia">Biología</option>
+          <option value="quimica">Química</option>
+          <option value="matematicas">Matemáticas</option>
+          <option value="fisica">Física</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Estado *</label>
+        <select id="clase-estado">
+          <option value="proxima">Próxima</option>
+          <option value="disponible">Disponible</option>
+          <option value="finalizada">Finalizada</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Título *</label>
+      <input type="text" id="clase-titulo" placeholder="Ej: Funciones cuadráticas" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nivel</label>
+        <input type="text" id="clase-nivel" placeholder="Ej: Bachillerato básico" />
+      </div>
+      <div class="form-group">
+        <label>Tutor</label>
+        <input type="text" id="clase-tutor" placeholder="Nombre del tutor" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="text" id="clase-fecha" placeholder="Lunes 14 de abril, 2025" />
+      </div>
+      <div class="form-group">
+        <label>Horario</label>
+        <input type="text" id="clase-horario" placeholder="16:00 – 17:30 h" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Modalidad</label>
+      <input type="text" id="clase-modalidad" placeholder="Virtual  /  Presencial – Aula 204" />
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="clase-descripcion" rows="3" placeholder="Breve descripción de la sesión…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Enlace de la clase (URL)</label>
+        <input type="url" id="clase-enlace_clase" placeholder="https://meet.google.com/..." />
+      </div>
+      <div class="form-group">
+        <label>Enlace de materiales (URL)</label>
+        <input type="url" id="clase-enlace_materiales" placeholder="https://drive.google.com/..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-clase')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarClase()">💾 Guardar clase</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Recurso -->
+<div class="modal-overlay" id="modal-recurso">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-recurso-titulo">Nuevo recurso</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-recurso')">✕</button>
+    </div>
+    <input type="hidden" id="recurso-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label>Área *</label>
+        <select id="recurso-area">
+          <option value="biologia">Biología</option>
+          <option value="quimica">Química</option>
+          <option value="matematicas">Matemáticas</option>
+          <option value="fisica">Física</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <input type="text" id="recurso-tipo" placeholder="Guía PDF / Video / Presentación…" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nivel</label>
+        <input type="text" id="recurso-nivel" placeholder="Básico / Bachillerato" />
+      </div>
+      <div class="form-group">
+        <label>Ícono (emoji)</label>
+        <input type="text" id="recurso-icono" placeholder="📄" maxlength="5" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Título *</label>
+      <input type="text" id="recurso-titulo" placeholder="Título del material" />
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="recurso-descripcion" rows="3"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Autor</label>
+        <input type="text" id="recurso-autor" />
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="text" id="recurso-fecha" placeholder="Abril 2025" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Enlace (URL)</label>
+        <input type="url" id="recurso-enlace" placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label>Texto del botón</label>
+        <input type="text" id="recurso-accion_label" placeholder="⬇ Descargar guía" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-recurso')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarRecurso()">💾 Guardar recurso</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Coordinador -->
+<div class="modal-overlay" id="modal-coord">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-coord-titulo">Nuevo coordinador</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-coord')">✕</button>
+    </div>
+    <input type="hidden" id="coord-id" />
+    <input type="hidden" id="coord-foto" />
+    <div class="form-group">
+      <label>Foto del coordinador</label>
+      <div class="foto-upload-area">
+        <div class="foto-circle" id="coord-foto-circle">
+          <span id="coord-foto-emoji">🧑‍🏫</span>
+          <img id="coord-foto-img" src="" alt="" style="display:none;" />
+        </div>
+        <div class="foto-upload-btns">
+          <input type="file" id="coord-foto-file" accept="image/*" style="display:none;"
+                 onchange="leerFoto('coord')" />
+          <button type="button" class="btn btn-outline btn-sm"
+                  onclick="document.getElementById('coord-foto-file').click()">
+            📷 Cargar foto
+          </button>
+          <button type="button" class="btn btn-outline btn-sm btn-quitar"
+                  onclick="quitarFoto('coord','🧑‍🏫')">
+            ✕ Quitar foto
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Nombre completo *</label>
+      <input type="text" id="coord-nombre" placeholder="Dra. Patricia Guzmán" />
+    </div>
+    <div class="form-group">
+      <label>Rol</label>
+      <input type="text" id="coord-rol" placeholder="Docente coordinadora – Ciencias Experimentales" />
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="coord-descripcion" rows="3"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-coord')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarCoord()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Tutor -->
+<div class="modal-overlay" id="modal-tutor">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-tutor-titulo">Nuevo tutor</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-tutor')">✕</button>
+    </div>
+    <input type="hidden" id="tutor-id" />
+    <input type="hidden" id="tutor-foto" />
+    <div class="form-group">
+      <label>Foto del tutor</label>
+      <div class="foto-upload-area">
+        <div class="foto-circle" id="tutor-foto-circle">
+          <span id="tutor-foto-emoji">👤</span>
+          <img id="tutor-foto-img" src="" alt="" style="display:none;" />
+        </div>
+        <div class="foto-upload-btns">
+          <input type="file" id="tutor-foto-file" accept="image/*" style="display:none;"
+                 onchange="leerFoto('tutor')" />
+          <button type="button" class="btn btn-outline btn-sm"
+                  onclick="document.getElementById('tutor-foto-file').click()">
+            📷 Cargar foto
+          </button>
+          <button type="button" class="btn btn-outline btn-sm btn-quitar"
+                  onclick="quitarFoto('tutor','👤')">
+            ✕ Quitar foto
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Nombre completo *</label>
+      <input type="text" id="tutor-nombre" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Semestre</label>
+        <input type="text" id="tutor-semestre" placeholder="5.º semestre" />
+      </div>
+      <div class="form-group">
+        <label>Especialidad</label>
+        <input type="text" id="tutor-especialidad" placeholder="Biología" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Áreas que imparte</label>
+      <div class="areas-checks">
+        <label><input type="checkbox" value="biologia" class="tutor-area-check" /> Biología</label>
+        <label><input type="checkbox" value="quimica" class="tutor-area-check" /> Química</label>
+        <label><input type="checkbox" value="matematicas" class="tutor-area-check" /> Matemáticas</label>
+        <label><input type="checkbox" value="fisica" class="tutor-area-check" /> Física</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-tutor')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarTutor()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Testimonio -->
+<div class="modal-overlay" id="modal-testimonio">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-test-titulo">Nuevo testimonio</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-testimonio')">✕</button>
+    </div>
+    <input type="hidden" id="test-id" />
+    <div class="form-group">
+      <label>Texto del testimonio *</label>
+      <textarea id="test-texto" rows="4" placeholder="Escribe el testimonio…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nombre del autor *</label>
+        <input type="text" id="test-autor" />
+      </div>
+      <div class="form-group">
+        <label>Rol / descripción</label>
+        <input type="text" id="test-rol" placeholder="Estudiante de bachillerato, 16 años" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-testimonio')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarTestimonio()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: FAQ -->
+<div class="modal-overlay" id="modal-faq">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-faq-titulo">Nueva pregunta</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-faq')">✕</button>
+    </div>
+    <input type="hidden" id="faq-id" />
+    <div class="form-group">
+      <label>Pregunta *</label>
+      <input type="text" id="faq-pregunta" placeholder="¿Cómo puedo…?" />
+    </div>
+    <div class="form-group">
+      <label>Respuesta *</label>
+      <textarea id="faq-respuesta" rows="4"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-faq')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarFaq()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirm Delete -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h2 class="modal-title">¿Eliminar este elemento?</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-confirm')">✕</button>
+    </div>
+    <p style="font-size:0.9rem;color:#555;">Esta acción no se puede deshacer.</p>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-confirm')">Cancelar</button>
+      <button class="btn btn-danger" id="btn-confirm-delete">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ESTADO GLOBAL
+═══════════════════════════════════════════════════════════ */
+let DATA = null;
+
+const AREA_CHIPS = {
+  biologia: '<span class="chip chip-bio">Biología</span>',
+  quimica:  '<span class="chip chip-qui">Química</span>',
+  matematicas: '<span class="chip chip-mat">Matemáticas</span>',
+  fisica:   '<span class="chip chip-fis">Física</span>'
+};
+const ESTADO_CHIPS = {
+  proxima:    '<span class="chip chip-proxima">Próxima</span>',
+  disponible: '<span class="chip chip-disponible">Disponible</span>',
+  finalizada: '<span class="chip chip-finalizada">Finalizada</span>'
+};
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CARGA Y GUARDADO
+═══════════════════════════════════════════════════════════ */
+async function cargarDatos() {
+  const res = await fetch('/api/data.php');
+  DATA = await res.json();
+  renderAll();
+}
+
+async function guardarDatos() {
+  try {
+    const res = await fetch('/api/data.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(DATA, null, 2)
+    });
+    const json = await res.json();
+    if (json.ok) toast('Cambios guardados correctamente ✓');
+    else toast('Error al guardar: ' + (json.error || 'desconocido'), true);
+  } catch (e) {
+    toast('No se pudo conectar con el servidor.', true);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER LISTAS
+═══════════════════════════════════════════════════════════ */
+function renderAll() {
+  renderHeroSlides();
+  renderPilares();
+  renderClases();
+  renderRecursos();
+  renderEquipo();
+  renderTestimonios();
+  renderFaq();
+  renderImpacto();
+  renderConfig();
+  renderProyecto();
+}
+
+/* ─── HERO SLIDES ─── */
+function renderHeroSlides() {
+  const el = document.getElementById('list-hero');
+  const slides = DATA.hero_slides || [];
+  if (!slides.length) {
+    el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay slides registrados.</p>';
+    return;
+  }
+  el.innerHTML = slides.map((s, idx) => `
+    <div class="item-row">
+      <div class="item-info" style="display:flex;align-items:center;gap:14px;">
+        <div style="width:80px;height:44px;border-radius:5px;overflow:hidden;background:#e8ecf5;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          ${s.imagen
+            ? `<img src="${s.imagen}" style="width:100%;height:100%;object-fit:cover;" alt="" />`
+            : '<span style="font-size:0.7rem;color:#9099b2;">Gradiente</span>'
+          }
+        </div>
+        <div>
+          <div class="item-title">${s.titulo}</div>
+          <div class="item-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px;">
+            ${s.eyebrow ? `<em>${s.eyebrow}</em> &nbsp;·&nbsp; ` : ''}
+            ${s.btn1_texto ? `Btn1: ${s.btn1_texto}` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="item-actions">
+        ${idx > 0 ? `<button class="btn btn-outline btn-icon" title="Mover arriba" onclick="moverSlide(${idx}, -1)">↑</button>` : ''}
+        ${idx < slides.length - 1 ? `<button class="btn btn-outline btn-icon" title="Mover abajo" onclick="moverSlide(${idx}, 1)">↓</button>` : ''}
+        <button class="btn btn-outline btn-icon" title="Editar" onclick="editarSlide('${s.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" title="Eliminar" onclick="confirmarEliminar('hero_slides','${s.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function moverSlide(idx, dir) {
+  const slides = DATA.hero_slides;
+  const nuevo = idx + dir;
+  if (nuevo < 0 || nuevo >= slides.length) return;
+  [slides[idx], slides[nuevo]] = [slides[nuevo], slides[idx]];
+  renderHeroSlides();
+  guardarDatos();
+}
+
+function abrirModalSlide(slide) {
+  resetForm(['slide-id','slide-eyebrow','slide-titulo','slide-subtitulo',
+    'slide-btn1_texto','slide-btn1_href','slide-btn2_texto','slide-btn2_href','slide-imagen']);
+  quitarImagenSlide();
+  document.getElementById('slide-img-file').value = '';
+  document.getElementById('modal-slide-titulo').textContent = slide ? 'Editar slide' : 'Nuevo slide';
+  if (slide) {
+    setV('slide-id', slide.id);
+    setV('slide-eyebrow', slide.eyebrow);
+    setV('slide-titulo', slide.titulo);
+    setV('slide-subtitulo', slide.subtitulo);
+    setV('slide-btn1_texto', slide.btn1_texto);
+    setV('slide-btn1_href', slide.btn1_href);
+    setV('slide-btn2_texto', slide.btn2_texto);
+    setV('slide-btn2_href', slide.btn2_href);
+    if (slide.imagen) mostrarImagenSlide(slide.imagen);
+  }
+  abrirModal('modal-slide');
+}
+
+function editarSlide(id) {
+  const s = (DATA.hero_slides || []).find(x => x.id === id);
+  if (s) abrirModalSlide(s);
+}
+
+function guardarSlide() {
+  const titulo = v('slide-titulo').trim();
+  if (!titulo) { toast('El título es obligatorio.', true); return; }
+  const id = v('slide-id') || ('slide-' + uid());
+  const obj = {
+    id,
+    eyebrow: v('slide-eyebrow'),
+    titulo,
+    subtitulo: v('slide-subtitulo'),
+    btn1_texto: v('slide-btn1_texto'),
+    btn1_href: v('slide-btn1_href'),
+    btn2_texto: v('slide-btn2_texto'),
+    btn2_href: v('slide-btn2_href'),
+    imagen: v('slide-imagen')
+  };
+  if (!DATA.hero_slides) DATA.hero_slides = [];
+  upsert('hero_slides', obj);
+  cerrarModal('modal-slide');
+  renderHeroSlides();
+  guardarDatos();
+}
+
+/* ─── Imagen helpers: SLIDE ─── */
+function leerImagenSlide() {
+  const file = document.getElementById('slide-img-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const MAX_W = 1200, MAX_H = 600;
+      let w = img.width, h = img.height;
+      const ratio = w / h;
+      if (w > MAX_W) { w = MAX_W; h = Math.round(w / ratio); }
+      if (h > MAX_H) { h = MAX_H; w = Math.round(h * ratio); }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      mostrarImagenSlide(dataUrl);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function mostrarImagenSlide(src) {
+  document.getElementById('slide-imagen').value = src;
+  const el = document.getElementById('slide-img-el');
+  const label = document.getElementById('slide-img-label');
+  el.src = src; el.style.display = 'block';
+  label.style.display = 'none';
+  document.getElementById('slide-img-preview').style.borderStyle = 'solid';
+  document.getElementById('slide-img-preview').style.borderColor = '#1a3a5c';
+}
+
+function quitarImagenSlide() {
+  setV('slide-imagen', '');
+  const el = document.getElementById('slide-img-el');
+  const label = document.getElementById('slide-img-label');
+  if (el) { el.src = ''; el.style.display = 'none'; }
+  if (label) label.style.display = '';
+  const preview = document.getElementById('slide-img-preview');
+  if (preview) { preview.style.borderStyle = 'dashed'; preview.style.borderColor = '#c0c8e0'; }
+}
+
+/* ─── PILARES ─── */
+function renderPilares() {
+  const el = document.getElementById('list-pilares');
+  const items = DATA.pilares || [];
+  if (!items.length) {
+    el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay pilares registrados.</p>';
+    return;
+  }
+  el.innerHTML = items.map((p, idx) => `
+    <div class="item-row">
+      <div class="item-info" style="display:flex;align-items:center;gap:14px;">
+        <div style="width:52px;height:52px;border-radius:10px;overflow:hidden;background:#e8ecf5;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          ${p.imagen
+            ? `<img src="${p.imagen}" style="width:100%;height:100%;object-fit:contain;" alt="" />`
+            : '<span style="font-size:1.4rem;">🔳</span>'
+          }
+        </div>
+        <div>
+          <div class="item-title">${p.titulo}</div>
+          <div class="item-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px;">${p.descripcion || ''}</div>
+        </div>
+      </div>
+      <div class="item-actions">
+        ${idx > 0 ? `<button class="btn btn-outline btn-icon" title="Mover arriba" onclick="moverPilar(${idx}, -1)">↑</button>` : ''}
+        ${idx < items.length - 1 ? `<button class="btn btn-outline btn-icon" title="Mover abajo" onclick="moverPilar(${idx}, 1)">↓</button>` : ''}
+        <button class="btn btn-outline btn-icon" title="Editar" onclick="editarPilar('${p.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" title="Eliminar" onclick="confirmarEliminar('pilares','${p.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function moverPilar(idx, dir) {
+  const items = DATA.pilares;
+  const nuevo = idx + dir;
+  if (nuevo < 0 || nuevo >= items.length) return;
+  [items[idx], items[nuevo]] = [items[nuevo], items[idx]];
+  renderPilares();
+  guardarDatos();
+}
+
+function abrirModalPilar(pilar) {
+  resetForm(['pilar-id','pilar-titulo','pilar-descripcion','pilar-imagen']);
+  quitarImagenPilar();
+  document.getElementById('pilar-img-file').value = '';
+  document.getElementById('modal-pilar-titulo').textContent = pilar ? 'Editar pilar' : 'Nuevo pilar';
+  if (pilar) {
+    setV('pilar-id', pilar.id);
+    setV('pilar-titulo', pilar.titulo);
+    setV('pilar-descripcion', pilar.descripcion);
+    if (pilar.imagen) mostrarImagenPilar(pilar.imagen);
+  }
+  abrirModal('modal-pilar');
+}
+
+function editarPilar(id) {
+  const p = (DATA.pilares || []).find(x => x.id === id);
+  if (p) abrirModalPilar(p);
+}
+
+function guardarPilar() {
+  const titulo = v('pilar-titulo').trim();
+  if (!titulo) { toast('El título es obligatorio.', true); return; }
+  const id = v('pilar-id') || ('pilar-' + uid());
+  const obj = {
+    id,
+    titulo,
+    descripcion: v('pilar-descripcion'),
+    imagen: v('pilar-imagen')
+  };
+  if (!DATA.pilares) DATA.pilares = [];
+  upsert('pilares', obj);
+  cerrarModal('modal-pilar');
+  renderPilares();
+  guardarDatos();
+}
+
+/* ─── Imagen helpers: PILAR ─── */
+function leerImagenPilar() {
+  const file = document.getElementById('pilar-img-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      // Use PNG for icon-type images (better transparency support)
+      const dataUrl = canvas.toDataURL('image/png');
+      mostrarImagenPilar(dataUrl);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function mostrarImagenPilar(src) {
+  document.getElementById('pilar-imagen').value = src;
+  const el = document.getElementById('pilar-img-el');
+  const label = document.getElementById('pilar-img-label');
+  el.src = src; el.style.display = 'block';
+  label.style.display = 'none';
+  document.getElementById('pilar-img-preview').style.borderStyle = 'solid';
+  document.getElementById('pilar-img-preview').style.borderColor = '#1a3a5c';
+}
+
+function quitarImagenPilar() {
+  setV('pilar-imagen', '');
+  const el = document.getElementById('pilar-img-el');
+  const label = document.getElementById('pilar-img-label');
+  if (el) { el.src = ''; el.style.display = 'none'; }
+  if (label) label.style.display = '';
+  const preview = document.getElementById('pilar-img-preview');
+  if (preview) { preview.style.borderStyle = 'dashed'; preview.style.borderColor = '#c0c8e0'; }
+}
+
+function renderClases() {
+  const el = document.getElementById('list-clases');
+  const clases = DATA.clases || [];
+  if (!clases.length) { el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay clases registradas.</p>'; return; }
+  el.innerHTML = clases.map(c => `
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title">${c.titulo}</div>
+        <div class="item-meta">
+          ${AREA_CHIPS[c.area]||''} ${ESTADO_CHIPS[c.estado]||''}
+          ${c.fecha ? `&nbsp;· 📅 ${c.fecha}` : ''}
+          ${c.horario ? `&nbsp;· 🕓 ${c.horario}` : ''}
+          ${c.modalidad ? `&nbsp;· ${c.modalidad}` : ''}
+          ${c.tutor ? `&nbsp;· 🧑 ${c.tutor}` : ''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-outline btn-icon" title="Editar clase" onclick="editarClase('${c.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" title="Eliminar clase" onclick="confirmarEliminar('clases','${c.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderRecursos() {
+  const el = document.getElementById('list-recursos');
+  const items = DATA.recursos || [];
+  if (!items.length) { el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay recursos registrados.</p>'; return; }
+  el.innerHTML = items.map(r => `
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title">${r.icono||'📄'} ${r.titulo}</div>
+        <div class="item-meta">${AREA_CHIPS[r.area]||''} &nbsp; ${r.tipo||''} · Por ${r.autor||''} · ${r.fecha||''}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-outline btn-icon" onclick="editarRecurso('${r.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" onclick="confirmarEliminar('recursos','${r.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderEquipo() {
+  const coords = (DATA.equipo || {}).coordinadores || [];
+  const tutores = (DATA.equipo || {}).tutores || [];
+
+  function miniAvatar(m, defaultEmoji) {
+    return m.foto
+      ? `<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid #dde2ef;">
+           <img src="${m.foto}" style="width:100%;height:100%;object-fit:cover;" alt="" />
+         </div>`
+      : `<div style="width:38px;height:38px;border-radius:50%;background:#e8ecf5;border:2px solid #dde2ef;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">${m.avatar||defaultEmoji}</div>`;
+  }
+
+  const elC = document.getElementById('list-coordinadores');
+  elC.innerHTML = coords.length
+    ? coords.map(c => `
+      <div class="item-row">
+        <div class="item-info" style="display:flex;align-items:center;gap:12px;">
+          ${miniAvatar(c,'🧑‍🏫')}
+          <div>
+            <div class="item-title">${c.nombre}</div>
+            <div class="item-meta">${c.rol}</div>
+          </div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-outline btn-icon" onclick="editarCoord('${c.id}')">✏️</button>
+          <button class="btn btn-danger btn-icon" onclick="confirmarEliminar('coordinadores','${c.id}')">🗑️</button>
+        </div>
+      </div>`).join('')
+    : '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay coordinadores.</p>';
+
+  const elT = document.getElementById('list-tutores');
+  elT.innerHTML = tutores.length
+    ? tutores.map(t => `
+      <div class="item-row">
+        <div class="item-info" style="display:flex;align-items:center;gap:12px;">
+          ${miniAvatar(t,'👤')}
+          <div>
+            <div class="item-title">${t.nombre}</div>
+            <div class="item-meta">${t.semestre} · ${t.especialidad} &nbsp; ${(t.areas||[]).map(a=>AREA_CHIPS[a]||'').join(' ')}</div>
+          </div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-outline btn-icon" onclick="editarTutor('${t.id}')">✏️</button>
+          <button class="btn btn-danger btn-icon" onclick="confirmarEliminar('tutores','${t.id}')">🗑️</button>
+        </div>
+      </div>`).join('')
+    : '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay tutores.</p>';
+}
+
+function renderTestimonios() {
+  const el = document.getElementById('list-testimonios');
+  const items = DATA.testimonios || [];
+  el.innerHTML = items.length
+    ? items.map(t => `
+      <div class="item-row">
+        <div class="item-info">
+          <div class="item-title">"${t.texto.slice(0,80)}…"</div>
+          <div class="item-meta">${t.autor} · ${t.rol}</div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-outline btn-icon" onclick="editarTestimonio('${t.id}')">✏️</button>
+          <button class="btn btn-danger btn-icon" onclick="confirmarEliminar('testimonios','${t.id}')">🗑️</button>
+        </div>
+      </div>`).join('')
+    : '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay testimonios.</p>';
+}
+
+function renderFaq() {
+  const el = document.getElementById('list-faq');
+  const items = DATA.faq || [];
+  el.innerHTML = items.length
+    ? items.map(f => `
+      <div class="item-row">
+        <div class="item-info">
+          <div class="item-title">${f.pregunta}</div>
+          <div class="item-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.respuesta.slice(0,80)}…</div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-outline btn-icon" onclick="editarFaq('${f.id}')">✏️</button>
+          <button class="btn btn-danger btn-icon" onclick="confirmarEliminar('faq','${f.id}')">🗑️</button>
+        </div>
+      </div>`).join('')
+    : '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay preguntas frecuentes.</p>';
+}
+
+function renderImpacto() {
+  const imp = DATA.impacto || {};
+  document.getElementById('imp-estudiantes').value = imp.estudiantes ?? 0;
+  document.getElementById('imp-sesiones').value    = imp.sesiones ?? 0;
+  document.getElementById('imp-recursos').value    = imp.recursos ?? 0;
+  document.getElementById('imp-tutores').value     = imp.tutores ?? 0;
+}
+
+function renderConfig() {
+  const cfg = DATA.config || {};
+  Object.keys(cfg).forEach(k => {
+    const el = document.getElementById('cfg-' + k);
+    if (el) el.value = cfg[k] || '';
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVEGACIÓN DE PANELES
+═══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.sidebar-item').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    const panel = this.dataset.panel;
+    document.getElementById('panel-' + panel).classList.add('active');
+    // Carga bajo demanda para los paneles de comunidad
+    if (panel === 'registros') cargarRegistros();
+    if (panel === 'mensajes')  cargarMensajes();
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   MODALES
+═══════════════════════════════════════════════════════════ */
+function abrirModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+// Cerrar al hacer clic fuera
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+/* ─── CLASES ─── */
+function abrirModalClase(cls) {
+  resetForm(['clase-id','clase-area','clase-estado','clase-titulo','clase-nivel',
+    'clase-tutor','clase-fecha','clase-horario','clase-modalidad','clase-descripcion',
+    'clase-enlace_clase','clase-enlace_materiales']);
+  document.getElementById('modal-clase-titulo').textContent = cls ? 'Editar clase' : 'Nueva clase';
+  if (cls) {
+    document.getElementById('clase-id').value = cls.id;
+    document.getElementById('clase-area').value = cls.area;
+    document.getElementById('clase-estado').value = cls.estado;
+    document.getElementById('clase-titulo').value = cls.titulo;
+    document.getElementById('clase-nivel').value = cls.nivel || '';
+    document.getElementById('clase-tutor').value = cls.tutor || '';
+    document.getElementById('clase-fecha').value = cls.fecha || '';
+    document.getElementById('clase-horario').value = cls.horario || '';
+    document.getElementById('clase-modalidad').value = cls.modalidad || '';
+    document.getElementById('clase-descripcion').value = cls.descripcion || '';
+    document.getElementById('clase-enlace_clase').value = cls.enlace_clase || '';
+    document.getElementById('clase-enlace_materiales').value = cls.enlace_materiales || '';
+  }
+  abrirModal('modal-clase');
+}
+function editarClase(id) {
+  const c = DATA.clases.find(x => x.id === id);
+  if (c) abrirModalClase(c);
+}
+function guardarClase() {
+  const titulo = document.getElementById('clase-titulo').value.trim();
+  if (!titulo) { toast('El título es obligatorio.', true); return; }
+  const id = document.getElementById('clase-id').value || ('clase-' + uid());
+  const obj = {
+    id, area: v('clase-area'), titulo, nivel: v('clase-nivel'),
+    estado: v('clase-estado'), fecha: v('clase-fecha'), horario: v('clase-horario'),
+    modalidad: v('clase-modalidad'), tutor: v('clase-tutor'),
+    descripcion: v('clase-descripcion'), enlace_clase: v('clase-enlace_clase'),
+    enlace_materiales: v('clase-enlace_materiales')
+  };
+  upsert('clases', obj);
+  cerrarModal('modal-clase');
+  renderClases();
+  guardarDatos();
+}
+
+/* ─── RECURSOS ─── */
+function abrirModalRecurso(rec) {
+  resetForm(['recurso-id','recurso-area','recurso-tipo','recurso-nivel','recurso-icono',
+    'recurso-titulo','recurso-descripcion','recurso-autor','recurso-fecha',
+    'recurso-enlace','recurso-accion_label']);
+  document.getElementById('modal-recurso-titulo').textContent = rec ? 'Editar recurso' : 'Nuevo recurso';
+  if (rec) {
+    document.getElementById('recurso-id').value = rec.id;
+    document.getElementById('recurso-area').value = rec.area;
+    setV('recurso-tipo', rec.tipo); setV('recurso-nivel', rec.nivel); setV('recurso-icono', rec.icono);
+    setV('recurso-titulo', rec.titulo); setV('recurso-descripcion', rec.descripcion);
+    setV('recurso-autor', rec.autor); setV('recurso-fecha', rec.fecha);
+    setV('recurso-enlace', rec.enlace); setV('recurso-accion_label', rec.accion_label);
+  }
+  abrirModal('modal-recurso');
+}
+function editarRecurso(id) {
+  const r = DATA.recursos.find(x => x.id === id);
+  if (r) abrirModalRecurso(r);
+}
+function guardarRecurso() {
+  const titulo = v('recurso-titulo').trim();
+  if (!titulo) { toast('El título es obligatorio.', true); return; }
+  const id = v('recurso-id') || ('rec-' + uid());
+  const obj = { id, area: v('recurso-area'), tipo: v('recurso-tipo'), nivel: v('recurso-nivel'),
+    icono: v('recurso-icono')||'📄', titulo, descripcion: v('recurso-descripcion'),
+    autor: v('recurso-autor'), fecha: v('recurso-fecha'),
+    enlace: v('recurso-enlace'), accion_label: v('recurso-accion_label')||'⬇ Descargar' };
+  upsert('recursos', obj);
+  cerrarModal('modal-recurso');
+  renderRecursos();
+  guardarDatos();
+}
+
+/* ─── COORDINADORES ─── */
+function abrirModalCoord(coord) {
+  resetForm(['coord-id','coord-nombre','coord-rol','coord-descripcion','coord-foto']);
+  quitarFoto('coord', '🧑‍🏫');
+  document.getElementById('coord-foto-file').value = '';
+  document.getElementById('modal-coord-titulo').textContent = coord ? 'Editar coordinador' : 'Nuevo coordinador';
+  if (coord) {
+    setV('coord-id', coord.id); setV('coord-nombre', coord.nombre);
+    setV('coord-rol', coord.rol); setV('coord-descripcion', coord.descripcion);
+    if (coord.foto) mostrarFotoPrevia('coord', coord.foto, '🧑‍🏫');
+  }
+  abrirModal('modal-coord');
+}
+function editarCoord(id) {
+  const c = (DATA.equipo.coordinadores||[]).find(x => x.id === id);
+  if (c) abrirModalCoord(c);
+}
+function guardarCoord() {
+  const nombre = v('coord-nombre').trim();
+  if (!nombre) { toast('El nombre es obligatorio.', true); return; }
+  const id = v('coord-id') || ('coord-' + uid());
+  const obj = { id, nombre, rol: v('coord-rol'), descripcion: v('coord-descripcion'), avatar: '🧑‍🏫', foto: v('coord-foto') };
+  if (!DATA.equipo) DATA.equipo = { coordinadores: [], tutores: [] };
+  upsertArr(DATA.equipo.coordinadores, obj);
+  cerrarModal('modal-coord');
+  renderEquipo();
+  guardarDatos();
+}
+
+/* ─── TUTORES ─── */
+function abrirModalTutor(t) {
+  resetForm(['tutor-id','tutor-nombre','tutor-semestre','tutor-especialidad','tutor-foto']);
+  quitarFoto('tutor', '👤');
+  document.getElementById('tutor-foto-file').value = '';
+  document.querySelectorAll('.tutor-area-check').forEach(c => c.checked = false);
+  document.getElementById('modal-tutor-titulo').textContent = t ? 'Editar tutor' : 'Nuevo tutor';
+  if (t) {
+    setV('tutor-id', t.id); setV('tutor-nombre', t.nombre);
+    setV('tutor-semestre', t.semestre); setV('tutor-especialidad', t.especialidad);
+    if (t.foto) mostrarFotoPrevia('tutor', t.foto, '👤');
+    (t.areas||[]).forEach(a => {
+      const cb = document.querySelector(`.tutor-area-check[value="${a}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+  abrirModal('modal-tutor');
+}
+function editarTutor(id) {
+  const t = (DATA.equipo.tutores||[]).find(x => x.id === id);
+  if (t) abrirModalTutor(t);
+}
+function guardarTutor() {
+  const nombre = v('tutor-nombre').trim();
+  if (!nombre) { toast('El nombre es obligatorio.', true); return; }
+  const areas = [...document.querySelectorAll('.tutor-area-check:checked')].map(c => c.value);
+  const id = v('tutor-id') || ('tutor-' + uid());
+  const obj = { id, nombre, semestre: v('tutor-semestre'), especialidad: v('tutor-especialidad'), areas, avatar: '👤', foto: v('tutor-foto') };
+  if (!DATA.equipo) DATA.equipo = { coordinadores: [], tutores: [] };
+  upsertArr(DATA.equipo.tutores, obj);
+  cerrarModal('modal-tutor');
+  renderEquipo();
+  guardarDatos();
+}
+
+/* ─── TESTIMONIOS ─── */
+function abrirModalTestimonio(t) {
+  resetForm(['test-id','test-texto','test-autor','test-rol']);
+  document.getElementById('modal-test-titulo').textContent = t ? 'Editar testimonio' : 'Nuevo testimonio';
+  if (t) { setV('test-id', t.id); setV('test-texto', t.texto); setV('test-autor', t.autor); setV('test-rol', t.rol); }
+  abrirModal('modal-testimonio');
+}
+function editarTestimonio(id) {
+  const t = DATA.testimonios.find(x => x.id === id);
+  if (t) abrirModalTestimonio(t);
+}
+function guardarTestimonio() {
+  const texto = v('test-texto').trim();
+  const autor = v('test-autor').trim();
+  if (!texto || !autor) { toast('Texto y autor son obligatorios.', true); return; }
+  const id = v('test-id') || ('test-' + uid());
+  upsert('testimonios', { id, texto, autor, rol: v('test-rol') });
+  cerrarModal('modal-testimonio');
+  renderTestimonios();
+  guardarDatos();
+}
+
+/* ─── FAQ ─── */
+function abrirModalFaq(f) {
+  resetForm(['faq-id','faq-pregunta','faq-respuesta']);
+  document.getElementById('modal-faq-titulo').textContent = f ? 'Editar pregunta' : 'Nueva pregunta';
+  if (f) { setV('faq-id', f.id); setV('faq-pregunta', f.pregunta); setV('faq-respuesta', f.respuesta); }
+  abrirModal('modal-faq');
+}
+function editarFaq(id) {
+  const f = DATA.faq.find(x => x.id === id);
+  if (f) abrirModalFaq(f);
+}
+function guardarFaq() {
+  const pregunta = v('faq-pregunta').trim();
+  const respuesta = v('faq-respuesta').trim();
+  if (!pregunta || !respuesta) { toast('Pregunta y respuesta son obligatorias.', true); return; }
+  const id = v('faq-id') || ('faq-' + uid());
+  upsert('faq', { id, pregunta, respuesta });
+  cerrarModal('modal-faq');
+  renderFaq();
+  guardarDatos();
+}
+
+/* ─── IMPACTO ─── */
+function guardarImpacto() {
+  DATA.impacto = {
+    estudiantes: parseInt(document.getElementById('imp-estudiantes').value)||0,
+    sesiones:    parseInt(document.getElementById('imp-sesiones').value)||0,
+    recursos:    parseInt(document.getElementById('imp-recursos').value)||0,
+    tutores:     parseInt(document.getElementById('imp-tutores').value)||0
+  };
+  guardarDatos();
+}
+
+/* ─── CONFIG ─── */
+/* ═══════════════════════════════════════════════════════════
+   PANEL: SECCIÓN PROYECTO
+═══════════════════════════════════════════════════════════ */
+function renderProyecto() {
+  const cfg = DATA.config || {};
+  setV('proy-titulo',    cfg.seccion_proyecto_titulo    || '¿Qué es EDUCIENCIA?');
+  setV('proy-subtitulo', cfg.seccion_proyecto_subtitulo || '');
+  setV('proy-p1',  cfg.descripcion_proyecto_1 || '');
+  setV('proy-p2',  cfg.descripcion_proyecto_2 || '');
+  setV('proy-p3',  cfg.descripcion_proyecto_3 || '');
+  setV('proy-marco', cfg.marco_institucional || '');
+  renderObjetivos();
+}
+
+function renderObjetivos() {
+  const lista = document.getElementById('objetivos-lista');
+  const objs  = DATA.objetivos || [];
+  if (!objs.length) {
+    lista.innerHTML = '<p style="color:#9099b2;font-size:0.85rem;padding:8px 0;">Sin objetivos aún. Agrega uno con el botón.</p>';
+    return;
+  }
+  lista.innerHTML = objs.map((o, i) => `
+    <div class="item-row" id="obj-row-${i}">
+      <div class="item-info">
+        <input type="text" value="${esc(o)}"
+               id="obj-text-${i}"
+               style="width:100%;padding:7px 10px;border:1.5px solid #dde2ef;border-radius:5px;font-size:0.875rem;"
+               onchange="actualizarObjetivo(${i}, this.value)" />
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-outline btn-icon btn-sm" title="Subir" onclick="moverObjetivo(${i}, -1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="btn btn-outline btn-icon btn-sm" title="Bajar" onclick="moverObjetivo(${i}, 1)"  ${i === objs.length - 1 ? 'disabled' : ''}>↓</button>
+        <button class="btn btn-danger  btn-icon btn-sm" title="Eliminar" onclick="eliminarObjetivo(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function actualizarObjetivo(i, val) {
+  if (!DATA.objetivos) DATA.objetivos = [];
+  DATA.objetivos[i] = val;
+}
+
+function agregarObjetivo() {
+  if (!DATA.objetivos) DATA.objetivos = [];
+  DATA.objetivos.push('Nuevo objetivo');
+  renderObjetivos();
+  // Enfocar el campo recién creado
+  const idx = DATA.objetivos.length - 1;
+  setTimeout(() => {
+    const el = document.getElementById('obj-text-' + idx);
+    if (el) { el.focus(); el.select(); }
+  }, 50);
+}
+
+function eliminarObjetivo(i) {
+  DATA.objetivos.splice(i, 1);
+  renderObjetivos();
+}
+
+function moverObjetivo(i, dir) {
+  const objs = DATA.objetivos;
+  const j    = i + dir;
+  if (j < 0 || j >= objs.length) return;
+  [objs[i], objs[j]] = [objs[j], objs[i]];
+  renderObjetivos();
+}
+
+function guardarProyecto() {
+  if (!DATA.config) DATA.config = {};
+  DATA.config.seccion_proyecto_titulo    = v('proy-titulo');
+  DATA.config.seccion_proyecto_subtitulo = v('proy-subtitulo');
+  DATA.config.descripcion_proyecto_1     = v('proy-p1');
+  DATA.config.descripcion_proyecto_2     = v('proy-p2');
+  DATA.config.descripcion_proyecto_3     = v('proy-p3');
+  DATA.config.marco_institucional        = v('proy-marco');
+  // Recoger objetivos actualizados de los inputs
+  DATA.objetivos = Array.from(
+    document.querySelectorAll('[id^="obj-text-"]')
+  ).map(el => el.value.trim()).filter(Boolean);
+  guardarDatos();
+}
+
+function guardarConfig() {
+  ['nombre_proyecto','lema','descripcion_hero','correo','telegram',
+   'institucion_nombre','institucion_universidad','departamento','marco_institucional',
+   'descripcion_proyecto_1','descripcion_proyecto_2','descripcion_proyecto_3'].forEach(k => {
+    const el = document.getElementById('cfg-' + k);
+    if (el) DATA.config[k] = el.value;
+  });
+  guardarDatos();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ELIMINAR
+═══════════════════════════════════════════════════════════ */
+function confirmarEliminar(collection, id) {
+  const btn = document.getElementById('btn-confirm-delete');
+  btn.onclick = function () {
+    if (collection === 'coordinadores' || collection === 'tutores') {
+      DATA.equipo[collection] = DATA.equipo[collection].filter(x => x.id !== id);
+    } else {
+      DATA[collection] = DATA[collection].filter(x => x.id !== id);
+    }
+    cerrarModal('modal-confirm');
+    renderAll();
+    guardarDatos();
+  };
+  abrirModal('modal-confirm');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════ */
+function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function setV(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
+function resetForm(ids) { ids.forEach(id => setV(id, '')); }
+
+/* ── Foto helpers ── */
+function leerFoto(prefix) {
+  const file = document.getElementById(prefix + '-foto-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const srcImg = new Image();
+    srcImg.onload = function() {
+      const MAX = 480;
+      let w = srcImg.width, h = srcImg.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(srcImg, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      document.getElementById(prefix + '-foto').value = dataUrl;
+      const imgEl = document.getElementById(prefix + '-foto-img');
+      imgEl.src = dataUrl;
+      imgEl.style.display = 'block';
+      document.getElementById(prefix + '-foto-emoji').style.display = 'none';
+      document.getElementById(prefix + '-foto-circle').classList.add('has-photo');
+    };
+    srcImg.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function quitarFoto(prefix, defaultEmoji) {
+  setV(prefix + '-foto', '');
+  const fileEl = document.getElementById(prefix + '-foto-file');
+  if (fileEl) fileEl.value = '';
+  const imgEl = document.getElementById(prefix + '-foto-img');
+  if (imgEl) { imgEl.src = ''; imgEl.style.display = 'none'; }
+  const emojiEl = document.getElementById(prefix + '-foto-emoji');
+  if (emojiEl) { emojiEl.textContent = defaultEmoji; emojiEl.style.display = ''; }
+  const circle = document.getElementById(prefix + '-foto-circle');
+  if (circle) circle.classList.remove('has-photo');
+}
+
+function mostrarFotoPrevia(prefix, fotoUrl, defaultEmoji) {
+  if (!fotoUrl) { quitarFoto(prefix, defaultEmoji); return; }
+  document.getElementById(prefix + '-foto').value = fotoUrl;
+  const imgEl = document.getElementById(prefix + '-foto-img');
+  imgEl.src = fotoUrl; imgEl.style.display = 'block';
+  document.getElementById(prefix + '-foto-emoji').style.display = 'none';
+  document.getElementById(prefix + '-foto-circle').classList.add('has-photo');
+}
+
+function upsert(collection, obj) {
+  if (!DATA[collection]) DATA[collection] = [];
+  const idx = DATA[collection].findIndex(x => x.id === obj.id);
+  if (idx >= 0) DATA[collection][idx] = obj;
+  else DATA[collection].push(obj);
+}
+
+function upsertArr(arr, obj) {
+  const idx = arr.findIndex(x => x.id === obj.id);
+  if (idx >= 0) arr[idx] = obj;
+  else arr.push(obj);
+}
+
+/* ─── Toast ─── */
+let toastTimer;
+function toast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3200);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REGISTROS DE ESTUDIANTES
+═══════════════════════════════════════════════════════════ */
+let REGISTROS = [];
+let MENSAJES  = [];
+
+async function cargarRegistros() {
+  try {
+    const res = await fetch('/api/registros');
+    REGISTROS = await res.json();
+    renderRegistros();
+    actualizarBadge('registros', REGISTROS.filter(r => !r.leido).length);
+  } catch { document.getElementById('lista-registros').innerHTML = '<p class="empty-inbox">Error al cargar registros.</p>'; }
+}
+
+function renderRegistros() {
+  const el = document.getElementById('lista-registros');
+  const cnt = document.getElementById('registros-count');
+  cnt.textContent = `${REGISTROS.length} registro${REGISTROS.length !== 1 ? 's' : ''}`;
+  if (!REGISTROS.length) {
+    el.innerHTML = '<div class="empty-inbox">📭 Aún no hay registros de estudiantes.</div>';
+    return;
+  }
+  el.innerHTML = REGISTROS.map(r => {
+    const areasHtml = (r.areas || []).map(a => `<span class="inbox-area-chip">${a}</span>`).join('');
+    return `
+    <div class="inbox-card${!r.leido ? ' no-leido' : ''}" id="regcard-${r.id}">
+      <div class="inbox-card-header">
+        <div>
+          <div class="inbox-nombre">${esc(r.nombre)} ${!r.leido ? '<span style="font-size:0.7rem;background:#1a3a5c;color:#fff;padding:1px 7px;border-radius:10px;font-weight:600;vertical-align:middle;">Nuevo</span>' : ''}</div>
+          <div class="inbox-meta">
+            <span>📧 ${esc(r.correo)}</span>
+            ${r.telefono ? `<span>📱 ${esc(r.telefono)}</span>` : ''}
+            <span>🏫 ${esc(r.institucion)}</span>
+            <span>📚 ${esc(r.grado)}</span>
+          </div>
+        </div>
+        <div class="inbox-fecha">${esc(r.fecha)}</div>
+      </div>
+      ${areasHtml ? `<div class="inbox-areas">${areasHtml}</div>` : ''}
+      ${r.como ? `<div class="inbox-body" style="margin-top:6px;">Se enteró por: <strong>${esc(r.como)}</strong></div>` : ''}
+      ${r.nota ? `<div class="inbox-body" style="margin-top:4px;font-style:italic;">"${esc(r.nota)}"</div>` : ''}
+      <div class="inbox-actions">
+        ${!r.leido ? `<button class="btn btn-outline btn-sm" onclick="marcarRegistroLeido('${r.id}')">✓ Marcar leído</button>` : ''}
+        <a href="mailto:${esc(r.correo)}?subject=EDUCIENCIA – Bienvenida al proyecto" class="btn btn-primary btn-sm">📧 Responder</a>
+        <button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${r.id}')">🗑 Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function marcarRegistroLeido(id) {
+  const r = REGISTROS.find(x => x.id === id);
+  if (!r) return;
+  r.leido = true;
+  // Guardar lista completa actualizada (usamos el endpoint de datos para persistir)
+  await guardarRegistrosArchivo();
+  renderRegistros();
+  actualizarBadge('registros', REGISTROS.filter(x => !x.leido).length);
+}
+
+async function eliminarRegistro(id) {
+  if (!confirm('¿Eliminar este registro permanentemente?')) return;
+  try {
+    await fetch('/api/registro?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    REGISTROS = REGISTROS.filter(x => x.id !== id);
+    renderRegistros();
+    actualizarBadge('registros', REGISTROS.filter(x => !x.leido).length);
+    toast('Registro eliminado.');
+  } catch { toast('Error al eliminar.', true); }
+}
+
+async function guardarRegistrosArchivo() {
+  // Reutilizamos el endpoint de datos maestro (solo para marcar leído)
+  // enviando la lista al endpoint dedicado a través de un POST
+  try {
+    await fetch('/api/registros', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(REGISTROS)
+    });
+  } catch { /* silencioso */ }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MENSAJES DE CONTACTO
+═══════════════════════════════════════════════════════════ */
+async function cargarMensajes() {
+  try {
+    const res = await fetch('/api/mensajes');
+    MENSAJES = await res.json();
+    renderMensajes();
+    actualizarBadge('mensajes', MENSAJES.filter(m => !m.leido).length);
+  } catch { document.getElementById('lista-mensajes').innerHTML = '<p class="empty-inbox">Error al cargar mensajes.</p>'; }
+}
+
+function renderMensajes() {
+  const el  = document.getElementById('lista-mensajes');
+  const cnt = document.getElementById('mensajes-count');
+  cnt.textContent = `${MENSAJES.length} mensaje${MENSAJES.length !== 1 ? 's' : ''}`;
+  if (!MENSAJES.length) {
+    el.innerHTML = '<div class="empty-inbox">📭 Aún no hay mensajes recibidos.</div>';
+    return;
+  }
+  el.innerHTML = MENSAJES.map(m => `
+    <div class="inbox-card${!m.leido ? ' no-leido' : ''}" id="msgcard-${m.id}">
+      <div class="inbox-card-header">
+        <div>
+          <div class="inbox-nombre">${esc(m.nombre)} ${!m.leido ? '<span style="font-size:0.7rem;background:#1a3a5c;color:#fff;padding:1px 7px;border-radius:10px;font-weight:600;vertical-align:middle;">Nuevo</span>' : ''}</div>
+          <div class="inbox-meta">
+            <span>📧 ${esc(m.correo)}</span>
+            ${m.asunto ? `<span>📌 ${esc(m.asunto)}</span>` : ''}
+          </div>
+        </div>
+        <div class="inbox-fecha">${esc(m.fecha)}</div>
+      </div>
+      <div class="inbox-body">${esc(m.mensaje)}</div>
+      <div class="inbox-actions">
+        ${!m.leido ? `<button class="btn btn-outline btn-sm" onclick="marcarMensajeLeido('${m.id}')">✓ Marcar leído</button>` : ''}
+        <a href="mailto:${esc(m.correo)}?subject=Re: ${esc(m.asunto || 'Tu mensaje a EDUCIENCIA')}" class="btn btn-primary btn-sm">📧 Responder</a>
+        <button class="btn btn-danger btn-sm" onclick="eliminarMensaje('${m.id}')">🗑 Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function marcarMensajeLeido(id) {
+  const m = MENSAJES.find(x => x.id === id);
+  if (!m) return;
+  m.leido = true;
+  await guardarMensajesArchivo();
+  renderMensajes();
+  actualizarBadge('mensajes', MENSAJES.filter(x => !x.leido).length);
+}
+
+async function eliminarMensaje(id) {
+  if (!confirm('¿Eliminar este mensaje permanentemente?')) return;
+  try {
+    await fetch('/api/mensaje?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    MENSAJES = MENSAJES.filter(x => x.id !== id);
+    renderMensajes();
+    actualizarBadge('mensajes', MENSAJES.filter(x => !x.leido).length);
+    toast('Mensaje eliminado.');
+  } catch { toast('Error al eliminar.', true); }
+}
+
+async function guardarMensajesArchivo() {
+  try {
+    await fetch('/api/mensajes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(MENSAJES)
+    });
+  } catch { /* silencioso */ }
+}
+
+/* ─── Badge de notificaciones ── */
+function actualizarBadge(tipo, count) {
+  const el = document.getElementById('badge-' + tipo);
+  if (!el) return;
+  if (count > 0) { el.textContent = count; el.style.display = ''; }
+  else           { el.style.display = 'none'; }
+}
+
+/* ─── Exportar CSV ── */
+function exportarCSV(tipo) {
+  const lista = tipo === 'registros' ? REGISTROS : MENSAJES;
+  if (!lista.length) { toast('No hay datos para exportar.', true); return; }
+  const keys = Object.keys(lista[0]).filter(k => k !== 'leido');
+  const rows = [keys.join(',')];
+  lista.forEach(item => {
+    rows.push(keys.map(k => {
+      const val = Array.isArray(item[k]) ? item[k].join(';') : (item[k] || '');
+      return '"' + String(val).replace(/"/g, '""') + '"';
+    }).join(','));
+  });
+  const blob = new Blob(['\uFEFF' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `educiencia_${tipo}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+/* ─── Escaping HTML básico para output seguro ── */
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INICIO
+═══════════════════════════════════════════════════════════ */
+cargarDatos();
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recursos educativos – EDUCIENCIA</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <!-- BANNER -->
+  <div class="page-banner">
+    <div class="container">
+      <p class="page-banner__eyebrow">Proyecto EDUCIENCIA</p>
+      <h1 class="page-banner__title">Recursos educativos</h1>
+      <p class="page-banner__desc">Materiales de apoyo creados por el equipo EDUCIENCIA. Disponibles para todos, sin necesidad de registro.</p>
+    </div>
+  </div>
+
+  <!-- RECURSOS -->
+  <section class="section">
+    <div class="container">
+
+      <div class="filtros-bar" role="group" aria-label="Filtrar por área">
+        <span><label>Filtrar por:</label></span>
+        <button class="filtro-btn active" data-filter="todos"       aria-pressed="true">Todos</button>
+        <button class="filtro-btn" data-filter="biologia"    aria-pressed="false">Biología</button>
+        <button class="filtro-btn" data-filter="quimica"     aria-pressed="false">Química</button>
+        <button class="filtro-btn" data-filter="matematicas" aria-pressed="false">Matemáticas</button>
+        <button class="filtro-btn" data-filter="fisica"      aria-pressed="false">Física</button>
+      </div>
+
+      <div class="recursos-grid" id="recursos-grid"></div>
+
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    (async () => {
+      const data = await initPage('recursos');
+
+      const grid = document.getElementById('recursos-grid');
+      const recursos = data.recursos || [];
+      grid.innerHTML = recursos.length
+        ? recursos.map(renderRecursoCard).join('')
+        : '<p class="empty-state" style="grid-column:1/-1;">No hay recursos registrados aún.</p>';
+
+      const btns = document.querySelectorAll('.filtro-btn');
+      initFiltros('recursos-grid', btns, 'area', 'todos');
+    })();
+  </script>
+</body>
+</html>

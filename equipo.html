@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equipo – EDUCIENCIA</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+  <div id="header-mount"></div>
+
+  <!-- BANNER -->
+  <div class="page-banner">
+    <div class="container">
+      <p class="page-banner__eyebrow">Proyecto EDUCIENCIA</p>
+      <h1 class="page-banner__title">Equipo EDUCIENCIA</h1>
+      <p class="page-banner__desc">Conoce a las personas que hacen posible este proyecto:</p>
+    </div>
+  </div>
+
+  <!-- EQUIPO -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Coordinación -->
+      <h2 style="font-size:0.875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);margin-bottom:20px;">
+        Coordinación del proyecto
+      </h2>
+      <div class="grid-2" id="coordinadores-grid" style="margin-bottom:48px;"></div>
+
+      <!-- Tutores -->
+      <h2 style="font-size:0.875rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);margin-bottom:20px;">
+        Integrantes del proyecto
+      </h2>
+      <div class="grid-4" id="tutores-grid"></div>
+
+      <div class="aviso" style="margin-top:32px;">
+        <strong>Nota:</strong> Los tutores de EDUCIENCIA son estudiantes universitarios en formación.
+        Su participación forma parte de su proceso académico y es acompañada en todo momento por los
+        docentes coordinadores del proyecto.
+      </div>
+
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    (async () => {
+      const data = await initPage('equipo');
+      const equipo = data.equipo || { coordinadores: [], tutores: [] };
+
+      function avatarCircle(m, defaultEmoji) {
+        return m.foto
+          ? `<img src="${m.foto}" alt="${m.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" />`
+          : (m.avatar || defaultEmoji);
+      }
+
+      // Coordinadores
+      const coordHtml = (equipo.coordinadores || []).map(c => `
+        <div class="card card--equipo" style="text-align:left;display:flex;gap:20px;align-items:flex-start;">
+          <div class="equipo-avatar" style="flex-shrink:0;margin:0;overflow:hidden;">
+            ${avatarCircle(c, '🧑‍🏫')}
+          </div>
+          <div>
+            <p class="equipo-nombre">${c.nombre}</p>
+            <p class="equipo-rol">${c.rol}</p>
+            <p style="font-size:0.875rem;color:var(--color-text-muted);">${c.descripcion}</p>
+          </div>
+        </div>`).join('');
+      document.getElementById('coordinadores-grid').innerHTML = coordHtml || '<p class="empty-state">No hay coordinadores registrados.</p>';
+
+      // Tutores
+      const tutoresHtml = (equipo.tutores || []).map(t => {
+        const areasChips = (t.areas || []).map(a => chipArea(a)).join('');
+        return `
+        <div class="card card--equipo">
+          <div class="equipo-avatar" style="overflow:hidden;">${avatarCircle(t, '👤')}</div>
+          <p class="equipo-nombre">${t.nombre}</p>
+          <p class="equipo-rol">${t.semestre} – ${t.especialidad}</p>
+          <div class="equipo-areas">${areasChips}</div>
+        </div>`;
+      }).join('');
+      document.getElementById('tutores-grid').innerHTML = tutoresHtml || '<p class="empty-state" style="grid-column:1/-1;">No hay tutores registrados.</p>';
+    })();
+  </script>
+</body>
+</html>

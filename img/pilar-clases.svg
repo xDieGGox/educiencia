@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="20" fill="#ee552c"/>
+  <!-- Graduation cap (mortarboard) -->
+  <!-- Board top -->
+  <rect x="52" y="76" width="96" height="16" rx="4" fill="white" opacity="0.95" transform="rotate(-2 100 84)"/>
+  <!-- Diamond top surface -->
+  <polygon points="100,50 148,76 100,92 52,76" fill="white" opacity="0.9"/>
+  <!-- Center cube top highlight -->
+  <polygon points="100,54 142,76 100,88 58,76" fill="rgba(238,85,44,0.35)"/>
+  <!-- Tassel string -->
+  <line x1="148" y1="76" x2="148" y2="116" stroke="white" stroke-width="3" opacity="0.8"/>
+  <!-- Tassel ball -->
+  <circle cx="148" cy="124" r="8" fill="white" opacity="0.85"/>
+  <!-- Tassel fringe -->
+  <line x1="144" y1="132" x2="142" y2="148" stroke="white" stroke-width="2" opacity="0.7"/>
+  <line x1="148" y1="132" x2="148" y2="150" stroke="white" stroke-width="2" opacity="0.7"/>
+  <line x1="152" y1="132" x2="154" y2="148" stroke="white" stroke-width="2" opacity="0.7"/>
+  <!-- Diploma scroll below -->
+  <rect x="72" y="140" width="56" height="36" rx="5" fill="white" opacity="0.25" stroke="white" stroke-width="1.5" stroke-opacity="0.5"/>
+  <line x1="80" y1="153" x2="120" y2="153" stroke="white" stroke-width="2" opacity="0.5"/>
+  <line x1="80" y1="162" x2="110" y2="162" stroke="white" stroke-width="2" opacity="0.4"/>
+  <!-- Decorative stars -->
+  <text x="40"  y="58" font-family="Arial" font-size="14" fill="rgba(255,255,255,0.35)">★</text>
+  <text x="152" y="42" font-family="Arial" font-size="10" fill="rgba(255,255,255,0.3)">★</text>
+</svg>
