@@ -18,6 +18,7 @@
 const path = require('path');
 const fs = require('fs');
 const fsp = require('fs/promises');
+const crypto = require('crypto');
 const express = require('express');
 
 const app = express();
@@ -27,6 +28,22 @@ const DATA_DIR = path.join(BASE_DIR, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
 const REGISTROS_FILE = path.join(DATA_DIR, 'registros.json');
 const MENSAJES_FILE = path.join(DATA_DIR, 'mensajes.json');
+
+// Credenciales del panel de administración
+const ADMIN_USER = process.env.ADMIN_USER || 'jonnathan.dominguezunaeCGAGOM';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'Unae.2026#CGAGOM_Educiencia';
+
+// Sesiones activas en memoria (se borran al reiniciar el servidor)
+const activeSessions = new Set();
+
+function requireAuth(req, res, next) {
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  if (!token || !activeSessions.has(token)) {
+    return res.status(401).json({ error: 'No autorizado. Inicia sesión en el panel de administración.' });
+  }
+  next();
+}
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -76,6 +93,30 @@ app.use((req, res, next) => {
 });
 app.options('*', (req, res) => res.sendStatus(200));
 
+// Auth endpoints
+app.post('/api/login', (req, res) => {
+  const { usuario, password } = req.body || {};
+  if (usuario === ADMIN_USER && password === ADMIN_PASS) {
+    const token = crypto.randomBytes(32).toString('hex');
+    activeSessions.add(token);
+    return res.json({ ok: true, token });
+  }
+  res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+});
+
+app.post('/api/logout', (req, res) => {
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  activeSessions.delete(token);
+  res.json({ ok: true });
+});
+
+app.get('/api/auth-check', (req, res) => {
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  res.json({ authenticated: activeSessions.has(token) });
+});
+
 // API routes
 app.get(['/api/data', '/api/data.php'], async (req, res) => {
   try {
@@ -86,7 +127,7 @@ app.get(['/api/data', '/api/data.php'], async (req, res) => {
   }
 });
 
-app.post(['/api/data', '/api/data.php'], async (req, res) => {
+app.post(['/api/data', '/api/data.php'], requireAuth, async (req, res) => {
   try {
     const body = req.body;
     if (typeof body !== 'object' || body === null) {
@@ -100,12 +141,12 @@ app.post(['/api/data', '/api/data.php'], async (req, res) => {
 });
 
 // Registros
-app.get('/api/registros', async (req, res) => {
+app.get('/api/registros', requireAuth, async (req, res) => {
   const data = await readJson(REGISTROS_FILE, []);
   res.json(data);
 });
 
-app.post('/api/registros', async (req, res) => {
+app.post('/api/registros', requireAuth, async (req, res) => {
   const lista = req.body;
   if (!Array.isArray(lista)) return res.status(400).json({ error: 'Se esperaba una lista JSON' });
   await writeJson(REGISTROS_FILE, lista);
@@ -127,7 +168,7 @@ app.post('/api/registro', async (req, res) => {
   }
 });
 
-app.delete('/api/registro', async (req, res) => {
+app.delete('/api/registro', requireAuth, async (req, res) => {
   const id = req.query.id;
   if (!id) return res.status(400).json({ error: 'Falta el parámetro id' });
   try {
@@ -141,12 +182,12 @@ app.delete('/api/registro', async (req, res) => {
 });
 
 // Mensajes
-app.get('/api/mensajes', async (req, res) => {
+app.get('/api/mensajes', requireAuth, async (req, res) => {
   const data = await readJson(MENSAJES_FILE, []);
   res.json(data);
 });
 
-app.post('/api/mensajes', async (req, res) => {
+app.post('/api/mensajes', requireAuth, async (req, res) => {
   const lista = req.body;
   if (!Array.isArray(lista)) return res.status(400).json({ error: 'Se esperaba una lista JSON' });
   await writeJson(MENSAJES_FILE, lista);
@@ -168,7 +209,7 @@ app.post('/api/mensaje', async (req, res) => {
   }
 });
 
-app.delete('/api/mensaje', async (req, res) => {
+app.delete('/api/mensaje', requireAuth, async (req, res) => {
   const id = req.query.id;
   if (!id) return res.status(400).json({ error: 'Falta el parámetro id' });
   try {

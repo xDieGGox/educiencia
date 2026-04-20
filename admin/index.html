@@ -192,6 +192,43 @@
     .inbox-card-expand { display: none; }
     .inbox-card.expandida .inbox-card-expand { display: block; }
 
+    /* ── LOGIN OVERLAY ── */
+    #login-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0f2540 0%, #1a3a5c 60%, #1e4976 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #login-overlay.hidden { display: none; }
+    .login-box {
+      background: #fff; border-radius: 12px;
+      padding: 40px 36px; width: 100%; max-width: 380px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    }
+    .login-logo { text-align: center; margin-bottom: 6px; font-size: 2rem; }
+    .login-title { text-align: center; font-size: 1.25rem; font-weight: 700; color: #1a3a5c; margin-bottom: 4px; }
+    .login-sub { text-align: center; font-size: 0.8rem; color: #9099b2; margin-bottom: 28px; }
+    .login-field { margin-bottom: 16px; }
+    .login-field label { display: block; font-size: 0.8rem; font-weight: 600; color: #444; margin-bottom: 5px; }
+    .login-field input {
+      width: 100%; padding: 10px 13px; border: 1.5px solid #dde2ef;
+      border-radius: 6px; font-size: 0.9rem; font-family: inherit;
+      color: #1e1e2e; transition: border-color 0.15s;
+    }
+    .login-field input:focus { outline: none; border-color: #1a3a5c; }
+    .login-btn {
+      width: 100%; padding: 11px; background: #1a3a5c; color: #fff;
+      border: none; border-radius: 6px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; margin-top: 6px; transition: background 0.15s;
+    }
+    .login-btn:hover { background: #122a4a; }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .login-error {
+      background: #fdecea; color: #c62828; border-radius: 6px;
+      padding: 9px 13px; font-size: 0.82rem; margin-top: 14px;
+      display: none;
+    }
+    .login-error.visible { display: block; }
+
     @media (max-width: 768px) {
       .sidebar { display: none; }
       .main { padding: 16px; }
@@ -203,6 +240,27 @@
 </head>
 <body>
 
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">⚗️</div>
+    <div class="login-title">EDUCIENCIA</div>
+    <div class="login-sub">Panel de administración — acceso restringido</div>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="login-field">
+        <label for="login-usuario">Usuario</label>
+        <input id="login-usuario" type="text" autocomplete="username" required placeholder="admin" />
+      </div>
+      <div class="login-field">
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+      </div>
+      <button class="login-btn" type="submit" id="login-btn">Ingresar</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-brand">
@@ -212,6 +270,7 @@
   </div>
   <div class="topbar-actions">
     <a href="/" target="_blank">← Ver sitio web</a>
+    <button onclick="handleLogout()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:5px 14px;border-radius:5px;cursor:pointer;font-size:0.82rem;font-family:inherit;">Cerrar sesión</button>
   </div>
 </div>
 
@@ -1046,14 +1105,14 @@ function uid() {
    CARGA Y GUARDADO
 ═══════════════════════════════════════════════════════════ */
 async function cargarDatos() {
-  const res = await fetch('/api/data.php');
+  const res = await authFetch('/api/data.php');
   DATA = await res.json();
   renderAll();
 }
 
 async function guardarDatos() {
   try {
-    const res = await fetch('/api/data.php', {
+    const res = await authFetch('/api/data.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(DATA, null, 2)
@@ -1903,7 +1962,7 @@ let MENSAJES  = [];
 
 async function cargarRegistros() {
   try {
-    const res = await fetch('/api/registros');
+    const res = await authFetch('/api/registros');
     REGISTROS = await res.json();
     renderRegistros();
     actualizarBadge('registros', REGISTROS.filter(r => !r.leido).length);
@@ -1959,7 +2018,7 @@ async function marcarRegistroLeido(id) {
 async function eliminarRegistro(id) {
   if (!confirm('¿Eliminar este registro permanentemente?')) return;
   try {
-    await fetch('/api/registro?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    await authFetch('/api/registro?id=' + encodeURIComponent(id), { method: 'DELETE' });
     REGISTROS = REGISTROS.filter(x => x.id !== id);
     renderRegistros();
     actualizarBadge('registros', REGISTROS.filter(x => !x.leido).length);
@@ -1971,7 +2030,7 @@ async function guardarRegistrosArchivo() {
   // Reutilizamos el endpoint de datos maestro (solo para marcar leído)
   // enviando la lista al endpoint dedicado a través de un POST
   try {
-    await fetch('/api/registros', {
+    await authFetch('/api/registros', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(REGISTROS)
@@ -1984,7 +2043,7 @@ async function guardarRegistrosArchivo() {
 ═══════════════════════════════════════════════════════════ */
 async function cargarMensajes() {
   try {
-    const res = await fetch('/api/mensajes');
+    const res = await authFetch('/api/mensajes');
     MENSAJES = await res.json();
     renderMensajes();
     actualizarBadge('mensajes', MENSAJES.filter(m => !m.leido).length);
@@ -2032,7 +2091,7 @@ async function marcarMensajeLeido(id) {
 async function eliminarMensaje(id) {
   if (!confirm('¿Eliminar este mensaje permanentemente?')) return;
   try {
-    await fetch('/api/mensaje?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    await authFetch('/api/mensaje?id=' + encodeURIComponent(id), { method: 'DELETE' });
     MENSAJES = MENSAJES.filter(x => x.id !== id);
     renderMensajes();
     actualizarBadge('mensajes', MENSAJES.filter(x => !x.leido).length);
@@ -2042,7 +2101,7 @@ async function eliminarMensaje(id) {
 
 async function guardarMensajesArchivo() {
   try {
-    await fetch('/api/mensajes', {
+    await authFetch('/api/mensajes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(MENSAJES)
@@ -2084,9 +2143,77 @@ function esc(str) {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   AUTENTICACIÓN
+═══════════════════════════════════════════════════════════ */
+function getToken() { return sessionStorage.getItem('admin_token') || ''; }
+function setToken(t) { sessionStorage.setItem('admin_token', t); }
+function clearToken() { sessionStorage.removeItem('admin_token'); }
+
+function authFetch(url, options = {}) {
+  const token = getToken();
+  const headers = { ...(options.headers || {}), 'Authorization': 'Bearer ' + token };
+  return fetch(url, { ...options, headers });
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errorEl = document.getElementById('login-error');
+  const usuario = document.getElementById('login-usuario').value.trim();
+  const password = document.getElementById('login-password').value;
+  btn.disabled = true;
+  btn.textContent = 'Verificando…';
+  errorEl.classList.remove('visible');
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario, password })
+    });
+    const data = await res.json();
+    if (data.ok && data.token) {
+      setToken(data.token);
+      document.getElementById('login-overlay').classList.add('hidden');
+      cargarDatos();
+    } else {
+      errorEl.textContent = data.error || 'Credenciales incorrectas';
+      errorEl.classList.add('visible');
+    }
+  } catch {
+    errorEl.textContent = 'Error de conexión con el servidor';
+    errorEl.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ingresar';
+  }
+}
+
+async function handleLogout() {
+  try {
+    await authFetch('/api/logout', { method: 'POST' });
+  } catch { /* ignorar */ }
+  clearToken();
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('login-password').value = '';
+}
+
+/* ═══════════════════════════════════════════════════════════
    INICIO
 ═══════════════════════════════════════════════════════════ */
-cargarDatos();
+(async () => {
+  const token = getToken();
+  if (token) {
+    const res = await fetch('/api/auth-check', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (data.authenticated) {
+      document.getElementById('login-overlay').classList.add('hidden');
+      cargarDatos();
+      return;
+    }
+    clearToken();
+  }
+  // Sin sesión válida: mostrar login (ya visible por defecto)
+})();
 </script>
 </body>
 </html>
