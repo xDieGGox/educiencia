@@ -150,7 +150,7 @@ function renderClaseCard(clase) {
 
   return `
 <article class="card card--clase card--${area.cls}"
-         data-area="${clase.area}" data-estado="${clase.estado}"
+         data-area="${clase.area}" data-estado="${clase.estado}" data-nivel="${clase.nivel || ''}"
          ${isFinalizada ? 'style="opacity:0.65;"' : ''}>
   <div class="clase-body">
     <div class="clase-meta">

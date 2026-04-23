@@ -40,6 +40,14 @@
         <button class="filtro-btn" data-filter="finalizada" data-filter-type="estado" aria-pressed="false">Finalizadas</button>
       </div>
 
+      <div class="filtros-bar" role="group" aria-label="Filtrar por nivel" style="margin-top:-16px;">
+        <span><label>Nivel:</label></span>
+        <button class="filtro-btn active" data-filter="todos" data-filter-type="nivel" aria-pressed="true">Todos</button>
+        <button class="filtro-btn" data-filter="Primero de bachillerato"  data-filter-type="nivel" aria-pressed="false">Primero de bachillerato</button>
+        <button class="filtro-btn" data-filter="Segundo de bachillerato"  data-filter-type="nivel" aria-pressed="false">Segundo de bachillerato</button>
+        <button class="filtro-btn" data-filter="Tercero de bachillerato"  data-filter-type="nivel" aria-pressed="false">Tercero de bachillerato</button>
+      </div>
+
       <div class="agenda-lista" id="agenda-lista" role="list"></div>
 
       <div class="aviso" id="aviso-clases">
@@ -79,6 +87,20 @@
           const val = this.dataset.filter;
           lista.querySelectorAll('[data-estado]').forEach(item => {
             item.style.display = (val === 'todos' || item.dataset.estado === val) ? '' : 'none';
+          });
+        });
+      });
+
+      // Filtros de nivel
+      const btnsFiltroNivel = document.querySelectorAll('[data-filter-type="nivel"]');
+      btnsFiltroNivel.forEach(btn => {
+        btn.addEventListener('click', function () {
+          btnsFiltroNivel.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+          this.classList.add('active');
+          this.setAttribute('aria-pressed', 'true');
+          const val = this.dataset.filter;
+          lista.querySelectorAll('[data-nivel]').forEach(item => {
+            item.style.display = (val === 'todos' || item.dataset.nivel === val) ? '' : 'none';
           });
         });
       });
