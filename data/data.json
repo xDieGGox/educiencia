@@ -425,17 +425,30 @@
   ],
   "recursos": [
     {
-      "id": "rec-001",
+      "id": "rec-mu2vy4gwo07j",
+      "area": "fisica",
+      "tipo": "Guía PDF",
+      "nivel": "Primero de bachillerato",
+      "icono": "📄",
+      "titulo": "Lanzamiento de un proyectil",
+      "descripcion": "El lanzamiento de proyectil es un movimiento bidimensional con trayectoria parabólica, donde un objeto se desplaza de forma horizontal a velocidad constante (MRU) y de forma vertical afectado únicamente por la aceleración de la gravedad",
+      "autor": "",
+      "fecha": "Mayo del 2026",
+      "enlace": "https://canva.link/e1wx9lrc9wurnxw",
+      "accion_label": "⬇ Descargar"
+    },
+    {
+      "id": "rec-mu2vzixiepz2",
       "area": "matematicas",
       "tipo": "Guía PDF",
-      "nivel": "Bachillerato básico",
+      "nivel": "Primero de bachillerato",
       "icono": "📄",
-      "titulo": "Guía de funciones cuadráticas",
-      "descripcion": "Explicación paso a paso de la forma general, vértice, raíces e interceptos. Incluye 15 ejercicios resueltos y 10 ejercicios propuestos.",
-      "autor": "Sebastián Torres",
-      "fecha": "Abril 2025",
-      "enlace": "",
-      "accion_label": "⬇ Descargar guía"
+      "titulo": "Sistema de ecuaciones con dos incógnitas",
+      "descripcion": "Un sistema de ecuaciones con dos incógnitas es un conjunto de dos ecuaciones con dos variables cuyo objetivo es hallar los valores que las cumplen simultáneamente, representando geométricamente el punto de intersección entre dos rectas.",
+      "autor": "",
+      "fecha": "Mayo del 2026",
+      "enlace": "https://canva.link/hmctkjlxcx11qtp",
+      "accion_label": "⬇ Descargar"
     }
   ],
   "equipo": {
