@@ -160,6 +160,58 @@
     .btn-quitar { color: #888; border-color: #ccc; font-size: 0.8rem; }
     .btn-quitar:hover { color: #c62828; border-color: #c62828; background: transparent; }
 
+    /* ── VIVE EDUCIENCIA ── */
+    .vive-hint { font-size: 0.78rem; color: #777; line-height: 1.5; }
+    .vive-drop {
+      border: 2px dashed #c0c8e0; border-radius: 8px;
+      background: #f8f9fc; padding: 26px 20px; text-align: center;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+    }
+    .vive-drop:hover, .vive-drop:focus-visible { border-color: #1a3a5c; background: #eef2fa; }
+    .vive-drop:focus-visible { outline: 3px solid #1a3a5c; outline-offset: 2px; }
+    .vive-drop.dragging { border-color: #2e7d32; background: #e8f5e9; }
+
+    .vive-subidas { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .vive-subida {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border: 1px solid #e8ecf5; border-radius: 6px; background: #fff;
+    }
+    .vive-subida img {
+      width: 54px; height: 40px; object-fit: cover; border-radius: 4px;
+      background: #e8ecf5; flex-shrink: 0;
+    }
+    .vive-subida-info { flex: 1; min-width: 0; }
+    .vive-subida-nombre {
+      font-size: 0.82rem; font-weight: 600; color: #1a3a5c;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .vive-subida-estado { font-size: 0.75rem; color: #777; margin-top: 3px; }
+    .vive-subida.error .vive-subida-estado { color: #c62828; font-weight: 600; }
+    .vive-barra { height: 5px; border-radius: 3px; background: #e8ecf5; margin-top: 5px; overflow: hidden; }
+    .vive-barra span { display: block; height: 100%; width: 0; background: #1a3a5c; transition: width 0.2s; }
+
+    .vive-thumb {
+      width: 80px; height: 54px; border-radius: 5px; overflow: hidden;
+      background: #e8ecf5; flex-shrink: 0;
+    }
+    .vive-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vive-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      padding: 1px 8px; border-radius: 20px; margin-left: 6px;
+    }
+    .vive-badge.on  { background: #e8f5e9; color: #2e7d32; }
+    .vive-badge.off { background: #f5f5f5; color: #9e9e9e; }
+    .vive-badge.star { background: #fff3e0; color: #e65100; }
+
+    .vive-preview-box {
+      border: 1px solid #e8ecf5; border-radius: 6px; background: #f8f9fc;
+      padding: 12px; margin-top: 10px; font-size: 0.8rem; color: #555e7a;
+    }
+    .vive-preview-box iframe {
+      width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 5px; background: #000;
+    }
+    .vive-preview-box.vertical iframe { aspect-ratio: 9 / 16; max-width: 260px; margin: 0 auto; display: block; }
+
     /* ── Tarjetas de registro / mensaje ── */
     .inbox-card {
       background: #fff;
@@ -303,6 +355,9 @@
     <button class="sidebar-item" data-panel="faq">
       <span class="icon">❓</span> FAQ
     </button>
+    <button class="sidebar-item" data-panel="vive">
+      <span class="icon">📸</span> Vive EDUCIENCIA
+    </button>
 
     <div class="sidebar-section">Comunidad</div>
     <button class="sidebar-item" data-panel="registros">
@@ -435,13 +490,70 @@
     <!-- ===== PANEL: FAQ ===== -->
     <div class="panel" id="panel-faq">
       <h1 class="panel-title">Preguntas frecuentes</h1>
-      <p class="panel-desc">Administra las preguntas y respuestas del acordeón de contacto.</p>
+      <p class="panel-desc">Administra las preguntas y respuestas del acordeón de «Vive EDUCIENCIA».</p>
       <div class="admin-card">
         <div class="admin-card-title">
           Preguntas frecuentes
           <button class="btn btn-primary btn-sm" onclick="abrirModalFaq()">+ Pregunta</button>
         </div>
         <div class="items-list" id="list-faq"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: VIVE EDUCIENCIA ===== -->
+    <div class="panel" id="panel-vive">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Vive EDUCIENCIA</h1>
+          <p class="panel-desc" style="margin-bottom:0;">
+            Fotografías y videos de la página pública «Vive EDUCIENCIA». Los cambios se guardan
+            en el servidor al momento y se ven al recargar la página.
+          </p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a href="/contacto.html" target="_blank" class="btn btn-outline btn-sm">🔗 Ver página</a>
+          <button class="btn btn-outline btn-sm" onclick="cargarVive()">↻ Actualizar</button>
+        </div>
+      </div>
+
+      <!-- ── FOTOGRAFÍAS ── -->
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Fotografías
+          <span id="vive-fotos-count" style="font-weight:400;font-size:0.8rem;color:#9099b2;"></span>
+        </div>
+
+        <div class="vive-drop" id="vive-drop" tabindex="0" role="button"
+             aria-label="Seleccionar imágenes para subir. También puedes arrastrarlas hasta aquí.">
+          <div style="font-size:2rem;">🖼️</div>
+          <p style="font-weight:600;color:#1a3a5c;margin-top:6px;">
+            Arrastra las imágenes aquí o pulsa para elegirlas
+          </p>
+          <p class="vive-hint" id="vive-formatos">
+            Se admiten JPG, PNG, WebP y GIF. Cada imagen se reduce a 1920 px de lado mayor y se
+            guarda optimizada en JPEG (más una vista previa de 640 px), con un límite de 6 MB por
+            archivo ya optimizado. Puedes subir varias a la vez.
+          </p>
+          <input type="file" id="vive-file-input" accept="image/jpeg,image/png,image/webp,image/gif"
+                 multiple hidden />
+        </div>
+
+        <div id="vive-subidas" class="vive-subidas"></div>
+        <div class="items-list" id="vive-lista-fotos" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- ── VIDEOS ── -->
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Videos
+          <button class="btn btn-primary btn-sm" onclick="abrirModalVideo()">+ Nuevo video</button>
+        </div>
+        <p class="vive-hint" style="margin:-6px 0 14px;">
+          Proveedores admitidos: <strong>YouTube</strong> y <strong>Vimeo</strong>.
+          Puedes pegar la dirección del video o su código de inserción; del código solo se
+          aprovecha la dirección del reproductor.
+        </p>
+        <div class="items-list" id="vive-lista-videos"></div>
       </div>
     </div>
 
@@ -1064,6 +1176,155 @@
   </div>
 </div>
 
+<!-- Modal: Fotografía de Vive EDUCIENCIA -->
+<div class="modal-overlay" id="modal-vfoto">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-vfoto-titulo">Editar fotografía</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-vfoto')">✕</button>
+    </div>
+    <input type="hidden" id="vfoto-id" />
+    <input type="hidden" id="vfoto-archivo" />
+    <input type="hidden" id="vfoto-thumb" />
+    <input type="hidden" id="vfoto-ancho" />
+    <input type="hidden" id="vfoto-alto" />
+
+    <div class="form-row" style="grid-template-columns:200px 1fr;align-items:start;">
+      <div>
+        <div class="vive-thumb" id="vfoto-preview" style="width:100%;height:120px;"></div>
+        <button class="btn btn-outline btn-sm" style="width:100%;margin-top:8px;"
+                onclick="document.getElementById('vfoto-reemplazo').click()">🔁 Reemplazar imagen</button>
+        <input type="file" id="vfoto-reemplazo" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+        <p class="vive-hint" id="vfoto-reemplazo-estado" style="margin-top:6px;"></p>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="vfoto-titulo">Título</label>
+          <input type="text" id="vfoto-titulo" placeholder="Taller de laboratorio" />
+        </div>
+        <div class="form-group">
+          <label for="vfoto-descripcion">Descripción breve</label>
+          <textarea id="vfoto-descripcion" rows="2"
+                    placeholder="Qué se ve en la fotografía"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="vfoto-alt">Texto alternativo (accesibilidad)</label>
+          <input type="text" id="vfoto-alt"
+                 placeholder="Descripción para quien no puede ver la imagen" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="vfoto-fecha">Fecha de la actividad (opcional)</label>
+            <input type="text" id="vfoto-fecha" placeholder="12 de mayo de 2026" />
+          </div>
+          <div class="form-group">
+            <label for="vfoto-encuadre">Encuadre de la vista previa</label>
+            <select id="vfoto-encuadre">
+              <option value="center center">Centro</option>
+              <option value="center top">Centro arriba</option>
+              <option value="center bottom">Centro abajo</option>
+              <option value="left center">Izquierda</option>
+              <option value="right center">Derecha</option>
+              <option value="left top">Izquierda arriba</option>
+              <option value="right top">Derecha arriba</option>
+              <option value="left bottom">Izquierda abajo</option>
+              <option value="right bottom">Derecha abajo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+            <input type="checkbox" id="vfoto-publicada" style="width:auto;" checked />
+            Publicada en la página
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-vfoto')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarVFoto()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Video de Vive EDUCIENCIA -->
+<div class="modal-overlay" id="modal-vvideo">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-vvideo-titulo">Nuevo video</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-vvideo')">✕</button>
+    </div>
+    <input type="hidden" id="vvideo-id" />
+    <input type="hidden" id="vvideo-miniatura" />
+
+    <div class="form-group">
+      <label for="vvideo-fuente">Dirección del video o código de inserción *</label>
+      <textarea id="vvideo-fuente" rows="2"
+                placeholder="https://www.youtube.com/watch?v=… , https://vimeo.com/… o el código &lt;iframe&gt;"></textarea>
+      <p class="vive-hint" style="margin-top:5px;">
+        Admitimos YouTube (incluidos Shorts) y Vimeo. Del código de inserción solo se guarda
+        la dirección del reproductor; nunca se almacena HTML.
+      </p>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="previsualizarVideo()">
+        👁 Previsualizar
+      </button>
+    </div>
+
+    <div class="vive-preview-box" id="vvideo-preview" style="display:none;"></div>
+
+    <div class="form-group" style="margin-top:14px;">
+      <label for="vvideo-titulo">Título</label>
+      <input type="text" id="vvideo-titulo" placeholder="Jornada de ciencias 2026" />
+    </div>
+    <div class="form-group">
+      <label for="vvideo-descripcion">Descripción breve</label>
+      <textarea id="vvideo-descripcion" rows="2"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="vvideo-fecha">Fecha de la actividad (opcional)</label>
+        <input type="text" id="vvideo-fecha" placeholder="12 de mayo de 2026" />
+      </div>
+      <div class="form-group">
+        <label for="vvideo-orientacion">Orientación</label>
+        <select id="vvideo-orientacion">
+          <option value="horizontal">Horizontal (16:9)</option>
+          <option value="vertical">Vertical (9:16 · Shorts / Reels)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Miniatura personalizada (opcional)</label>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="vive-thumb" id="vvideo-mini-preview"></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-outline btn-sm"
+                  onclick="document.getElementById('vvideo-mini-file').click()">⬆ Subir miniatura</button>
+          <button class="btn btn-outline btn-sm btn-quitar" onclick="quitarMiniaturaVideo()">Quitar</button>
+        </div>
+        <p class="vive-hint" id="vvideo-mini-estado" style="flex:1;">
+          Si no subes ninguna, se usa la portada automática del proveedor y, cuando no exista,
+          una portada alternativa del diseño.
+        </p>
+      </div>
+      <input type="file" id="vvideo-mini-file" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+    </div>
+
+    <div class="form-group">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+        <input type="checkbox" id="vvideo-publicado" style="width:auto;" checked />
+        Publicado en la página
+      </label>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-vvideo')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarVVideo()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Confirm Delete -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;">
@@ -1549,6 +1810,7 @@ document.querySelectorAll('.sidebar-item').forEach(btn => {
     // Carga bajo demanda para los paneles de comunidad
     if (panel === 'registros') cargarRegistros();
     if (panel === 'mensajes')  cargarMensajes();
+    if (panel === 'vive')      cargarVive();
   });
 });
 
@@ -2140,6 +2402,561 @@ function exportarCSV(tipo) {
 function esc(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VIVE EDUCIENCIA — fotografías y videos
+   Se guardan en data/vive.json + uploads/vive/ mediante /api/vive*.
+   No se tocan otras secciones de data.json.
+═══════════════════════════════════════════════════════════ */
+let VIVE = { fotos: [], videos: [] };
+
+async function cargarVive() {
+  try {
+    const res = await authFetch('/api/vive/admin');
+    if (!res.ok) throw new Error('No autorizado');
+    VIVE = await res.json();
+    renderViveFotos();
+    renderViveVideos();
+  } catch {
+    document.getElementById('vive-lista-fotos').innerHTML =
+      '<p style="color:#c62828;font-size:0.875rem;">No se pudo cargar la galería. Vuelve a iniciar sesión.</p>';
+  }
+}
+
+/* ─── Listado de fotografías ─── */
+function renderViveFotos() {
+  const el = document.getElementById('vive-lista-fotos');
+  const fotos = VIVE.fotos || [];
+  document.getElementById('vive-fotos-count').textContent =
+    `${fotos.length} fotografía${fotos.length !== 1 ? 's' : ''} · ` +
+    `${fotos.filter(f => f.publicada !== false).length} publicada${fotos.filter(f => f.publicada !== false).length !== 1 ? 's' : ''}`;
+
+  if (!fotos.length) {
+    el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">Todavía no hay fotografías. Sube la primera con el recuadro de arriba.</p>';
+    return;
+  }
+  el.innerHTML = fotos.map((f, idx) => `
+    <div class="item-row">
+      <div class="item-info" style="display:flex;align-items:center;gap:14px;">
+        <div class="vive-thumb">
+          <img src="${esc(f.thumb_url || f.url)}" alt=""
+               style="object-position:${esc(f.encuadre || 'center center')};" />
+        </div>
+        <div style="min-width:0;">
+          <div class="item-title">
+            ${esc(f.titulo || 'Sin título')}
+            <span class="vive-badge ${f.publicada !== false ? 'on' : 'off'}">
+              ${f.publicada !== false ? 'Publicada' : 'Oculta'}
+            </span>
+          </div>
+          <div class="item-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px;">
+            ${esc(f.descripcion || 'Sin descripción')}${f.fecha ? ' · ' + esc(f.fecha) : ''}
+            ${f.ancho && f.alto ? ` · ${f.ancho}×${f.alto}px` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="item-actions">
+        ${idx > 0 ? `<button class="btn btn-outline btn-icon" title="Mover arriba" aria-label="Mover arriba" onclick="moverVive('fotos',${idx},-1)">↑</button>` : ''}
+        ${idx < fotos.length - 1 ? `<button class="btn btn-outline btn-icon" title="Mover abajo" aria-label="Mover abajo" onclick="moverVive('fotos',${idx},1)">↓</button>` : ''}
+        <button class="btn btn-outline btn-icon" title="${f.publicada !== false ? 'Ocultar' : 'Publicar'}"
+                aria-label="${f.publicada !== false ? 'Ocultar' : 'Publicar'}"
+                onclick="alternarPublicacionFoto('${f.id}')">${f.publicada !== false ? '🙈' : '👁'}</button>
+        <button class="btn btn-outline btn-icon" title="Editar" aria-label="Editar" onclick="editarVFoto('${f.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" title="Eliminar" aria-label="Eliminar" onclick="confirmarEliminarVive('fotos','${f.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ─── Listado de videos ─── */
+function renderViveVideos() {
+  const el = document.getElementById('vive-lista-videos');
+  const videos = VIVE.videos || [];
+  if (!videos.length) {
+    el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">Todavía no hay videos registrados.</p>';
+    return;
+  }
+  el.innerHTML = videos.map((v, idx) => {
+    const portada = v.miniatura_url || v.portada_auto || '';
+    return `
+    <div class="item-row">
+      <div class="item-info" style="display:flex;align-items:center;gap:14px;">
+        <div class="vive-thumb">
+          ${portada
+            ? `<img src="${esc(portada)}" alt="" />`
+            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🎬</div>'}
+        </div>
+        <div style="min-width:0;">
+          <div class="item-title">
+            ${esc(v.titulo || 'Sin título')}
+            <span class="vive-badge ${v.publicado !== false ? 'on' : 'off'}">
+              ${v.publicado !== false ? 'Publicado' : 'Oculto'}
+            </span>
+            ${v.destacado ? '<span class="vive-badge star">★ Destacado</span>' : ''}
+          </div>
+          <div class="item-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px;">
+            ${esc(v.proveedor === 'youtube' ? 'YouTube' : 'Vimeo')} ·
+            ${esc(v.orientacion === 'vertical' ? 'Vertical' : 'Horizontal')}
+            ${v.fecha ? ' · ' + esc(v.fecha) : ''} · ${esc(v.descripcion || 'Sin descripción')}
+          </div>
+        </div>
+      </div>
+      <div class="item-actions">
+        ${idx > 0 ? `<button class="btn btn-outline btn-icon" title="Mover arriba" aria-label="Mover arriba" onclick="moverVive('videos',${idx},-1)">↑</button>` : ''}
+        ${idx < videos.length - 1 ? `<button class="btn btn-outline btn-icon" title="Mover abajo" aria-label="Mover abajo" onclick="moverVive('videos',${idx},1)">↓</button>` : ''}
+        <button class="btn btn-outline btn-icon" title="${v.destacado ? 'Quitar de destacado' : 'Marcar como destacado'}"
+                aria-label="${v.destacado ? 'Quitar de destacado' : 'Marcar como destacado'}"
+                onclick="marcarDestacado('${v.id}')">${v.destacado ? '★' : '☆'}</button>
+        <button class="btn btn-outline btn-icon" title="${v.publicado !== false ? 'Ocultar' : 'Publicar'}"
+                aria-label="${v.publicado !== false ? 'Ocultar' : 'Publicar'}"
+                onclick="alternarPublicacionVideo('${v.id}')">${v.publicado !== false ? '🙈' : '👁'}</button>
+        <button class="btn btn-outline btn-icon" title="Editar" aria-label="Editar" onclick="editarVVideo('${v.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" title="Eliminar" aria-label="Eliminar" onclick="confirmarEliminarVive('videos','${v.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── Optimización en el navegador + subida con progreso real ─── */
+function optimizarImagen(file, maxLado, calidad) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+    reader.onload = e => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('El archivo no es una imagen válida.'));
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        const factor = Math.min(1, maxLado / Math.max(w, h));
+        w = Math.max(1, Math.round(w * factor));
+        h = Math.max(1, Math.round(h * factor));
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve({ dataUrl: c.toDataURL('image/jpeg', calidad), ancho: w, alto: h });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// XMLHttpRequest para poder mostrar un porcentaje realmente medido.
+function subirImagen(payload, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/vive/upload');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + getToken());
+    if (onProgress) {
+      xhr.upload.onprogress = e => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
+    }
+    xhr.onload = () => {
+      let j = {};
+      try { j = JSON.parse(xhr.responseText); } catch { /* respuesta no JSON */ }
+      if (xhr.status >= 200 && xhr.status < 300 && j.ok) resolve(j);
+      else reject(new Error(j.error || `El servidor respondió ${xhr.status}.`));
+    };
+    xhr.onerror = () => reject(new Error('Error de conexión con el servidor.'));
+    xhr.send(JSON.stringify(payload));
+  });
+}
+
+/* ─── Cola de subida de fotografías ─── */
+async function subirFotos(fileList) {
+  const archivos = Array.from(fileList || []).filter(f => f && f.type.startsWith('image/'));
+  const descartados = Array.from(fileList || []).length - archivos.length;
+  if (descartados > 0) toast(`${descartados} archivo(s) no son imágenes y se omitieron.`, true);
+  if (!archivos.length) return;
+
+  const cont = document.getElementById('vive-subidas');
+  let correctas = 0;
+
+  for (const file of archivos) {
+    const fila = document.createElement('div');
+    fila.className = 'vive-subida';
+    fila.innerHTML = `
+      <img alt="" />
+      <div class="vive-subida-info">
+        <div class="vive-subida-nombre">${esc(file.name)}</div>
+        <div class="vive-subida-estado">Optimizando…</div>
+        <div class="vive-barra"><span></span></div>
+      </div>`;
+    cont.appendChild(fila);
+    const estado = fila.querySelector('.vive-subida-estado');
+    const barra = fila.querySelector('.vive-barra span');
+    const prev = fila.querySelector('img');
+
+    try {
+      const full = await optimizarImagen(file, 1920, 0.85);
+      const thumb = await optimizarImagen(file, 640, 0.8);
+      prev.src = thumb.dataUrl;
+
+      estado.textContent = 'Subiendo… 0 %';
+      const r = await subirImagen(
+        { full: full.dataUrl, thumb: thumb.dataUrl, nombre: file.name },
+        p => {
+          const pct = Math.round(p * 100);
+          barra.style.width = pct + '%';
+          estado.textContent = `Subiendo… ${pct} %`;
+        }
+      );
+
+      estado.textContent = 'Registrando…';
+      const res = await authFetch('/api/vive/fotos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          archivo: r.archivo, thumb: r.thumb,
+          ancho: r.ancho, alto: r.alto,
+          titulo: '', descripcion: '', alt: '', fecha: '',
+          encuadre: 'center center', publicada: true
+        })
+      });
+      const j = await res.json();
+      if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo registrar la fotografía.');
+
+      barra.style.width = '100%';
+      estado.textContent = '✓ Subida correctamente';
+      correctas++;
+      setTimeout(() => fila.remove(), 2500);
+    } catch (err) {
+      // El fallo de un archivo no cancela los que ya terminaron
+      fila.classList.add('error');
+      barra.style.width = '0%';
+      estado.textContent = '✗ ' + (err.message || 'No se pudo subir.');
+    }
+  }
+
+  if (correctas) {
+    toast(`${correctas} fotografía(s) subida(s). Añade título y descripción con ✏️.`);
+    await cargarVive();
+  }
+}
+
+/* ─── Zona de arrastre y selector de archivos ─── */
+(function initViveDrop() {
+  const drop = document.getElementById('vive-drop');
+  const input = document.getElementById('vive-file-input');
+  if (!drop || !input) return;
+
+  drop.addEventListener('click', () => input.click());
+  drop.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+  });
+  input.addEventListener('change', () => { subirFotos(input.files); input.value = ''; });
+
+  ['dragenter', 'dragover'].forEach(ev =>
+    drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('dragging'); }));
+  ['dragleave', 'drop'].forEach(ev =>
+    drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('dragging'); }));
+  drop.addEventListener('drop', e => {
+    if (e.dataTransfer && e.dataTransfer.files) subirFotos(e.dataTransfer.files);
+  });
+})();
+
+/* ─── Edición de una fotografía ─── */
+function editarVFoto(id) {
+  const f = (VIVE.fotos || []).find(x => x.id === id);
+  if (!f) return;
+  setV('vfoto-id', f.id);
+  setV('vfoto-archivo', f.archivo);
+  setV('vfoto-thumb', f.thumb || f.archivo);
+  setV('vfoto-ancho', f.ancho || '');
+  setV('vfoto-alto', f.alto || '');
+  setV('vfoto-titulo', f.titulo || '');
+  setV('vfoto-descripcion', f.descripcion || '');
+  setV('vfoto-alt', f.alt || '');
+  setV('vfoto-fecha', f.fecha || '');
+  setV('vfoto-encuadre', f.encuadre || 'center center');
+  document.getElementById('vfoto-publicada').checked = f.publicada !== false;
+  document.getElementById('vfoto-reemplazo-estado').textContent = '';
+  pintarPreviewVFoto(f.thumb_url || f.url, f.encuadre || 'center center');
+  abrirModal('modal-vfoto');
+}
+
+function pintarPreviewVFoto(url, encuadre) {
+  document.getElementById('vfoto-preview').innerHTML =
+    `<img src="${esc(url)}" alt="" style="object-position:${esc(encuadre || 'center center')};" />`;
+}
+
+document.getElementById('vfoto-encuadre').addEventListener('change', function () {
+  const img = document.querySelector('#vfoto-preview img');
+  if (img) img.style.objectPosition = this.value;
+});
+
+document.getElementById('vfoto-reemplazo').addEventListener('change', async function () {
+  const file = this.files[0];
+  this.value = '';
+  if (!file) return;
+  const estado = document.getElementById('vfoto-reemplazo-estado');
+  try {
+    estado.textContent = 'Optimizando…';
+    const full = await optimizarImagen(file, 1920, 0.85);
+    const thumb = await optimizarImagen(file, 640, 0.8);
+    const r = await subirImagen(
+      { full: full.dataUrl, thumb: thumb.dataUrl, nombre: file.name },
+      p => { estado.textContent = `Subiendo… ${Math.round(p * 100)} %`; }
+    );
+    setV('vfoto-archivo', r.archivo);
+    setV('vfoto-thumb', r.thumb);
+    setV('vfoto-ancho', r.ancho);
+    setV('vfoto-alto', r.alto);
+    pintarPreviewVFoto(r.thumb_url, v('vfoto-encuadre'));
+    estado.textContent = '✓ Imagen lista. Pulsa «Guardar» para aplicarla.';
+  } catch (err) {
+    estado.textContent = '✗ ' + (err.message || 'No se pudo subir la imagen.');
+  }
+});
+
+async function guardarVFoto() {
+  const cuerpo = {
+    id: v('vfoto-id'),
+    archivo: v('vfoto-archivo'),
+    thumb: v('vfoto-thumb'),
+    ancho: Number(v('vfoto-ancho')) || 0,
+    alto: Number(v('vfoto-alto')) || 0,
+    titulo: v('vfoto-titulo'),
+    descripcion: v('vfoto-descripcion'),
+    alt: v('vfoto-alt'),
+    fecha: v('vfoto-fecha'),
+    encuadre: v('vfoto-encuadre'),
+    publicada: document.getElementById('vfoto-publicada').checked
+  };
+  try {
+    const res = await authFetch('/api/vive/fotos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cuerpo)
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo guardar.');
+    cerrarModal('modal-vfoto');
+    toast('Fotografía guardada ✓');
+    await cargarVive();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+async function alternarPublicacionFoto(id) {
+  const f = (VIVE.fotos || []).find(x => x.id === id);
+  if (!f) return;
+  try {
+    const res = await authFetch('/api/vive/fotos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...f, publicada: f.publicada === false })
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo actualizar.');
+    toast(f.publicada === false ? 'Fotografía publicada ✓' : 'Fotografía oculta ✓');
+    await cargarVive();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+/* ─── Videos ─── */
+function abrirModalVideo(video) {
+  resetForm(['vvideo-id', 'vvideo-fuente', 'vvideo-titulo', 'vvideo-descripcion',
+             'vvideo-fecha', 'vvideo-miniatura']);
+  setV('vvideo-orientacion', 'horizontal');
+  document.getElementById('vvideo-publicado').checked = true;
+  document.getElementById('vvideo-preview').style.display = 'none';
+  document.getElementById('vvideo-mini-preview').innerHTML = '';
+  document.getElementById('vvideo-mini-estado').textContent =
+    'Si no subes ninguna, se usa la portada automática del proveedor y, cuando no exista, una portada alternativa del diseño.';
+  document.getElementById('modal-vvideo-titulo').textContent = video ? 'Editar video' : 'Nuevo video';
+
+  if (video) {
+    setV('vvideo-id', video.id);
+    setV('vvideo-fuente', video.url_original || '');
+    setV('vvideo-titulo', video.titulo || '');
+    setV('vvideo-descripcion', video.descripcion || '');
+    setV('vvideo-fecha', video.fecha || '');
+    setV('vvideo-orientacion', video.orientacion || 'horizontal');
+    setV('vvideo-miniatura', video.miniatura || '');
+    document.getElementById('vvideo-publicado').checked = video.publicado !== false;
+    const portada = video.miniatura_url || video.portada_auto || '';
+    if (portada) document.getElementById('vvideo-mini-preview').innerHTML = `<img src="${esc(portada)}" alt="" />`;
+  }
+  abrirModal('modal-vvideo');
+}
+
+function editarVVideo(id) {
+  const vd = (VIVE.videos || []).find(x => x.id === id);
+  if (vd) abrirModalVideo(vd);
+}
+
+async function previsualizarVideo() {
+  const caja = document.getElementById('vvideo-preview');
+  const fuente = v('vvideo-fuente').trim();
+  caja.style.display = 'block';
+  caja.classList.toggle('vertical', v('vvideo-orientacion') === 'vertical');
+  caja.innerHTML = '<p>Validando la dirección…</p>';
+  try {
+    const res = await authFetch('/api/vive/validar-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fuente })
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo validar.');
+    caja.innerHTML = `
+      <p style="margin-bottom:8px;">
+        <strong>${j.proveedor === 'youtube' ? 'YouTube' : 'Vimeo'}</strong> ·
+        identificador <code>${esc(j.video_id)}</code>
+      </p>
+      <iframe src="${esc(j.embed_url)}" title="Vista previa del video"
+              allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+              referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <p style="margin-top:8px;">
+        Enlace original: <a href="${esc(j.url_original)}" target="_blank" rel="noopener noreferrer">${esc(j.url_original)}</a>
+      </p>
+      ${j.proveedor === 'vimeo' && !j.portada_auto
+        ? '<p style="margin-top:6px;color:#e65100;">No se obtuvo portada automática de Vimeo. Sube una miniatura o se usará la portada alternativa.</p>'
+        : ''}`;
+  } catch (err) {
+    caja.innerHTML = `<p style="color:#c62828;font-weight:600;">✗ ${esc(err.message)}</p>`;
+  }
+}
+
+document.getElementById('vvideo-mini-file').addEventListener('change', async function () {
+  const file = this.files[0];
+  this.value = '';
+  if (!file) return;
+  const estado = document.getElementById('vvideo-mini-estado');
+  try {
+    estado.textContent = 'Optimizando…';
+    const full = await optimizarImagen(file, 1280, 0.85);
+    const r = await subirImagen(
+      { full: full.dataUrl, nombre: (file.name || 'miniatura') },
+      p => { estado.textContent = `Subiendo… ${Math.round(p * 100)} %`; }
+    );
+    setV('vvideo-miniatura', r.archivo);
+    document.getElementById('vvideo-mini-preview').innerHTML = `<img src="${esc(r.thumb_url)}" alt="" />`;
+    estado.textContent = '✓ Miniatura lista. Pulsa «Guardar» para aplicarla.';
+  } catch (err) {
+    estado.textContent = '✗ ' + (err.message || 'No se pudo subir la miniatura.');
+  }
+});
+
+function quitarMiniaturaVideo() {
+  setV('vvideo-miniatura', '');
+  document.getElementById('vvideo-mini-preview').innerHTML = '';
+  document.getElementById('vvideo-mini-estado').textContent =
+    'Se usará la portada automática del proveedor o la portada alternativa del diseño.';
+}
+
+async function guardarVVideo() {
+  const cuerpo = {
+    id: v('vvideo-id'),
+    fuente: v('vvideo-fuente'),
+    titulo: v('vvideo-titulo'),
+    descripcion: v('vvideo-descripcion'),
+    fecha: v('vvideo-fecha'),
+    orientacion: v('vvideo-orientacion'),
+    miniatura: v('vvideo-miniatura'),
+    publicado: document.getElementById('vvideo-publicado').checked
+  };
+  try {
+    const res = await authFetch('/api/vive/videos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cuerpo)
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo guardar el video.');
+    cerrarModal('modal-vvideo');
+    toast('Video guardado ✓');
+    await cargarVive();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+async function alternarPublicacionVideo(id) {
+  const vd = (VIVE.videos || []).find(x => x.id === id);
+  if (!vd) return;
+  try {
+    const res = await authFetch('/api/vive/videos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...vd, fuente: vd.url_original, publicado: vd.publicado === false })
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo actualizar.');
+    toast(vd.publicado === false ? 'Video publicado ✓' : 'Video oculto ✓');
+    await cargarVive();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+async function marcarDestacado(id) {
+  const vd = (VIVE.videos || []).find(x => x.id === id);
+  if (!vd) return;
+  if (!vd.destacado && vd.publicado === false) {
+    toast('Publica el video antes de marcarlo como destacado.', true);
+    return;
+  }
+  try {
+    const res = await authFetch('/api/vive/destacado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: vd.destacado ? null : id })
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo actualizar.');
+    toast(vd.destacado ? 'Ya no hay video destacado.' : 'Video marcado como destacado ✓');
+    await cargarVive();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+/* ─── Reordenar ─── */
+async function moverVive(tipo, idx, dir) {
+  const lista = VIVE[tipo] || [];
+  const destino = idx + dir;
+  if (destino < 0 || destino >= lista.length) return;
+  [lista[idx], lista[destino]] = [lista[destino], lista[idx]];
+  if (tipo === 'fotos') renderViveFotos(); else renderViveVideos();
+  try {
+    const res = await authFetch('/api/vive/orden', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tipo, ids: lista.map(x => x.id) })
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo reordenar.');
+    toast('Orden actualizado ✓');
+  } catch (err) {
+    toast(err.message, true);
+    await cargarVive();
+  }
+}
+
+/* ─── Eliminar (con confirmación) ─── */
+function confirmarEliminarVive(tipo, id) {
+  const btn = document.getElementById('btn-confirm-delete');
+  btn.onclick = async function () {
+    cerrarModal('modal-confirm');
+    try {
+      const res = await authFetch(`/api/vive/${tipo}?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      const j = await res.json();
+      if (!res.ok || !j.ok) throw new Error(j.error || 'No se pudo eliminar.');
+      toast(tipo === 'fotos' ? 'Fotografía eliminada ✓' : 'Video eliminado ✓');
+      await cargarVive();
+    } catch (err) {
+      toast(err.message, true);
+    }
+  };
+  abrirModal('modal-confirm');
 }
 
 /* ═══════════════════════════════════════════════════════════

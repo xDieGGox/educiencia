@@ -3,411 +3,1021 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contacto – EDUCIENCIA</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta name="description" content="Fotografías, videos e inscripción al proyecto EDUCIENCIA." />
+  <title>Vive EDUCIENCIA – EDUCIENCIA</title>
+  <link rel="stylesheet" href="/css/styles.css?v=7" />
   <style>
-    /* ── Tarjeta de captación ── */
-    .contacto-info-item.captacion {
-      cursor: pointer;
-      background: linear-gradient(135deg, #1a3a5c 0%, #0d5c3a 100%);
-      color: #fff;
-      border: none;
-      transition: transform 0.18s, box-shadow 0.18s;
+    /* ══════════════════════════════════════════════════════════════
+       VIVE EDUCIENCIA
+       Clases con prefijo .vive- para no interferir con el carrusel
+       de la portada (.hero-carousel / .carousel-*).
+    ══════════════════════════════════════════════════════════════ */
+
+    /* ── Encabezado con acceso al registro ── */
+    .vive-banner-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 28px;
+      flex-wrap: wrap;
     }
-    .contacto-info-item.captacion:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(26,58,92,0.25);
+    .vive-banner-cta { flex-shrink: 0; }
+    .vive-nota-pestana {
+      display: block;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.65);
+      margin-top: 8px;
     }
-    .contacto-info-item.captacion .contacto-info-titulo,
-    .contacto-info-item.captacion .contacto-info-valor {
-      color: rgba(255,255,255,0.92);
-    }
-    .contacto-info-item.captacion .contacto-info-titulo {
-      color: #fff;
+
+    /* ── Estructura de secciones ── */
+    .vive-sub {
+      font-size: 1.05rem;
       font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 4px;
     }
-    .captacion-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
+    .vive-sub-desc {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      margin-bottom: 20px;
+    }
+    .vive-vacio {
+      text-align: center;
+      padding: 40px 20px;
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      font-size: 0.9375rem;
+    }
+
+    /* ══ CARRUSEL DE FOTOGRAFÍAS ══ */
+    .vive-carousel {
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .vive-carousel__viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;          /* reserva el espacio: evita saltos */
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #0d2540;
+      box-shadow: 0 6px 24px var(--color-shadow);
+    }
+    .vive-carousel__viewport:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 3px;
+    }
+    .vive-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      /* visibility oculta la diapositiva (y saca sus botones del tabulador)
+         solo cuando el fundido ha terminado; al activarse cambia al instante,
+         para que su botón sea enfocable de inmediato. */
+      visibility: hidden;
+      transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+    }
+    .vive-slide.is-active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.5s ease-in-out, visibility 0s linear 0s;
+    }
+    .vive-slide__btn {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: zoom-in;
+      font: inherit;
+      color: inherit;
+      text-align: left;
+    }
+    .vive-slide__btn:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: -4px;
+    }
+    .vive-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;             /* nunca deforma: recorta el encuadre */
+      display: block;
+    }
+    .vive-slide__caption {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 44px 22px 18px;
+      /* Degradado inferior: el texto se lee sin tapar el centro de la foto */
+      background: linear-gradient(to top, rgba(4,20,34,0.88) 0%, rgba(4,20,34,0.55) 55%, rgba(4,20,34,0) 100%);
       color: #fff;
+      pointer-events: none;
+    }
+    .vive-slide__titulo {
+      display: block;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .vive-slide__desc {
+      display: block;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.86);
+      line-height: 1.5;
+      max-width: 60ch;
+    }
+    .vive-slide__fecha {
+      display: block;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.68);
+      margin-top: 6px;
+    }
+
+    .vive-carousel__btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(4,20,34,0.55);
+      border: 2px solid rgba(255,255,255,0.45);
+      color: #fff;
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .vive-carousel__btn:hover { background: rgba(4,20,34,0.8); }
+    .vive-carousel__btn:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+    .vive-carousel__btn--prev { left: 12px; }
+    .vive-carousel__btn--next { right: 12px; }
+
+    .vive-carousel__dots {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .vive-dot {
+      width: 10px; height: 10px;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      background: #c3ccdd;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .vive-dot.active { background: var(--color-primary); transform: scale(1.35); }
+    .vive-dot:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+
+    .vive-carousel__contador {
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      margin-top: 8px;
+    }
+
+    /* ══ VISOR DE FOTOGRAFÍA (lightbox) ══ */
+    .vive-visor {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      background: rgba(4,12,22,0.93);
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+    .vive-visor.open { display: flex; }
+    .vive-visor__caja {
+      position: relative;
+      max-width: 1100px;
+      width: 100%;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .vive-visor__img {
+      max-width: 100%;
+      max-height: 74vh;
+      width: auto; height: auto;
+      object-fit: contain;           /* el visor nunca recorta la imagen */
+      border-radius: 6px;
+      background: #0d2540;
+    }
+    .vive-visor__info {
+      color: #fff;
+      text-align: center;
+      max-width: 70ch;
+    }
+    .vive-visor__titulo { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .vive-visor__desc  { font-size: 0.875rem; color: rgba(255,255,255,0.8); line-height: 1.55; }
+    .vive-visor__pos   { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 6px; }
+    .vive-visor__cerrar {
+      position: absolute;
+      top: -6px; right: -6px;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: 2px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .vive-visor__cerrar:hover { background: rgba(255,255,255,0.28); }
+    .vive-visor__nav {
+      position: absolute;
+      top: 40%;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: 2px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .vive-visor__nav:hover { background: rgba(255,255,255,0.28); }
+    .vive-visor__nav[hidden] { display: none; }
+    .vive-visor__nav--prev { left: -4px; }
+    .vive-visor__nav--next { right: -4px; }
+    .vive-visor button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+
+    /* ══ VIDEOS ══ */
+    .vive-videos { margin-top: 56px; }
+
+    .vive-destacado {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 28px;
+      align-items: center;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 10px var(--color-shadow);
+    }
+    .vive-destacado__info { min-width: 0; }
+    .vive-destacado__chip {
+      display: inline-block;
+      background: #e8f0fb;
+      color: var(--color-primary);
       font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      padding: 2px 10px;
+      padding: 3px 10px;
       border-radius: 20px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .captacion-cta {
-      margin-top: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.82rem;
+    .vive-destacado__titulo {
+      font-size: 1.25rem;
       font-weight: 700;
-      color: #fff;
-      border: 1.5px solid rgba(255,255,255,0.5);
-      padding: 5px 14px;
-      border-radius: 20px;
-      transition: background 0.15s;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
     }
-    .contacto-info-item.captacion:hover .captacion-cta {
-      background: rgba(255,255,255,0.15);
+    .vive-destacado__desc {
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      margin-bottom: 14px;
     }
 
-    /* ── Modal de registro ── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 900;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: #fff;
-      border-radius: 12px;
+    /* Portada reproducible (destacado y tarjetas) */
+    .vive-portada {
+      position: relative;
+      display: block;
       width: 100%;
-      max-width: 560px;
-      max-height: 92vh;
-      overflow-y: auto;
-      box-shadow: 0 12px 48px rgba(0,0,0,0.22);
-      animation: modalIn 0.25s ease;
+      padding: 0;
+      border: none;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0d5c3a 100%);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      aspect-ratio: 16 / 9;          /* reserva el espacio */
     }
-    @keyframes modalIn {
-      from { opacity: 0; transform: translateY(24px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    .vive-portada--vertical { aspect-ratio: 9 / 16; max-width: 300px; margin: 0 auto; }
+    .vive-portada img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    .modal-header {
+    .vive-portada__play {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid #e8ecf5;
+      justify-content: center;
+      background: rgba(4,20,34,0.28);
+      transition: background 0.18s;
     }
-    .modal-header h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #1a3a5c;
+    .vive-portada:hover .vive-portada__play { background: rgba(4,20,34,0.45); }
+    .vive-portada__play span {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.92);
+      color: var(--color-primary);
+      font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      padding-left: 5px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: transform 0.18s;
     }
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: #888;
-      line-height: 1;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .modal-close:hover { background: #f0f2f8; color: #333; }
-    .modal-body { padding: 20px 24px 24px; }
-    .modal-intro {
-      font-size: 0.875rem;
-      color: #555e7a;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-    .modal-form .form-group { margin-bottom: 14px; }
-    .modal-form label {
-      display: block;
+    .vive-portada:hover .vive-portada__play span { transform: scale(1.08); }
+    .vive-portada:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .vive-portada__sinfoto {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      padding: 14px;
+      color: rgba(255,255,255,0.75);
       font-size: 0.8rem;
-      font-weight: 600;
-      color: #444;
-      margin-bottom: 5px;
     }
-    .modal-form input,
-    .modal-form select,
-    .modal-form textarea {
-      width: 100%;
-      padding: 9px 12px;
-      border: 1.5px solid #dde2ef;
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 0.875rem;
-      color: #1e1e2e;
-      background: #fff;
-      transition: border-color 0.15s;
+
+    .vive-videos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
     }
-    .modal-form input:focus,
-    .modal-form select:focus,
-    .modal-form textarea:focus {
-      outline: none;
-      border-color: #1a3a5c;
-      box-shadow: 0 0 0 3px rgba(26,58,92,0.08);
+    .vive-video-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px var(--color-shadow);
+      transition: box-shadow 0.18s, transform 0.18s;
     }
-    .modal-form textarea { resize: vertical; min-height: 70px; }
-    .areas-group {
+    .vive-video-card:hover { box-shadow: 0 8px 22px var(--color-shadow-hover); transform: translateY(-2px); }
+    .vive-video-card .vive-portada { border-radius: 0; }
+    .vive-video-card__body { padding: 16px 18px 18px; }
+    .vive-video-card__titulo {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .vive-video-card__desc {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      line-height: 1.55;
+    }
+    .vive-video-card__meta {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: 8px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-    }
-    .area-check-label {
-      display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.82rem;
-      padding: 5px 12px;
-      border: 1.5px solid #dde2ef;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      color: #444;
     }
-    .area-check-label input { display: none; }
-    .area-check-label:has(input:checked) {
-      border-color: #1a3a5c;
-      background: #e8f0fb;
-      color: #1a3a5c;
-      font-weight: 600;
-    }
-    .modal-footer-row {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #e8ecf5;
-    }
-    .btn-reg-cancel {
-      background: none;
-      border: 1.5px solid #dde2ef;
-      color: #555;
-      padding: 8px 18px;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-reg-cancel:hover { background: #f5f7fa; }
-    .btn-reg-submit {
-      background: #1a3a5c;
-      color: #fff;
-      border: none;
-      padding: 9px 22px;
-      border-radius: 6px;
-      font-size: 0.875rem;
+    .vive-prov {
+      display: inline-block;
+      font-size: 0.68rem;
       font-weight: 700;
-      cursor: pointer;
-      transition: background 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--color-bg-alt);
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
     }
-    .btn-reg-submit:hover { background: #122a4a; }
-    .btn-reg-submit:disabled { background: #9099b2; cursor: not-allowed; }
 
-    /* ── Estado de éxito dentro del modal ── */
-    .reg-success {
+    /* ══ MODAL DE REPRODUCCIÓN ══ */
+    .vive-player {
       display: none;
-      text-align: center;
-      padding: 24px 0 8px;
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      background: rgba(4,12,22,0.93);
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
     }
-    .reg-success-icon { font-size: 3rem; margin-bottom: 12px; }
-    .reg-success h3 { font-size: 1.1rem; font-weight: 700; color: #1a3a5c; margin-bottom: 8px; }
-    .reg-success p  { font-size: 0.875rem; color: #555e7a; }
+    .vive-player.open { display: flex; }
+    .vive-player__caja {
+      position: relative;
+      width: 100%;
+      max-width: 940px;
+      background: #0b1826;
+      border-radius: 10px;
+      padding: 16px;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+    .vive-player__caja--vertical { max-width: 420px; }
+    .vive-player__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .vive-player__titulo { font-size: 1rem; font-weight: 700; color: #fff; }
+    .vive-player__cerrar {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: 2px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .vive-player__cerrar:hover { background: rgba(255,255,255,0.28); }
+    .vive-player__marco {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .vive-player__marco--vertical { aspect-ratio: 9 / 16; }
+    .vive-player__marco iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .vive-player__desc {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+    .vive-player__pie {
+      margin-top: 12px;
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .vive-player__pie a {
+      color: #fff;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .vive-player__aviso {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: rgba(255,213,79,0.14);
+      border: 1px solid rgba(255,213,79,0.4);
+      color: #ffe8a3;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+    }
+    .vive-player__aviso.visible { display: block; }
+    .vive-player button:focus-visible,
+    .vive-player a:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+
+    /* ══ BLOQUE DE INSCRIPCIÓN ══ */
+    .vive-registro {
+      background: linear-gradient(135deg, #1a3a5c 0%, #0d5c3a 100%);
+      border-radius: var(--radius);
+      color: #fff;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .vive-registro__titulo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .vive-registro__desc {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.85);
+      max-width: 56ch;
+      margin: 0 auto 22px;
+      line-height: 1.6;
+    }
+    .vive-registro .vive-nota-pestana { color: rgba(255,255,255,0.6); }
+
+    /* Enlaces de inscripción: foco visible y sin estilos de enlace por defecto */
+    .vive-btn-registro:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 3px;
+    }
+    .vive-registro .vive-btn-registro:focus-visible { outline-color: var(--color-accent); }
+
+    /* ══ PREGUNTAS FRECUENTES ══ */
+    .vive-faq { max-width: 760px; margin: 0 auto; }
+    .vive-faq__titulo {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .vive-faq__intro {
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1024px) {
+      .vive-videos-grid { grid-template-columns: repeat(2, 1fr); }
+      .vive-destacado { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .vive-banner-inner { align-items: flex-start; gap: 20px; }
+      .vive-banner-cta { width: 100%; }
+      .vive-banner-cta .btn { width: 100%; text-align: center; justify-content: center; }
+      .vive-carousel__viewport { aspect-ratio: 4 / 3; }
+      .vive-carousel__btn { width: 38px; height: 38px; font-size: 1.1rem; }
+      .vive-carousel__btn--prev { left: 6px; }
+      .vive-carousel__btn--next { right: 6px; }
+      .vive-slide__caption { padding: 34px 14px 14px; }
+      .vive-slide__titulo { font-size: 0.95rem; }
+      .vive-slide__desc { font-size: 0.8125rem; }
+      .vive-videos-grid { grid-template-columns: 1fr; }
+      .vive-visor__nav--prev { left: 0; }
+      .vive-visor__nav--next { right: 0; }
+      .vive-visor__img { max-height: 62vh; }
+      .vive-registro { padding: 32px 20px; }
+      .vive-registro__titulo { font-size: 1.25rem; }
+    }
+
+    /* Respeta la preferencia de movimiento reducido */
+    @media (prefers-reduced-motion: reduce) {
+      .vive-slide,
+      .vive-video-card,
+      .vive-portada__play,
+      .vive-portada__play span,
+      .vive-dot { transition: none !important; }
+      .vive-video-card:hover { transform: none; }
+    }
   </style>
 </head>
 <body>
 
   <div id="header-mount"></div>
 
-  <!-- BANNER -->
+  <!-- ENCABEZADO -->
   <div class="page-banner">
-    <div class="container">
-      <p class="page-banner__eyebrow">Proyecto EDUCIENCIA</p>
-      <h1 class="page-banner__title">Contacto</h1>
-      <p class="page-banner__desc">¿Tienes preguntas, quieres participar o necesitas orientación? Escríbenos.</p>
+    <div class="container vive-banner-inner">
+      <div>
+        <p class="page-banner__eyebrow">Proyecto EDUCIENCIA</p>
+        <h1 class="page-banner__title">Conoce, comparte y participa</h1>
+        <p class="page-banner__desc">Descubre nuestras experiencias y anímate a formar parte de las actividades de EDUCIENCIA.</p>
+      </div>
+      <div class="vive-banner-cta">
+        <a class="btn btn--white vive-btn-registro"
+           href="https://forms.cloud.microsoft/r/rcAPpGkqHa"
+           target="_blank" rel="noopener noreferrer">Quiero registrarme</a>
+        <span class="vive-nota-pestana">Se abre en una pestaña nueva</span>
+      </div>
     </div>
   </div>
 
-  <!-- CONTACTO -->
-  <section class="section section--alt">
+  <!-- ASÍ VIVIMOS EDUCIENCIA -->
+  <section class="section section--alt" aria-labelledby="vive-galeria-titulo">
     <div class="container">
+      <div class="section__header">
+        <h2 class="section__title" id="vive-galeria-titulo">Así vivimos EDUCIENCIA</h2>
+        <p class="section__subtitle">Momentos de las sesiones, los talleres y el trabajo del equipo con la comunidad.</p>
+      </div>
 
-      <!-- Canales -->
-      <div class="contacto-info-grid" id="contacto-info"></div>
+      <!-- Carrusel de fotografías -->
+      <div id="vive-fotos-mount"></div>
 
-      <!-- Formulario + FAQ -->
-      <div class="grid-2" style="gap:48px;align-items:start;">
+      <!-- Videos -->
+      <div class="vive-videos">
+        <h3 class="vive-sub" id="vive-videos-titulo">Videos del proyecto</h3>
+        <p class="vive-sub-desc" id="vive-videos-nota">Los reproductores se cargan solo cuando pulsas el botón de reproducción.</p>
+        <div id="vive-videos-mount"></div>
+      </div>
+    </div>
+  </section>
 
-        <div>
-          <h2 style="font-size:1.125rem;font-weight:700;color:var(--color-primary);margin-bottom:20px;">Envíanos un mensaje</h2>
-          <form aria-label="Formulario de contacto" onsubmit="handleMensaje(event)">
-            <div class="form-group">
-              <label for="nombre">Nombre completo <span aria-hidden="true">*</span></label>
-              <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre" autocomplete="name" />
-            </div>
-            <div class="form-group">
-              <label for="correo">Correo electrónico <span aria-hidden="true">*</span></label>
-              <input type="email" id="correo" name="correo" required placeholder="tu@correo.com" autocomplete="email" />
-            </div>
-            <div class="form-group">
-              <label for="asunto">Asunto</label>
-              <select id="asunto" name="asunto">
-                <option value="">Selecciona un asunto…</option>
-                <option value="consulta">Tengo una consulta general</option>
-                <option value="apoyo">Necesito apoyo en una materia</option>
-                <option value="participar">Quiero participar como tutor</option>
-                <option value="docente">Soy docente y quiero derivar estudiantes</option>
-                <option value="otro">Otro</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="mensaje">Mensaje <span aria-hidden="true">*</span></label>
-              <textarea id="mensaje" name="mensaje" required placeholder="Escribe tu mensaje aquí…" rows="5"></textarea>
-            </div>
-            <button type="submit" class="btn btn--primary" id="btn-enviar">Enviar mensaje</button>
-            <div id="form-feedback" style="margin-top:12px;font-size:0.875rem;display:none;padding:10px 14px;border-radius:6px;"></div>
-            <p class="form-aviso">Tu información será utilizada únicamente para responder tu consulta. No la compartiremos con terceros.</p>
-          </form>
-        </div>
+  <!-- TÚ TAMBIÉN PUEDES SER PARTE -->
+  <section class="section" aria-labelledby="vive-registro-titulo">
+    <div class="container">
+      <div class="vive-registro">
+        <h2 class="vive-registro__titulo" id="vive-registro-titulo">Tú también puedes ser parte</h2>
+        <p class="vive-registro__desc">Completa el formulario de inscripción para participar en las actividades del proyecto EDUCIENCIA.</p>
+        <a class="btn btn--white vive-btn-registro"
+           href="https://forms.cloud.microsoft/r/rcAPpGkqHa"
+           target="_blank" rel="noopener noreferrer">Quiero registrarme</a>
+        <span class="vive-nota-pestana">Se abre en una pestaña nueva</span>
+      </div>
+    </div>
+  </section>
 
-        <div>
-          <h2 style="font-size:1.125rem;font-weight:700;color:var(--color-primary);margin-bottom:20px;">Preguntas frecuentes</h2>
-          <div class="faq-lista" id="faq-lista" role="list"></div>
-        </div>
-
+  <!-- PREGUNTAS FRECUENTES -->
+  <section class="section section--alt" aria-labelledby="vive-faq-titulo">
+    <div class="container">
+      <div class="vive-faq">
+        <h2 class="vive-faq__titulo" id="vive-faq-titulo">Preguntas frecuentes</h2>
+        <p class="vive-faq__intro">Estas son las dudas más comunes sobre el proyecto y sus actividades.</p>
+        <div class="faq-lista" id="faq-lista" role="list"></div>
       </div>
     </div>
   </section>
 
   <div id="footer-mount"></div>
 
-  <!-- ══════════════════════════════════════════════════════
-       MODAL: Registro de estudiante
-  ══════════════════════════════════════════════════════ -->
-  <div class="modal-overlay" id="modal-registro" role="dialog" aria-modal="true" aria-labelledby="modal-reg-titulo">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2 id="modal-reg-titulo">Únete al proyecto EDUCIENCIA</h2>
-        <button class="modal-close" onclick="cerrarModalRegistro()" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body">
-
-        <!-- Estado éxito -->
-        <div class="reg-success" id="reg-success">
-          <div class="reg-success-icon">🎉</div>
-          <h3>¡Registro recibido!</h3>
-          <p>Gracias por tu interés. El equipo EDUCIENCIA se pondrá en contacto contigo pronto para coordinar los detalles.</p>
-          <button class="btn-reg-submit" style="margin-top:20px;" onclick="cerrarModalRegistro()">Cerrar</button>
-        </div>
-
-        <!-- Formulario -->
-        <div id="reg-form-container">
-          <p class="modal-intro">
-            Completa el formulario y el equipo se comunicará contigo para darte la bienvenida al proyecto.
-            Las clases son completamente gratuitas y abiertas.
-          </p>
-          <form class="modal-form" onsubmit="enviarRegistro(event)">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-              <div class="form-group">
-                <label for="reg-nombre">Nombre completo *</label>
-                <input type="text" id="reg-nombre" required placeholder="Tu nombre" autocomplete="name" />
-              </div>
-              <div class="form-group">
-                <label for="reg-correo">Correo electrónico *</label>
-                <input type="email" id="reg-correo" required placeholder="tu@correo.com" autocomplete="email" />
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-              <div class="form-group">
-                <label for="reg-telefono">Teléfono / WhatsApp</label>
-                <input type="tel" id="reg-telefono" placeholder="0987654321" autocomplete="tel" />
-              </div>
-              <div class="form-group">
-                <label for="reg-grado">Año / curso que cursas *</label>
-                <select id="reg-grado" required>
-                  <option value="">Selecciona…</option>
-                  <option>1.° de Bachillerato</option>
-                  <option>2.° de Bachillerato</option>
-                  <option>3.° de Bachillerato</option>
-                  <option>Educación Básica Superior</option>
-                  <option>Universidad (primer año)</option>
-                  <option>Otro</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-institucion">Institución educativa *</label>
-              <input type="text" id="reg-institucion" required placeholder="Nombre de tu colegio o unidad educativa" />
-            </div>
-            <div class="form-group">
-              <label>Áreas en las que necesitas apoyo</label>
-              <div class="areas-group">
-                <label class="area-check-label">
-                  <input type="checkbox" name="area" value="biologia" /> 🌿 Biología
-                </label>
-                <label class="area-check-label">
-                  <input type="checkbox" name="area" value="quimica" /> ⚗️ Química
-                </label>
-                <label class="area-check-label">
-                  <input type="checkbox" name="area" value="matematicas" /> 📐 Matemáticas
-                </label>
-                <label class="area-check-label">
-                  <input type="checkbox" name="area" value="fisica" /> ⚡ Física
-                </label>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="reg-como">¿Cómo te enteraste de EDUCIENCIA?</label>
-              <select id="reg-como">
-                <option value="">Selecciona…</option>
-                <option value="docente">Un docente me lo recomendó</option>
-                <option value="amigo">Un amigo / compañero</option>
-                <option value="redes">Redes sociales</option>
-                <option value="afiche">Afiche o cartelera</option>
-                <option value="otro">Otro</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="reg-nota">¿Algo más que quieras contarnos?</label>
-              <textarea id="reg-nota" placeholder="Cuéntanos tu situación o qué esperas del proyecto…" rows="3"></textarea>
-            </div>
-            <div class="modal-footer-row">
-              <button type="button" class="btn-reg-cancel" onclick="cerrarModalRegistro()">Cancelar</button>
-              <button type="submit" class="btn-reg-submit" id="btn-reg-submit">Enviar registro →</button>
-            </div>
-          </form>
-        </div>
-
+  <!-- VISOR DE FOTOGRAFÍA -->
+  <div class="vive-visor" id="vive-visor" role="dialog" aria-modal="true" aria-labelledby="vive-visor-titulo">
+    <div class="vive-visor__caja">
+      <button class="vive-visor__cerrar" id="vive-visor-cerrar" aria-label="Cerrar el visor de fotografías">✕</button>
+      <button class="vive-visor__nav vive-visor__nav--prev" id="vive-visor-prev" aria-label="Fotografía anterior">&#8249;</button>
+      <img class="vive-visor__img" id="vive-visor-img" src="" alt="" />
+      <button class="vive-visor__nav vive-visor__nav--next" id="vive-visor-next" aria-label="Fotografía siguiente">&#8250;</button>
+      <div class="vive-visor__info">
+        <p class="vive-visor__titulo" id="vive-visor-titulo"></p>
+        <p class="vive-visor__desc" id="vive-visor-desc"></p>
+        <p class="vive-visor__pos" id="vive-visor-pos" aria-live="polite"></p>
       </div>
     </div>
   </div>
 
-  <script src="/js/app.js"></script>
+  <!-- REPRODUCTOR DE VIDEO -->
+  <div class="vive-player" id="vive-player" role="dialog" aria-modal="true" aria-labelledby="vive-player-titulo">
+    <div class="vive-player__caja" id="vive-player-caja">
+      <div class="vive-player__head">
+        <p class="vive-player__titulo" id="vive-player-titulo"></p>
+        <button class="vive-player__cerrar" id="vive-player-cerrar" aria-label="Cerrar el reproductor">✕</button>
+      </div>
+      <div class="vive-player__marco" id="vive-player-marco"></div>
+      <p class="vive-player__desc" id="vive-player-desc"></p>
+      <div class="vive-player__aviso" id="vive-player-aviso">
+        El reproductor está tardando en cargar. Algunos videos no permiten verse insertados en otros sitios;
+        en ese caso, ábrelo directamente con el enlace de abajo.
+      </div>
+      <div class="vive-player__pie">
+        <span id="vive-player-prov"></span>
+        <a id="vive-player-enlace" href="#" target="_blank" rel="noopener noreferrer">Ver el video original ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js?v=7"></script>
   <script>
+    /* ═══════════════════════════════════════════════════════════
+       Utilidades
+    ═══════════════════════════════════════════════════════════ */
+    function esc(str) {
+      return String(str == null ? '' : str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    const PROVEEDORES = { youtube: 'YouTube', vimeo: 'Vimeo' };
+
+    /* ═══════════════════════════════════════════════════════════
+       CARRUSEL DE FOTOGRAFÍAS
+       Mismo patrón que la portada (fade + flechas + indicadores +
+       gestos), con clases propias para no interferir con ella.
+    ═══════════════════════════════════════════════════════════ */
+    let FOTOS = [];
+    let fotoActual = 0;
+
+    function renderFotos(fotos) {
+      const mount = document.getElementById('vive-fotos-mount');
+      if (!fotos.length) {
+        mount.innerHTML = '<p class="vive-vacio">Todavía no hay fotografías publicadas.</p>';
+        return;
+      }
+
+      const varias = fotos.length > 1;
+      const slides = fotos.map((f, i) => `
+        <div class="vive-slide${i === 0 ? ' is-active' : ''}"
+             id="vive-slide-${i}" role="group" aria-roledescription="diapositiva"
+             aria-label="Fotografía ${i + 1} de ${fotos.length}"${i === 0 ? '' : ' aria-hidden="true"'}>
+          <button type="button" class="vive-slide__btn" data-indice="${i}"
+                  aria-label="Ampliar la fotografía: ${esc(f.alt || f.titulo || ('fotografía ' + (i + 1)))}">
+            <img src="${esc(f.thumb_url || f.url)}"
+                 alt="${esc(f.alt || f.titulo || '')}"
+                 ${f.ancho ? `width="${f.ancho}"` : ''} ${f.alto ? `height="${f.alto}"` : ''}
+                 loading="${i === 0 ? 'eager' : 'lazy'}"
+                 decoding="async"
+                 style="object-position:${esc(f.encuadre || 'center center')};" />
+            ${(f.titulo || f.descripcion || f.fecha) ? `
+              <span class="vive-slide__caption">
+                ${f.titulo ? `<span class="vive-slide__titulo">${esc(f.titulo)}</span>` : ''}
+                ${f.descripcion ? `<span class="vive-slide__desc">${esc(f.descripcion)}</span>` : ''}
+                ${f.fecha ? `<span class="vive-slide__fecha">${esc(f.fecha)}</span>` : ''}
+              </span>` : ''}
+          </button>
+        </div>`).join('');
+
+      mount.innerHTML = `
+        <div class="vive-carousel">
+          <div class="vive-carousel__viewport" id="vive-viewport"
+               tabindex="0" role="group" aria-roledescription="carrusel"
+               aria-label="Fotografías del proyecto. Usa las flechas del teclado para cambiar de imagen.">
+            ${slides}
+            ${varias ? `
+              <button type="button" class="vive-carousel__btn vive-carousel__btn--prev"
+                      id="vive-prev" aria-label="Fotografía anterior">&#8249;</button>
+              <button type="button" class="vive-carousel__btn vive-carousel__btn--next"
+                      id="vive-next" aria-label="Fotografía siguiente">&#8250;</button>` : ''}
+          </div>
+          ${varias ? `
+            <div class="vive-carousel__dots" id="vive-dots" role="tablist"
+                 aria-label="Ir a una fotografía"></div>` : ''}
+          <p class="vive-carousel__contador" id="vive-contador" aria-live="polite"></p>
+        </div>`;
+
+      if (varias) {
+        document.getElementById('vive-dots').innerHTML = fotos.map((f, i) => `
+          <button type="button" class="vive-dot${i === 0 ? ' active' : ''}" role="tab"
+                  aria-selected="${i === 0}" aria-controls="vive-slide-${i}"
+                  aria-label="Ir a la fotografía ${i + 1}"></button>`).join('');
+      }
+
+      const viewport = document.getElementById('vive-viewport');
+      const slideEls = viewport.querySelectorAll('.vive-slide');
+      const dots = varias ? document.getElementById('vive-dots').querySelectorAll('.vive-dot') : [];
+      const contador = document.getElementById('vive-contador');
+
+      window.irAFoto = function (n) {
+        const total = fotos.length;
+        const next = ((n % total) + total) % total;
+        slideEls.forEach((el, i) => {
+          el.classList.toggle('is-active', i === next);
+          if (i === next) el.removeAttribute('aria-hidden');
+          else el.setAttribute('aria-hidden', 'true');
+        });
+        dots.forEach((d, i) => {
+          d.classList.toggle('active', i === next);
+          d.setAttribute('aria-selected', String(i === next));
+        });
+        fotoActual = next;
+        contador.textContent = `Fotografía ${next + 1} de ${total}`;
+      };
+
+      irAFoto(0);
+
+      // Abrir el visor al seleccionar una fotografía
+      viewport.querySelectorAll('.vive-slide__btn').forEach(btn => {
+        btn.addEventListener('click', () => abrirVisor(Number(btn.dataset.indice), btn));
+      });
+
+      if (!varias) return;
+
+      dots.forEach((d, i) => d.addEventListener('click', () => irAFoto(i)));
+      document.getElementById('vive-prev')
+        .addEventListener('click', () => irAFoto(fotoActual - 1));
+      document.getElementById('vive-next')
+        .addEventListener('click', () => irAFoto(fotoActual + 1));
+
+      // Teclado sobre el carrusel
+      viewport.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); irAFoto(fotoActual - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); irAFoto(fotoActual + 1); }
+      });
+
+      // Gestos táctiles
+      let x0 = null;
+      viewport.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+      viewport.addEventListener('touchend', e => {
+        if (x0 === null) return;
+        const dx = x0 - e.changedTouches[0].clientX;
+        if (Math.abs(dx) > 40) irAFoto(fotoActual + (dx > 0 ? 1 : -1));
+        x0 = null;
+      }, { passive: true });
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       VISOR DE FOTOGRAFÍA (no recorta la imagen)
+    ═══════════════════════════════════════════════════════════ */
+    const visor = document.getElementById('vive-visor');
+    let visorIndice = 0;
+    let visorOrigen = null;
+
+    function pintarVisor(i) {
+      const total = FOTOS.length;
+      visorIndice = ((i % total) + total) % total;
+      const f = FOTOS[visorIndice];
+      const img = document.getElementById('vive-visor-img');
+      img.src = f.url;
+      img.alt = f.alt || f.titulo || `Fotografía ${visorIndice + 1}`;
+      document.getElementById('vive-visor-titulo').textContent = f.titulo || '';
+      document.getElementById('vive-visor-desc').textContent =
+        [f.descripcion, f.fecha].filter(Boolean).join(' · ');
+      document.getElementById('vive-visor-pos').textContent =
+        `Fotografía ${visorIndice + 1} de ${total}`;
+      const solaUna = total < 2;
+      document.getElementById('vive-visor-prev').hidden = solaUna;
+      document.getElementById('vive-visor-next').hidden = solaUna;
+    }
+
+    function abrirVisor(i, origen) {
+      if (!FOTOS.length) return;
+      visorOrigen = origen || document.activeElement;
+      pintarVisor(i);
+      visor.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('vive-visor-cerrar').focus();
+    }
+
+    function cerrarVisor() {
+      visor.classList.remove('open');
+      document.getElementById('vive-visor-img').src = '';
+      document.body.style.overflow = '';
+      // El carrusel queda en la fotografía que se estaba viendo
+      if (typeof window.irAFoto === 'function') irAFoto(visorIndice);
+      if (visorOrigen && document.contains(visorOrigen)) visorOrigen.focus();
+      visorOrigen = null;
+    }
+
+    document.getElementById('vive-visor-cerrar').addEventListener('click', cerrarVisor);
+    document.getElementById('vive-visor-prev').addEventListener('click', () => pintarVisor(visorIndice - 1));
+    document.getElementById('vive-visor-next').addEventListener('click', () => pintarVisor(visorIndice + 1));
+    visor.addEventListener('click', e => { if (e.target === visor) cerrarVisor(); });
+
+    /* ═══════════════════════════════════════════════════════════
+       VIDEOS
+    ═══════════════════════════════════════════════════════════ */
+    let VIDEOS_POR_ID = {};
+
+    function portadaHtml(v, vertical) {
+      const etiqueta = v.titulo ? `Reproducir el video: ${esc(v.titulo)}` : 'Reproducir el video';
+      return `
+        <button type="button" class="vive-portada${vertical ? ' vive-portada--vertical' : ''}"
+                data-video="${esc(v.id)}" aria-label="${etiqueta}">
+          ${v.portada
+            ? `<img src="${esc(v.portada)}" alt="" loading="lazy" decoding="async" />`
+            : `<span class="vive-portada__sinfoto">${esc(v.titulo || 'Video del proyecto')}</span>`}
+          <span class="vive-portada__play" aria-hidden="true"><span>▶</span></span>
+        </button>`;
+    }
+
+    function renderVideos(destacado, videos) {
+      const mount = document.getElementById('vive-videos-mount');
+      [destacado, ...videos].filter(Boolean).forEach(v => { VIDEOS_POR_ID[v.id] = v; });
+
+      if (!destacado && !videos.length) {
+        // El aviso sobre la carga de los reproductores no aplica si no hay ninguno
+        document.getElementById('vive-videos-nota').hidden = true;
+        mount.innerHTML =
+          '<p class="vive-vacio">Todavía no hay videos publicados.</p>';
+        return;
+      }
+      document.getElementById('vive-videos-nota').hidden = false;
+
+      // Si no hay destacado se muestra solo la galería, sin hueco vacío
+      const destHtml = destacado ? `
+        <div class="vive-destacado">
+          <div>${portadaHtml(destacado, destacado.orientacion === 'vertical')}</div>
+          <div class="vive-destacado__info">
+            <span class="vive-destacado__chip">Video destacado</span>
+            <h4 class="vive-destacado__titulo">${esc(destacado.titulo || 'Video del proyecto')}</h4>
+            ${destacado.descripcion ? `<p class="vive-destacado__desc">${esc(destacado.descripcion)}</p>` : ''}
+            <p class="vive-video-card__meta">
+              <span class="vive-prov">${esc(PROVEEDORES[destacado.proveedor] || destacado.proveedor)}</span>
+              ${destacado.fecha ? `<span>${esc(destacado.fecha)}</span>` : ''}
+            </p>
+          </div>
+        </div>` : '';
+
+      const gridHtml = videos.length ? `
+        <div class="vive-videos-grid">
+          ${videos.map(v => `
+            <article class="vive-video-card">
+              ${portadaHtml(v, v.orientacion === 'vertical')}
+              <div class="vive-video-card__body">
+                <h4 class="vive-video-card__titulo">${esc(v.titulo || 'Video del proyecto')}</h4>
+                ${v.descripcion ? `<p class="vive-video-card__desc">${esc(v.descripcion)}</p>` : ''}
+                <p class="vive-video-card__meta">
+                  <span class="vive-prov">${esc(PROVEEDORES[v.proveedor] || v.proveedor)}</span>
+                  ${v.fecha ? `<span>${esc(v.fecha)}</span>` : ''}
+                </p>
+              </div>
+            </article>`).join('')}
+        </div>` : '';
+
+      mount.innerHTML = destHtml + gridHtml;
+
+      mount.querySelectorAll('.vive-portada').forEach(btn => {
+        btn.addEventListener('click', () => abrirVideo(btn.dataset.video, btn));
+      });
+    }
+
+    /* ─── Modal de reproducción ─── */
+    const player = document.getElementById('vive-player');
+    const marco = document.getElementById('vive-player-marco');
+    const aviso = document.getElementById('vive-player-aviso');
+    let playerOrigen = null;
+    let avisoTimer = null;
+
+    function abrirVideo(id, origen) {
+      const v = VIDEOS_POR_ID[id];
+      if (!v) return;
+      playerOrigen = origen || document.activeElement;
+
+      const vertical = v.orientacion === 'vertical';
+      document.getElementById('vive-player-caja')
+        .classList.toggle('vive-player__caja--vertical', vertical);
+      marco.classList.toggle('vive-player__marco--vertical', vertical);
+
+      document.getElementById('vive-player-titulo').textContent = v.titulo || 'Video del proyecto';
+      document.getElementById('vive-player-desc').textContent =
+        [v.descripcion, v.fecha].filter(Boolean).join(' · ');
+      const prov = PROVEEDORES[v.proveedor] || v.proveedor;
+      document.getElementById('vive-player-prov').textContent = 'Reproducido desde ' + prov;
+      const enlace = document.getElementById('vive-player-enlace');
+      enlace.href = v.url_original;
+      enlace.textContent = `Ver el video original en ${prov} ↗`;
+
+      aviso.classList.remove('visible');
+
+      // El iframe se crea aquí: antes de pulsar reproducir no se carga
+      // ningún recurso del proveedor externo.
+      const iframe = document.createElement('iframe');
+      const sep = v.embed_url.includes('?') ? '&' : '?';
+      iframe.src = v.embed_url + sep + 'autoplay=1';
+      iframe.title = v.titulo || 'Video del proyecto';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      let cargo = false;
+      iframe.addEventListener('load', () => { cargo = true; });
+      marco.replaceChildren(iframe);
+
+      // No es posible detectar de forma fiable que un proveedor bloquee la
+      // inserción; si el marco no llega a cargar se ofrece el enlace directo.
+      clearTimeout(avisoTimer);
+      avisoTimer = setTimeout(() => { if (!cargo) aviso.classList.add('visible'); }, 8000);
+
+      player.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('vive-player-cerrar').focus();
+    }
+
+    function cerrarVideo() {
+      clearTimeout(avisoTimer);
+      player.classList.remove('open');
+      marco.replaceChildren();     // destruye el iframe: detiene la reproducción
+      aviso.classList.remove('visible');
+      document.body.style.overflow = '';
+      if (playerOrigen && document.contains(playerOrigen)) playerOrigen.focus();
+      playerOrigen = null;
+    }
+
+    document.getElementById('vive-player-cerrar').addEventListener('click', cerrarVideo);
+    player.addEventListener('click', e => { if (e.target === player) cerrarVideo(); });
+
+    /* ─── Escape y navegación por teclado en las ventanas ─── */
+    document.addEventListener('keydown', e => {
+      if (player.classList.contains('open')) {
+        if (e.key === 'Escape') { e.preventDefault(); cerrarVideo(); }
+        return;
+      }
+      if (visor.classList.contains('open')) {
+        if (e.key === 'Escape')     { e.preventDefault(); cerrarVisor(); }
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); pintarVisor(visorIndice - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); pintarVisor(visorIndice + 1); }
+      }
+    });
+
+    /* Mantiene el foco dentro de la ventana abierta */
+    document.addEventListener('focusin', e => {
+      const abierto = player.classList.contains('open') ? player
+                    : visor.classList.contains('open')  ? visor
+                    : null;
+      if (abierto && !abierto.contains(e.target)) {
+        const primero = abierto.querySelector('button:not([hidden]), a[href]');
+        if (primero) primero.focus();
+      }
+    });
+
+    /* ═══════════════════════════════════════════════════════════
+       ARRANQUE
+    ═══════════════════════════════════════════════════════════ */
     (async () => {
       const data = await initPage('contacto');
-      const cfg  = data.config || {};
 
-      // Canales de contacto
-      document.getElementById('contacto-info').innerHTML = `
-        <div class="contacto-info-item">
-          <div class="contacto-info-icon">📧</div>
-          <p class="contacto-info-titulo">Correo electrónico</p>
-          <p class="contacto-info-valor">${cfg.correo || '—'}</p>
-        </div>
-        <div class="contacto-info-item">
-          <div class="contacto-info-icon">💬</div>
-          <p class="contacto-info-titulo">Canal de mensajería</p>
-          <p class="contacto-info-valor">${cfg.telegram || '—'} (Telegram / WhatsApp)</p>
-        </div>
-        <div class="contacto-info-item captacion"
-             onclick="abrirModalRegistro()"
-             role="button" tabindex="0"
-             onkeydown="if(event.key==='Enter'||event.key===' ')abrirModalRegistro()"
-             aria-label="Abre formulario de registro de estudiantes">
-          <span class="captacion-badge">¡Únete!</span>
-          <div class="contacto-info-icon">🎓</div>
-          <p class="contacto-info-titulo">Regístrate como estudiante</p>
-          <p class="contacto-info-valor">Forma parte del proyecto y recibe acompañamiento personalizado de nuestros tutores.</p>
-          <span class="captacion-cta">Quiero registrarme →</span>
-        </div>
-      `;
-
-      // FAQ
+      // Preguntas frecuentes (carga dinámica existente)
       const faqHtml = (data.faq || []).map(f => `
         <div class="faq-item" role="listitem">
           <button class="faq-pregunta" aria-expanded="false">
@@ -419,107 +1029,32 @@
       document.getElementById('faq-lista').innerHTML =
         faqHtml || '<p class="text-muted">No hay preguntas frecuentes registradas.</p>';
       initFaq();
+
+      // Galería administrada desde el panel
+      try {
+        const res = await fetch('/api/vive');
+        if (!res.ok) throw new Error('respuesta no válida');
+        const vive = await res.json();
+        FOTOS = vive.fotos || [];
+        const destacado = vive.destacado || null;
+        const videos = vive.videos || [];
+
+        if (!FOTOS.length && !destacado && !videos.length) {
+          // Sin nada publicado: un único aviso discreto, sin bloques vacíos
+          document.getElementById('vive-fotos-mount').innerHTML =
+            '<p class="vive-vacio">Pronto compartiremos nuevas experiencias del proyecto.</p>';
+          document.querySelector('.vive-videos').hidden = true;
+        } else {
+          renderFotos(FOTOS);
+          renderVideos(destacado, videos);
+        }
+      } catch (err) {
+        console.error('No se pudo cargar la galería de Vive EDUCIENCIA:', err);
+        document.getElementById('vive-fotos-mount').innerHTML =
+          '<p class="vive-vacio">Pronto compartiremos nuevas experiencias del proyecto.</p>';
+        document.querySelector('.vive-videos').hidden = true;
+      }
     })();
-
-    /* ── Formulario de mensajes (guarda en el servidor) ── */
-    async function handleMensaje(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btn-enviar');
-      const fb  = document.getElementById('form-feedback');
-      btn.disabled = true;
-      btn.textContent = 'Enviando…';
-
-      const payload = {
-        nombre:  document.getElementById('nombre').value.trim(),
-        correo:  document.getElementById('correo').value.trim(),
-        asunto:  document.getElementById('asunto').value,
-        mensaje: document.getElementById('mensaje').value.trim()
-      };
-
-      try {
-        const res = await fetch('/api/mensaje', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Error del servidor');
-        fb.style.display     = 'block';
-        fb.style.background  = '#e8f5e9';
-        fb.style.color       = '#2e7d32';
-        fb.style.border      = '1px solid #c8e6c9';
-        fb.textContent       = '✓ Mensaje recibido. Nos pondremos en contacto pronto.';
-        e.target.reset();
-      } catch {
-        fb.style.display     = 'block';
-        fb.style.background  = '#fdecea';
-        fb.style.color       = '#c62828';
-        fb.style.border      = '1px solid #f5c6c6';
-        fb.textContent       = '✗ No se pudo enviar. ¿El servidor está activo?';
-      } finally {
-        btn.disabled    = false;
-        btn.textContent = 'Enviar mensaje';
-      }
-    }
-
-    /* ── Modal de registro ── */
-    function abrirModalRegistro() {
-      document.getElementById('modal-registro').classList.add('open');
-      document.getElementById('reg-form-container').style.display = '';
-      document.getElementById('reg-success').style.display = 'none';
-      document.body.style.overflow = 'hidden';
-    }
-
-    function cerrarModalRegistro() {
-      document.getElementById('modal-registro').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    // Cerrar con clic fuera del modal
-    document.getElementById('modal-registro').addEventListener('click', function(e) {
-      if (e.target === this) cerrarModalRegistro();
-    });
-
-    // Cerrar con Escape
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') cerrarModalRegistro();
-    });
-
-    async function enviarRegistro(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btn-reg-submit');
-      btn.disabled    = true;
-      btn.textContent = 'Enviando…';
-
-      const areas = Array.from(
-        document.querySelectorAll('#modal-registro input[name="area"]:checked')
-      ).map(cb => cb.value);
-
-      const payload = {
-        nombre:       document.getElementById('reg-nombre').value.trim(),
-        correo:       document.getElementById('reg-correo').value.trim(),
-        telefono:     document.getElementById('reg-telefono').value.trim(),
-        grado:        document.getElementById('reg-grado').value,
-        institucion:  document.getElementById('reg-institucion').value.trim(),
-        areas:        areas,
-        como:         document.getElementById('reg-como').value,
-        nota:         document.getElementById('reg-nota').value.trim()
-      };
-
-      try {
-        const res = await fetch('/api/registro', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Error del servidor');
-        document.getElementById('reg-form-container').style.display = 'none';
-        document.getElementById('reg-success').style.display = 'block';
-      } catch {
-        btn.disabled    = false;
-        btn.textContent = 'Enviar registro →';
-        alert('No se pudo enviar el registro. Verifica que el servidor esté activo.');
-      }
-    }
   </script>
 </body>
 </html>

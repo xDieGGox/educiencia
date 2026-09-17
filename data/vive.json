@@ -1,0 +1,33 @@
+{
+  "fotos": [
+    {
+      "id": "foto-mu5rc71rc516c6",
+      "titulo": "",
+      "descripcion": "",
+      "alt": "",
+      "fecha": "",
+      "archivo": "si-5-mu5rc71ff8983be9.jpg",
+      "thumb": "si-5-mu5rc71h8299f088.jpg",
+      "ancho": 1920,
+      "alto": 1080,
+      "encuadre": "center center",
+      "publicada": true,
+      "creado": "2026-09-17 11:42"
+    },
+    {
+      "id": "foto-mu5rcc2c8357cd",
+      "titulo": "",
+      "descripcion": "",
+      "alt": "",
+      "fecha": "",
+      "archivo": "si-mu5rcc247bd6750f.jpg",
+      "thumb": "si-mu5rcc2661ffadd4.jpg",
+      "ancho": 1920,
+      "alto": 1079,
+      "encuadre": "center center",
+      "publicada": true,
+      "creado": "2026-09-17 11:42"
+    }
+  ],
+  "videos": []
+}

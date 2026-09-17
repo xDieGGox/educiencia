@@ -237,6 +237,7 @@ ul { list-style: none; }
 .header-nav a {
   color: #2d3748; font-size: 0.9rem; font-weight: 500;
   padding: 6px 14px; border-radius: var(--radius-sm);
+  white-space: nowrap;
   transition: background 0.15s, color 0.15s;
 }
 .header-nav a:hover { background: #f0f4f8; color: var(--color-primary); }

@@ -31,7 +31,8 @@ function renderHeader(config, currentPage) {
     { id: 'agenda',    label: 'Agenda',    href: '/agenda.html' },
     { id: 'recursos',  label: 'Recursos',  href: '/recursos.html' },
     { id: 'equipo',    label: 'Equipo',    href: '/equipo.html' },
-    { id: 'contacto',  label: 'Contacto',  href: '/contacto.html' }
+    // La ruta se conserva para no romper enlaces existentes; solo cambia el rótulo.
+    { id: 'contacto',  label: 'Vive EDUCIENCIA',  href: '/contacto.html' }
   ];
 
   const links = pages.map(p =>
