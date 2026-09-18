@@ -29,5 +29,22 @@
       "creado": "2026-09-17 11:42"
     }
   ],
-  "videos": []
+  "videos": [
+    {
+      "id": "video-mu6zfr4x7ada48",
+      "titulo": "Presentación del proyecto de vinculación  Educiencia",
+      "descripcion": "",
+      "fecha": "",
+      "proveedor": "youtube",
+      "video_id": "KpcSY7MgK74",
+      "embed_url": "https://www.youtube-nocookie.com/embed/KpcSY7MgK74?rel=0&modestbranding=1",
+      "url_original": "https://www.youtube.com/watch?v=KpcSY7MgK74",
+      "portada_auto": "https://i.ytimg.com/vi/KpcSY7MgK74/hqdefault.jpg",
+      "miniatura": "",
+      "orientacion": "horizontal",
+      "publicado": true,
+      "destacado": false,
+      "creado": "2026-09-18 08:16"
+    }
+  ]
 }
