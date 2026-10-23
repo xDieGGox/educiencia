@@ -19,6 +19,7 @@ npm start
 - APIs: `server.js` (Express)
 - Datos: `data/data.json`, `data/registros.json`, `data/mensajes.json`, `data/vive.json`
 - Imágenes subidas desde el panel: `uploads/vive/` (se sirven en `/uploads/vive/...`)
+- Tabla periódica 3D: `tabla-periodica/` (se sirve en `/tabla-periodica/`)
 
 ## Endpoints
 - GET/POST `/api/data` y `/api/data.php` → lee/guarda `data/data.json`
@@ -73,6 +74,37 @@ carpeta en las copias de seguridad.
    fotografías subidas desde el panel (se crea sola al arrancar si no existe).
 
 No se requiere PHP: la ruta `/api/data.php` es servida por Express para compatibilidad con el frontend.
+
+## Simuladores
+
+La página de Recursos tiene dos subsecciones:
+
+- **Guías y materiales de apoyo** → colección `recursos` de `data/data.json` (con filtro por área).
+- **Simuladores** → colección `simuladores` de `data/data.json` (sin filtro).
+
+Ambas usan la misma tarjeta (`renderRecursoCard` en `js/app.js`), así que comparten diseño.
+Los simuladores se administran en el panel, apartado «Simuladores»: alta, edición, reordenado
+(↑ ↓) y borrado. El campo *Enlace* acepta una ruta interna que empiece por `/`
+(p. ej. `/tabla-periodica/`) o una dirección externa con `https://`.
+
+Para añadir un simulador nuevo que viva dentro del sitio: coloca su carpeta en la raíz del
+proyecto (como `tabla-periodica/`) y registra la tarjeta desde el panel apuntando a su ruta.
+No hace falta tocar el servidor.
+
+## Tabla periódica inmersiva 3D
+
+Aplicación estática en `tabla-periodica/`, accesible en `/tabla-periodica/` y enlazada desde
+la subsección **Simuladores** de Recursos.
+
+- `index.html` · `app.js` (módulo ES) · `logo-educiencia-bn.png`
+- No necesita rutas propias en el servidor: tanto `server.js` (`express.static`) como
+  `server.py` (`SimpleHTTPRequestHandler`) sirven `index.html` para la ruta de la carpeta.
+- **Requiere conexión a internet**: Three.js se carga desde `cdn.jsdelivr.net` (mediante un
+  `importmap`) y las tipografías desde Google Fonts. Sin red, la tabla no se dibuja.
+- Necesita un navegador con WebGL.
+- Todas sus rutas internas son relativas (`./app.js`, `./logo-educiencia-bn.png`), así que la
+  carpeta puede moverse o renombrarse sin tocar su código; solo habría que actualizar el
+  `enlace` del recurso en `data/data.json`.
 
 > Nota: `server.py` es un servidor alternativo heredado y **no** implementa las APIs de
 > Vive EDUCIENCIA. Usa `server.js` (es lo que arranca `INICIAR SERVIDOR.bat` y `npm start`).

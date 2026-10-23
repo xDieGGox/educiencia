@@ -633,6 +633,21 @@
       "accion_label": "⬇ Descargar"
     }
   ],
+  "simuladores": [
+    {
+      "id": "sim-tabla-periodica-3d",
+      "area": "quimica",
+      "tipo": "Simulador 3D",
+      "nivel": "Bachillerato",
+      "icono": "⚛️",
+      "titulo": "Tabla periódica inmersiva 3D",
+      "descripcion": "Recorre los 118 elementos en un entorno tridimensional. Alterna entre las vistas de tabla, hélice y esfera, consulta las propiedades y familias químicas de cada elemento, compáralos entre sí y pon a prueba lo aprendido.",
+      "autor": "Equipo EDUCIENCIA",
+      "fecha": "Octubre del 2026",
+      "enlace": "/tabla-periodica/",
+      "accion_label": "Explorar tabla periódica"
+    }
+  ],
   "equipo": {
     "coordinadores": [
       {

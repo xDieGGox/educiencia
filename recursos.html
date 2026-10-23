@@ -12,6 +12,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recursos educativos – EDUCIENCIA</title>
   <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* ── Subsecciones de la página de recursos ── */
+    .subseccion__head { margin-bottom: 28px; }
+    .subseccion__titulo {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+    }
+    .subseccion__desc {
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      max-width: 72ch;
+    }
+    .subseccion__sep {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      /* Aire simétrico: el título siguiente no debe quedar pegado a la línea */
+      margin: 56px 0;
+    }
+    @media (max-width: 768px) {
+      .subseccion__sep { margin: 40px 0; }
+      .subseccion__titulo { font-size: 1.1875rem; }
+    }
+  </style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -34,16 +60,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <section class="section">
     <div class="container">
 
-      <div class="filtros-bar" role="group" aria-label="Filtrar por área">
-        <span><label>Filtrar por:</label></span>
-        <button class="filtro-btn active" data-filter="todos"       aria-pressed="true">Todos</button>
-        <button class="filtro-btn" data-filter="biologia"    aria-pressed="false">Biología</button>
-        <button class="filtro-btn" data-filter="quimica"     aria-pressed="false">Química</button>
-        <button class="filtro-btn" data-filter="matematicas" aria-pressed="false">Matemáticas</button>
-        <button class="filtro-btn" data-filter="fisica"      aria-pressed="false">Física</button>
-      </div>
+      <!-- ── Simuladores ── -->
+      <section class="subseccion" aria-labelledby="simuladores-titulo">
+        <div class="subseccion__head">
+          <h2 class="subseccion__titulo" id="simuladores-titulo">Simuladores</h2>
+          <p class="subseccion__desc">Entornos interactivos para explorar y experimentar directamente desde el navegador.</p>
+        </div>
 
-      <div class="recursos-grid" id="recursos-grid"></div>
+        <div class="recursos-grid" id="simuladores-grid"></div>
+      </section>
+
+      <hr class="subseccion__sep" />
+
+      <!-- ── Guías y materiales de apoyo ── -->
+      <section class="subseccion" aria-labelledby="guias-titulo">
+        <div class="subseccion__head">
+          <h2 class="subseccion__titulo" id="guias-titulo">Guías y materiales de apoyo</h2>
+          <p class="subseccion__desc">Material descargable para repasar y practicar por tu cuenta.</p>
+        </div>
+
+        <div class="filtros-bar" role="group" aria-label="Filtrar por área">
+          <span><label>Filtrar por:</label></span>
+          <button class="filtro-btn active" data-filter="todos"       aria-pressed="true">Todos</button>
+          <button class="filtro-btn" data-filter="biologia"    aria-pressed="false">Biología</button>
+          <button class="filtro-btn" data-filter="quimica"     aria-pressed="false">Química</button>
+          <button class="filtro-btn" data-filter="matematicas" aria-pressed="false">Matemáticas</button>
+          <button class="filtro-btn" data-filter="fisica"      aria-pressed="false">Física</button>
+        </div>
+
+        <div class="recursos-grid" id="recursos-grid"></div>
+      </section>
 
     </div>
   </section>
@@ -55,6 +101,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     (async () => {
       const data = await initPage('recursos');
 
+      // Guías y materiales de apoyo
       const grid = document.getElementById('recursos-grid');
       const recursos = data.recursos || [];
       grid.innerHTML = recursos.length
@@ -63,6 +110,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       const btns = document.querySelectorAll('.filtro-btn');
       initFiltros('recursos-grid', btns, 'area', 'todos');
+
+      // Simuladores (misma tarjeta, colección aparte en data.json)
+      const simGrid = document.getElementById('simuladores-grid');
+      const simuladores = data.simuladores || [];
+      simGrid.innerHTML = simuladores.length
+        ? simuladores.map(renderRecursoCard).join('')
+        : '<p class="empty-state" style="grid-column:1/-1;">Pronto publicaremos nuevos simuladores.</p>';
     })();
   </script>
 </body>

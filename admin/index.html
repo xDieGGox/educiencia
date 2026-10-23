@@ -346,6 +346,9 @@
     <button class="sidebar-item" data-panel="recursos">
       <span class="icon">📚</span> Recursos
     </button>
+    <button class="sidebar-item" data-panel="simuladores">
+      <span class="icon">🧪</span> Simuladores
+    </button>
     <button class="sidebar-item" data-panel="equipo">
       <span class="icon">👥</span> Equipo
     </button>
@@ -451,6 +454,29 @@
           <button class="btn btn-primary btn-sm" onclick="abrirModalRecurso()">+ Nuevo recurso</button>
         </div>
         <div class="items-list" id="list-recursos"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: SIMULADORES ===== -->
+    <div class="panel" id="panel-simuladores">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div>
+          <h1 class="panel-title" style="margin-bottom:4px;">Simuladores</h1>
+          <p class="panel-desc" style="margin-bottom:0;">
+            Entornos interactivos de la subsección «Simuladores» en Recursos.
+            Se muestran con la misma tarjeta que los recursos, pero en su propia lista.
+          </p>
+        </div>
+        <a href="/recursos.html" target="_blank" class="btn btn-outline btn-sm" style="align-self:center;">
+          🔗 Ver en la página
+        </a>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">
+          Simuladores registrados
+          <button class="btn btn-primary btn-sm" onclick="abrirModalSimulador()">+ Nuevo simulador</button>
+        </div>
+        <div class="items-list" id="list-simuladores"></div>
       </div>
     </div>
 
@@ -1015,6 +1041,77 @@
   </div>
 </div>
 
+<!-- Modal: Simulador -->
+<div class="modal-overlay" id="modal-simulador">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-simulador-titulo">Nuevo simulador</h2>
+      <button class="modal-close" onclick="cerrarModal('modal-simulador')">✕</button>
+    </div>
+    <input type="hidden" id="simulador-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label>Área *</label>
+        <select id="simulador-area">
+          <option value="biologia">Biología</option>
+          <option value="quimica">Química</option>
+          <option value="matematicas">Matemáticas</option>
+          <option value="fisica">Física</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <input type="text" id="simulador-tipo" placeholder="Simulador 3D / Laboratorio virtual…" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nivel</label>
+        <input type="text" id="simulador-nivel" placeholder="Bachillerato" />
+      </div>
+      <div class="form-group">
+        <label>Ícono (emoji)</label>
+        <input type="text" id="simulador-icono" placeholder="⚛️" maxlength="5" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Título *</label>
+      <input type="text" id="simulador-titulo" placeholder="Tabla periódica inmersiva 3D" />
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="simulador-descripcion" rows="3"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Autor</label>
+        <input type="text" id="simulador-autor" placeholder="Equipo EDUCIENCIA" />
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="text" id="simulador-fecha" placeholder="Octubre del 2026" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Enlace *</label>
+      <input type="text" id="simulador-enlace" placeholder="/tabla-periodica/" />
+      <p style="font-size:0.78rem;color:#777;margin-top:5px;line-height:1.5;">
+        Si el simulador vive dentro de este sitio, escribe su ruta empezando por <code>/</code>
+        (por ejemplo <code>/tabla-periodica/</code>). Si está alojado fuera, pega la dirección
+        completa con <code>https://</code>.
+      </p>
+    </div>
+    <div class="form-group">
+      <label>Texto del botón</label>
+      <input type="text" id="simulador-accion_label" placeholder="Explorar simulador" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="cerrarModal('modal-simulador')">Cancelar</button>
+      <button class="btn btn-success" onclick="guardarSimulador()">💾 Guardar simulador</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Coordinador -->
 <div class="modal-overlay" id="modal-coord">
   <div class="modal">
@@ -1394,6 +1491,7 @@ function renderAll() {
   renderPilares();
   renderClases();
   renderRecursos();
+  renderSimuladores();
   renderEquipo();
   renderTestimonios();
   renderFaq();
@@ -1696,6 +1794,41 @@ function renderRecursos() {
     </div>`).join('');
 }
 
+function renderSimuladores() {
+  const el = document.getElementById('list-simuladores');
+  const items = DATA.simuladores || [];
+  if (!items.length) {
+    el.innerHTML = '<p style="color:#9099b2;font-size:0.875rem;padding:8px 0;">No hay simuladores registrados.</p>';
+    return;
+  }
+  el.innerHTML = items.map((s, idx) => `
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title">${s.icono||'🧪'} ${s.titulo}</div>
+        <div class="item-meta">
+          ${AREA_CHIPS[s.area]||''} &nbsp; ${s.tipo||''}
+          ${s.fecha ? ' · ' + s.fecha : ''}
+          ${s.enlace ? ' · <code>' + s.enlace + '</code>' : ''}
+        </div>
+      </div>
+      <div class="item-actions">
+        ${idx > 0 ? `<button class="btn btn-outline btn-icon" title="Mover arriba" aria-label="Mover arriba" onclick="moverSimulador(${idx},-1)">↑</button>` : ''}
+        ${idx < items.length - 1 ? `<button class="btn btn-outline btn-icon" title="Mover abajo" aria-label="Mover abajo" onclick="moverSimulador(${idx},1)">↓</button>` : ''}
+        <button class="btn btn-outline btn-icon" title="Editar" aria-label="Editar" onclick="editarSimulador('${s.id}')">✏️</button>
+        <button class="btn btn-danger btn-icon" title="Eliminar" aria-label="Eliminar" onclick="confirmarEliminar('simuladores','${s.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function moverSimulador(idx, dir) {
+  const items = DATA.simuladores || [];
+  const destino = idx + dir;
+  if (destino < 0 || destino >= items.length) return;
+  [items[idx], items[destino]] = [items[destino], items[idx]];
+  renderSimuladores();
+  guardarDatos();
+}
+
 function renderEquipo() {
   const coords = (DATA.equipo || {}).coordinadores || [];
   const tutores = (DATA.equipo || {}).tutores || [];
@@ -1904,6 +2037,52 @@ function guardarRecurso() {
   upsert('recursos', obj);
   cerrarModal('modal-recurso');
   renderRecursos();
+  guardarDatos();
+}
+
+/* ─── SIMULADORES ─── */
+function abrirModalSimulador(sim) {
+  resetForm(['simulador-id','simulador-area','simulador-tipo','simulador-nivel','simulador-icono',
+    'simulador-titulo','simulador-descripcion','simulador-autor','simulador-fecha',
+    'simulador-enlace','simulador-accion_label']);
+  document.getElementById('modal-simulador-titulo').textContent = sim ? 'Editar simulador' : 'Nuevo simulador';
+  if (sim) {
+    setV('simulador-id', sim.id);
+    document.getElementById('simulador-area').value = sim.area || 'quimica';
+    setV('simulador-tipo', sim.tipo); setV('simulador-nivel', sim.nivel); setV('simulador-icono', sim.icono);
+    setV('simulador-titulo', sim.titulo); setV('simulador-descripcion', sim.descripcion);
+    setV('simulador-autor', sim.autor); setV('simulador-fecha', sim.fecha);
+    setV('simulador-enlace', sim.enlace); setV('simulador-accion_label', sim.accion_label);
+  }
+  abrirModal('modal-simulador');
+}
+
+function editarSimulador(id) {
+  const s = (DATA.simuladores || []).find(x => x.id === id);
+  if (s) abrirModalSimulador(s);
+}
+
+function guardarSimulador() {
+  const titulo = v('simulador-titulo').trim();
+  if (!titulo) { toast('El título es obligatorio.', true); return; }
+  const enlace = v('simulador-enlace').trim();
+  if (!enlace) { toast('El enlace es obligatorio: sin él la tarjeta no abre nada.', true); return; }
+  if (!/^(\/|https?:\/\/)/i.test(enlace)) {
+    toast('El enlace debe empezar por "/" (ruta del sitio) o por "https://".', true);
+    return;
+  }
+  const id = v('simulador-id') || ('sim-' + uid());
+  const obj = {
+    id, area: v('simulador-area'), tipo: v('simulador-tipo') || 'Simulador',
+    nivel: v('simulador-nivel'), icono: v('simulador-icono') || '🧪',
+    titulo, descripcion: v('simulador-descripcion'),
+    autor: v('simulador-autor'), fecha: v('simulador-fecha'),
+    enlace, accion_label: v('simulador-accion_label') || 'Explorar simulador'
+  };
+  if (!DATA.simuladores) DATA.simuladores = [];
+  upsert('simuladores', obj);
+  cerrarModal('modal-simulador');
+  renderSimuladores();
   guardarDatos();
 }
 

@@ -226,7 +226,9 @@ class EducienciaHandler(http.server.SimpleHTTPRequestHandler):
 
     def end_headers(self):
         path = urlparse(self.path).path
-        if path.endswith(('.html', '.css', '.js')):
+        # Las rutas de carpeta ("/", "/tabla-periodica/") sirven su index.html,
+        # así que reciben el mismo no-cache que las páginas con extensión.
+        if path.endswith(('.html', '.css', '.js')) or path.endswith('/'):
             self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
             self.send_header("Pragma",        "no-cache")
             self.send_header("Expires",       "0")

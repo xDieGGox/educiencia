@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>medición</title></head>
+<body>
+<pre id="out">midiendo…</pre>
+<iframe id="f" src="/tabla-periodica/" style="width:944px;height:860px;border:0;"></iframe>
+<script>
+const L = [];
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+
+(async () => {
+  const f = document.getElementById('f');
+  await new Promise(r => f.addEventListener('load', r, { once: true }));
+  const w = f.contentWindow, d = f.contentDocument;
+  await esperar(5000);
+
+  // Entrar al entorno
+  const start = d.getElementById('startBtn');
+  if (start) { start.click(); await esperar(3000); }
+
+  // Seleccionar Sodio igual que en la captura
+  const inp = d.getElementById('searchInput');
+  inp.value = 'Sodio';
+  inp.dispatchEvent(new w.Event('input', { bubbles: true }));
+  await esperar(2000);
+
+  const left = d.querySelector('.hud-left');
+  const right = d.querySelector('.hud-right');
+
+  for (const ancho of [944, 1280, 1536, 1920]) {
+    f.style.width = ancho + 'px';
+    await esperar(900);
+    const vw = d.documentElement.clientWidth;
+    const rL = left.getBoundingClientRect();
+    const rR = right.getBoundingClientRect();
+    const visible = right.classList.contains('visible');
+    const libre = Math.round(rR.left - rL.right);
+    const pct = Math.round(((rL.width + rR.width) / vw) * 100);
+    L.push(`${String(vw).padStart(4)}px  →  izq ${Math.round(rL.width)}px (alto ${Math.round(rL.height)}px) | der ${Math.round(rR.width)}px (alto ${Math.round(rR.height)}px) | centro libre ${libre}px | paneles ocupan ${pct}% del ancho${visible ? '' : '  [panel der. NO visible]'}`);
+  }
+
+  // Volver al ancho de la captura para revisar defectos visuales
+  f.style.width = '944px';
+  await esperar(900);
+
+  L.push('');
+  L.push('— Defectos visibles en la captura —');
+
+  const closeBtn = d.getElementById('detailCloseBtn');
+  const atomic = d.getElementById('detailAtomic');
+  if (closeBtn && atomic) {
+    const a = atomic.getBoundingClientRect(), c = closeBtn.getBoundingClientRect();
+    const solapa = !(a.right <= c.left || c.right <= a.left || a.bottom <= c.top || c.bottom <= a.top);
+    L.push('  "Z = 11" y la X de cerrar se solapan: ' + (solapa ? 'SÍ (defecto)' : 'no'));
+    L.push('    Z en x[' + Math.round(a.left) + '-' + Math.round(a.right) + '] · X en x[' + Math.round(c.left) + '-' + Math.round(c.right) + ']');
+  }
+
+  const header = d.querySelector('.detail-header');
+  const name = d.getElementById('detailName');
+  if (header && name) {
+    const h = header.getBoundingClientRect(), n = name.getBoundingClientRect();
+    L.push('  el nombre "Sodio" sobresale del encabezado: ' + (n.bottom > h.bottom + 1 ? 'SÍ (recortado por ' + Math.round(n.bottom - h.bottom) + 'px)' : 'no'));
+    L.push('    header alto ' + Math.round(h.height) + 'px · símbolo ' + w.getComputedStyle(d.getElementById('detailSymbol')).fontSize + ' · nombre ' + w.getComputedStyle(name).fontSize);
+  }
+
+  const sym = d.getElementById('detailSymbol');
+  if (sym) {
+    const s = sym.getBoundingClientRect(), h = header.getBoundingClientRect();
+    L.push('  el símbolo "Na" sobresale del encabezado: ' + (s.bottom > h.bottom + 1 ? 'SÍ (' + Math.round(s.bottom - h.bottom) + 'px)' : 'no'));
+  }
+
+  L.push('');
+  L.push('— Valores actuales —');
+  L.push('  .hud-left  min-width: ' + w.getComputedStyle(left).minWidth + ' · padding: ' + w.getComputedStyle(left).padding + ' · max-height: ' + w.getComputedStyle(left).maxHeight);
+  L.push('  .hud-right width: ' + w.getComputedStyle(right).width + ' · max-height: ' + w.getComputedStyle(right).maxHeight);
+
+  document.getElementById('out').textContent = L.join('\n');
+})().catch(e => { document.getElementById('out').textContent = L.join('\n') + '\nERROR: ' + e.message; });
+</script>
+</body>
+</html>
