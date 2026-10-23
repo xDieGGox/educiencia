@@ -4,3 +4,5 @@ __pycache__/
 server_log.txt
 .env
 *.pyc
+# Arneses de verificación temporales (no forman parte del sitio)
+__prueba_temporal.html
